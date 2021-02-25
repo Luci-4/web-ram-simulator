@@ -1,8 +1,6 @@
 let lastLinesNum = 1;
 let breakpoints = [];
-function toggleFile(){
-    
-}
+
 function getNumberOfLines(){
     return document.getElementById("textarea-editor").value.split("\n").length;
 }
@@ -28,12 +26,16 @@ function switchBreakpoint(index) {
     let state = point.className.split(" ")[1];
     if(state === "inactive"){
         classNameArray.push("active");
+        breakpoints.push(parseInt(index));
     }else if(state === "active"){
         classNameArray.push("inactive");
+        let pointIndex = breakpoints.indexOf(parseInt(index));
+        breakpoints.splice(pointIndex, 1);
     }
+    console.log(breakpoints);
     point.className = classNameArray.join(" ");
     
-    breakpoints[parseInt(index)] = parseInt(index);
+    
     
 }
 function updateEditorMargin(currentLineNum){

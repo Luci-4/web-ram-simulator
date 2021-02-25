@@ -1,0 +1,241 @@
+* {
+    -webkit-box-sizing: padding-box;
+    box-sizing: padding-box;
+    margin: none;
+    padding: none;
+}
+
+
+
+html {
+    font-size: 100%;
+    
+    height: 100%;
+    
+    
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /* height: 100vh;
+    width: 100vw; */
+    height: 100%;
+    width: 100%;
+    
+    line-height: 1.8;
+    font-weight: 300;
+    font-size: 1.125rem;
+    
+    font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
+    background-color: #071330;
+    
+    /* background: #071330; */
+    
+}
+
+.main {
+    height: 100%;
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+}
+
+
+
+nav {
+    z-index: 3;
+    
+    position: sticky;
+    height: 35px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    width: 100%;
+    background-color: #071330;
+    top: 0;
+}
+.input-tape {
+    z-index: 2;
+    position: sticky;
+    
+
+    min-height: 80px;
+    padding: 0;
+    
+    width: 100%;
+    background-color:green;
+    top: 0;
+}
+.output-section {
+    z-index: 2;
+    position: sticky;
+    
+    min-height: 80px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    
+    width: 100%;
+    background-color:red;
+    bottom: 0;
+}
+
+#textarea-console {
+    font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
+    color:white;
+    min-height: 20px;
+    /* height: 30%; */
+    width: 100%;
+    background-color: rebeccapurple;
+    /* align-self: flex-end; */
+}
+
+.output-tape {
+    
+    min-height: 80px;
+    padding: 0;
+    min-height: 60px;
+    width: 100%;
+    background-color: yellow;
+    
+}
+
+nav button {
+    font-weight:600;
+    font-family: "Public Sans", sans-serif;
+    color: rgb(199, 199, 199);
+    background-color: #071330;
+    text-decoration: none;
+    font-size: 70%;
+    height: inherit;
+    border: none;
+    padding: 0px 20px;
+    cursor: pointer;
+    
+}
+nav button:hover{
+    background-color: #6c757e;
+}
+
+
+.container {
+    
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    /* background-color: palevioletred; */
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    
+}
+
+/* .container-item{
+    min-height: 100px;
+} */
+/* .input-tape{
+    width: 80px;
+    background-color: green;
+    position: sticky;
+    justify-content: flex-start
+} */
+
+.workspace{
+    
+    /* display: inline; */
+    /* flex-direction: column; */
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* background-color: pink; */
+    
+}
+.editor {
+    min-height: 100%;
+    width: 100%;
+    display: inline-flex;
+    
+    
+}
+
+.margin {
+    padding-top: 0;
+    margin-right: 0;
+    padding-right: 10px;
+    padding-left: 10px;
+    display: flex;
+    color: #828285;
+    background-color: purple;
+    width: 80px;
+    left: 0;
+    
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+}
+
+button.point{
+    width: 0.75rem;
+    height: 0.75rem;
+    border: none;
+    border-radius: 50%;
+    justify-content: right;
+    background-color: transparent;
+    
+}
+
+button.point:hover{
+    background-color: red;
+}
+
+
+#lines {
+    /* padding: 10px; */
+    
+    display: block;
+}
+.line{
+    display: flex;
+    padding-left: 10px;
+}
+
+#point #pointtemplate{
+    width: 50%;
+    text-align: right; 
+}
+
+
+.linenumber {
+    font-size: 1.125rem;
+    width: 50%;
+    text-align: right;
+    justify-content: center;
+}
+#textarea-editor {
+    font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
+    width: 100%;
+    outline:none;
+    resize: none;
+    overflow:hidden;
+    border: none;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1.8;
+    padding-top: 0;
+}
+
+
+
+/* .output-tape{
+    width: 80px;
+    background-color: red;
+    justify-content: flex-end;
+    
+} */
+
+
+

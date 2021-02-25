@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="main">
+        <nav>
+            
+            <button class="file-button">File</button>
+            <button class="view-button">View</button>
+            <button class="view-button">Run</button>
+            
+        </nav>
+        <div class="input-tape"></div>
+
+
+        <div class="container">
+            
+            <div class="workspace">
+                <div class="editor">
+                    <div class="margin" id="lines">
+                        <div class="line">
+                            <div id="pointtemplate">
+                                <button class="point" id="1" onclick="enableBreakpoint(this.id)"></button>
+                            </div>
+                            <div class="linenumber">1</div>
+    
+                        </div>
+
+                    </div>
+                    
+                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false"></textarea>
+                </div>
+                
+
+                
+            </div>
+            
+            
+            
+            
+        </div>
+        <div class="output-section">
+            <div id="textarea-console" spellcheck="false" autocapitalize="false">
+                
+            </div>
+            <div class="output-tape"></div>
+        </div>
+    </div>
+
+	<script src="build/script.js"></script>
+</body>
+
+</html>

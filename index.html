@@ -13,7 +13,7 @@
             
             <button class="file-button">File</button>
             <button class="view-button">View</button>
-            <button class="view-button">Run</button>
+            <button class="view-button" onclick="run()">Run</button>
             
         </nav>
         <div class="input-tape"></div>
@@ -26,7 +26,7 @@
                     <div class="margin" id="lines">
                         <div class="line">
                             <div id="pointtemplate">
-                                <button class="point" id="1" onclick="enableBreakpoint(this.id)"></button>
+                                <button class="point inactive" id="1" onclick="switchBreakpoint(this.id)"></button>
                             </div>
                             <div class="linenumber">1</div>
     
@@ -34,16 +34,12 @@
 
                     </div>
                     
-                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false"></textarea>
+                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false" wrap="off";></textarea>
                 </div>
                 
 
                 
             </div>
-            
-            
-            
-            
         </div>
         <div class="output-section">
             <div id="textarea-console" spellcheck="false" autocapitalize="false">

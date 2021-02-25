@@ -1,5 +1,5 @@
 let lastLinesNum = 1;
-
+let breakpoints = [];
 function toggleFile(){
     
 }
@@ -20,21 +20,21 @@ function OnInput() {
   
   this.style.height = (this.scrollHeight) + 'px';
 }
-// function autoGrow(oField) {
-//     console.log("scroll:", oField.scrollHeight);
-    
-//     if (oField.scrollHeight > oField.clientHeight) {
-//       oField.style.height = oField.scrollHeight + "px";
-     
-//     }
-//     if (oField.scrollHeight < oField.clientHeight) {
-//         oField.style.height = oField.scrollHeight - "px";
-        
-//       }
-//   }
 
-function enableBreakpoint(index) {
-    console.log(index);
+
+function switchBreakpoint(index) {
+    let classNameArray = ["point"];
+    let point = document.getElementById(index)
+    let state = point.className.split(" ")[1];
+    if(state === "inactive"){
+        classNameArray.push("active");
+    }else if(state === "active"){
+        classNameArray.push("inactive");
+    }
+    point.className = classNameArray.join(" ");
+    
+    breakpoints[parseInt(index)] = parseInt(index);
+    
 }
 function updateEditorMargin(currentLineNum){
     while (lastLinesNum < currentLineNum){
@@ -53,6 +53,11 @@ function updateEditorMargin(currentLineNum){
         const buttonPoint = buttonTemplate.cloneNode();
         
         buttonPoint.id = lastLinesNum.toString();
+        let buttonClassName = buttonPoint.className.split(" ");
+        
+        // make sure that the button is initialized as inactive
+        buttonClassName[1] = "inactive";
+        buttonPoint.className = buttonClassName.join(" ");
         divLineNumber.innerHTML = lastLinesNum.toString();
         divPoint.appendChild(buttonPoint);
         divLine.appendChild(divPoint);
@@ -87,13 +92,9 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
     lastLinesNum = linesNum;
 })
 
-function format(command, value) {
-    console.log(document.querySelector('textarea').value.split("\n").length);
-    
-}
 
 function getContent(){
-    document.getElementById("my-textarea").value = document.getElementById("editor1").innerHTML;
+    document.getElementById("textarea-editor").value = document.getElementById("textarea-editor").innerHTML;
 }
 
 function save() {

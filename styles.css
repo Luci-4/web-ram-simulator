@@ -90,7 +90,7 @@ nav {
     /* height: 30%; */
     width: 100%;
     background-color: rebeccapurple;
-    /* align-self: flex-end; */
+    
 }
 
 .output-tape {
@@ -126,32 +126,21 @@ nav button:hover{
     height: 100%;
     width: 100%;
     overflow: auto;
-    /* background-color: palevioletred; */
+    
     display: flex;
     justify-content: flex-start;
     align-items: stretch;
     
 }
 
-/* .container-item{
-    min-height: 100px;
-} */
-/* .input-tape{
-    width: 80px;
-    background-color: green;
-    position: sticky;
-    justify-content: flex-start
-} */
+
 
 .workspace{
     
-    /* display: inline; */
-    /* flex-direction: column; */
+    
     padding: 0;
     width: 100%;
     height: 100%;
-    
-    /* background-color: pink; */
     
 }
 .editor {
@@ -182,19 +171,28 @@ button.point{
     width: 0.75rem;
     height: 0.75rem;
     border: none;
+    outline:none;
     border-radius: 50%;
     justify-content: right;
-    background-color: transparent;
+    
     
 }
 
-button.point:hover{
+button.inactive {
+    background-color: transparent;
+}
+
+button.active {
+    background-color: red;
+}
+
+button.inactive:hover{
     background-color: red;
 }
 
 
 #lines {
-    /* padding: 10px; */
+    
     
     display: block;
 }
@@ -220,22 +218,11 @@ button.point:hover{
     width: 100%;
     outline:none;
     resize: none;
-    overflow:hidden;
+    overflow-y: hidden;
     border: none;
     font-size: inherit;
     font-weight: inherit;
     line-height: 1.8;
     padding-top: 0;
+    scrollbar-width: none;
 }
-
-
-
-/* .output-tape{
-    width: 80px;
-    background-color: red;
-    justify-content: flex-end;
-    
-} */
-
-
-

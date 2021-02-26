@@ -22,6 +22,12 @@ var Argument = /** @class */ (function (_super) {
         _this.value = value;
         return _this;
     }
+    Argument.prototype.validateValue = function () {
+        if (/^[0-9]+$/.test(this.value)) {
+            return true;
+        }
+        return false;
+    };
     Argument.GenerateArgument = function (text) {
         if (/^[0-9]+$/.test(text)) {
             return new ArgumentsTypes["address"](text);
@@ -60,6 +66,12 @@ var LabelArg = /** @class */ (function (_super) {
     function LabelArg() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    LabelArg.prototype.validateValue = function () {
+        if (this.value) {
+            return true;
+        }
+        return false;
+    };
     LabelArg.prototype.getLabelIndex = function (app) {
         return app.lexer.labelsWithIndices[this.value];
     };

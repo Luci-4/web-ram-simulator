@@ -15,7 +15,15 @@ abstract class Instruction extends Token{
         return true;
     }
     static GenerateInstruction(text: string){
+        console.log("here: ", text);
         return new Instructions[text]();
+    }
+
+    static validateInstruction(text) {
+        if(Instructions.hasOwnProperty(text)){
+            return true;
+        }
+        return false;
     }
 }
 

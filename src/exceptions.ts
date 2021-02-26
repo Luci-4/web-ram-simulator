@@ -10,7 +10,7 @@ class DuplicateLabelsError {
 
 class UnexpectedTokenError {
     static generateMessage(lineIndex: number, count: number){
-        return `UnexpectedTokenError: in line ${lineIndex} expected three tokens, got ${count}\n`;
+        return `UnexpectedTokenError: in line ${lineIndex} expected 3 tokens, got ${count}\n`;
     }
 }
 
@@ -21,14 +21,20 @@ class InvalidInstructionError {
 }
 
 class InvalidArgumentError {
-    static generateMessage(lineIndex: number, argumentType: Argument, instruction: Instruction){
-        return `InvalidArgumentError: in line ${lineIndex} invalid argument of type ${argumentType.constructor.name} for ${instruction.constructor.name}\n`;
+    static generateMessage(lineIndex: number, argument: Argument, instruction: Instruction){
+        return `InvalidArgumentError: in line ${lineIndex} invalid argument of type ${argument.constructor.name} for ${instruction.constructor.name}\n`;
+    }
+}
+
+class InvalidArgumentValueError {
+    static generateMessage(lineIndex: number, argument: Argument){
+        return `InvalidArgumentValueError: in line ${lineIndex} unexpected value '${argument.value}' for argument of type ${argument.constructor.name}\n`
     }
 }
 
 class EmptyArgumentError {
     static generateMessage(lineIndex: number, instruction: Instruction){
-        return `EmptyArgumentError: in line ${lineIndex} instruction ${instruction.constructor.name} expects an argument`;
+        return `EmptyArgumentError: in line ${lineIndex} instruction ${instruction.constructor.name} expects an argument\n`;
     }
 }
 
@@ -40,7 +46,7 @@ class UndefinedAccumulatorError {
 
 class UndefinedCellError {
     static generateMessage(lineIndex: number) {
-        return `UndefinedCellerror: in line ${lineIndex}\n`;
+        return `UndefinedCellError: in line ${lineIndex}\n`;
     }
 }
 
@@ -61,6 +67,7 @@ export {DuplicateLabelsError,
     UndefinedAccumulatorError, 
     UndefinedCellError, 
     InvalidArgumentError, 
+    InvalidArgumentValueError,
     EmptyArgumentError,
     LabelNotFoundError
 }

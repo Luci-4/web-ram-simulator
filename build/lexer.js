@@ -38,16 +38,26 @@ var Lexer = /** @class */ (function () {
         }
         else if (elements.length === 3) {
             label = new label_1.Label(elements[0]);
+            if (!instruction_1.Instruction.validateInstruction(elements[1])) {
+                var message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[1]);
+                this.debugConsole.push(message);
+                return undefined;
+            }
             instruction = instruction_1.Instruction.GenerateInstruction(elements[1]);
             argument = argument_1.Argument.GenerateArgument(elements[2]);
         }
         else if (elements.length === 2) {
             if (instruction_1.Instructions.hasOwnProperty(elements[0])) {
                 label = new label_1.Label(undefined);
+                if (!instruction_1.Instruction.validateInstruction(elements[0])) {
+                    var message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
+                    this.debugConsole.push(message);
+                    return undefined;
+                }
                 instruction = instruction_1.Instruction.GenerateInstruction(elements[0]);
                 argument = argument_1.Argument.GenerateArgument(elements[1]);
             }
-            else if (instruction_1.Instructions.hasOwnProperty(elements[1])) {
+            else if (instruction_1.Instruction.validateInstruction(elements[1])) {
                 label = new label_1.Label(elements[0]);
                 instruction = instruction_1.Instruction.GenerateInstruction(elements[1]);
             }
@@ -58,7 +68,7 @@ var Lexer = /** @class */ (function () {
             }
         }
         else {
-            if (instruction_1.Instructions.hasOwnProperty(elements[0])) {
+            if (instruction_1.Instruction.validateInstruction(elements[0])) {
                 label = new label_1.Label(undefined);
                 instruction = instruction_1.Instruction.GenerateInstruction(elements[0]);
             }
@@ -76,6 +86,11 @@ var Lexer = /** @class */ (function () {
             else {
                 message = exceptions_1.InvalidArgumentError.generateMessage(lineIndex, argument, instruction);
             }
+            this.debugConsole.push(message);
+            return undefined;
+        }
+        if (!argument.validateValue()) {
+            var message = exceptions_1.InvalidArgumentValueError.generateMessage(lineIndex, argument);
             this.debugConsole.push(message);
             return undefined;
         }

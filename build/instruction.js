@@ -31,7 +31,14 @@ var Instruction = /** @class */ (function (_super) {
         return true;
     };
     Instruction.GenerateInstruction = function (text) {
+        console.log("here: ", text);
         return new Instructions[text]();
+    };
+    Instruction.validateInstruction = function (text) {
+        if (Instructions.hasOwnProperty(text)) {
+            return true;
+        }
+        return false;
     };
     return Instruction;
 }(token_1.Token));

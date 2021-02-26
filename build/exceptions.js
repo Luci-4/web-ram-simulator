@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LabelNotFoundError = exports.EmptyArgumentError = exports.InvalidArgumentError = exports.UndefinedCellError = exports.UndefinedAccumulatorError = exports.InvalidInstructionError = exports.UnexpectedTokenError = exports.DuplicateLabelsError = void 0;
+exports.LabelNotFoundError = exports.EmptyArgumentError = exports.InvalidArgumentValueError = exports.InvalidArgumentError = exports.UndefinedCellError = exports.UndefinedAccumulatorError = exports.InvalidInstructionError = exports.UnexpectedTokenError = exports.DuplicateLabelsError = void 0;
 var DuplicateLabelsError = /** @class */ (function () {
     function DuplicateLabelsError() {
     }
@@ -14,7 +14,7 @@ var UnexpectedTokenError = /** @class */ (function () {
     function UnexpectedTokenError() {
     }
     UnexpectedTokenError.generateMessage = function (lineIndex, count) {
-        return "UnexpectedTokenError: in line " + lineIndex + " expected three tokens, got " + count + "\n";
+        return "UnexpectedTokenError: in line " + lineIndex + " expected 3 tokens, got " + count + "\n";
     };
     return UnexpectedTokenError;
 }());
@@ -31,17 +31,26 @@ exports.InvalidInstructionError = InvalidInstructionError;
 var InvalidArgumentError = /** @class */ (function () {
     function InvalidArgumentError() {
     }
-    InvalidArgumentError.generateMessage = function (lineIndex, argumentType, instruction) {
-        return "InvalidArgumentError: in line " + lineIndex + " invalid argument of type " + argumentType.constructor.name + " for " + instruction.constructor.name + "\n";
+    InvalidArgumentError.generateMessage = function (lineIndex, argument, instruction) {
+        return "InvalidArgumentError: in line " + lineIndex + " invalid argument of type " + argument.constructor.name + " for " + instruction.constructor.name + "\n";
     };
     return InvalidArgumentError;
 }());
 exports.InvalidArgumentError = InvalidArgumentError;
+var InvalidArgumentValueError = /** @class */ (function () {
+    function InvalidArgumentValueError() {
+    }
+    InvalidArgumentValueError.generateMessage = function (lineIndex, argument) {
+        return "InvalidArgumentValueError: in line " + lineIndex + " unexpected value '" + argument.value + "' for argument of type " + argument.constructor.name + "\n";
+    };
+    return InvalidArgumentValueError;
+}());
+exports.InvalidArgumentValueError = InvalidArgumentValueError;
 var EmptyArgumentError = /** @class */ (function () {
     function EmptyArgumentError() {
     }
     EmptyArgumentError.generateMessage = function (lineIndex, instruction) {
-        return "EmptyArgumentError: in line " + lineIndex + " instruction " + instruction.constructor.name + " expects an argument";
+        return "EmptyArgumentError: in line " + lineIndex + " instruction " + instruction.constructor.name + " expects an argument\n";
     };
     return EmptyArgumentError;
 }());
@@ -59,7 +68,7 @@ var UndefinedCellError = /** @class */ (function () {
     function UndefinedCellError() {
     }
     UndefinedCellError.generateMessage = function (lineIndex) {
-        return "UndefinedCellerror: in line " + lineIndex + "\n";
+        return "UndefinedCellError: in line " + lineIndex + "\n";
     };
     return UndefinedCellError;
 }());

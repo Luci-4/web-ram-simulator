@@ -1,6 +1,7 @@
 * {
-    -webkit-box-sizing: padding-box;
-    box-sizing: padding-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     margin: none;
     padding: none;
 }
@@ -87,7 +88,7 @@ nav {
     
     font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
     color:white;
-    min-height: 20px;
+    min-height: 40px;
     /* height: 30%; */
     width: 100%;
     background-color: rebeccapurple;
@@ -127,6 +128,7 @@ nav button {
     font-size: 70%;
     height: inherit;
     border: none;
+    outline: none;
     padding: 0px 20px;
     cursor: pointer;
     

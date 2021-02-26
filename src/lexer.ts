@@ -7,6 +7,7 @@ import {DuplicateLabelsError,
     UnexpectedTokenError, 
     InvalidInstructionError, 
     InvalidArgumentError,
+    InvalidArgumentValueError,
     EmptyArgumentError
 } from "./exceptions"
 
@@ -33,6 +34,7 @@ export class Lexer {
         this.contents = lines.map((line: string, index: number) => {
             let elements: string[] = line.split(" ");
             let statementNow = this.GenerateTokens(elements, index + 1);
+            
             return statementNow;
         });
 
@@ -55,16 +57,26 @@ export class Lexer {
         }
         else if (elements.length === 3){
             label = new Label(elements[0]);
+            if (!Instruction.validateInstruction(elements[1])){
+                let message = InvalidInstructionError.generateMessage(lineIndex, elements[1])
+                this.debugConsole.push(message);
+                return undefined;
+            }
             instruction = Instruction.GenerateInstruction(elements[1]);
             argument = Argument.GenerateArgument(elements[2]);
         }
         else if (elements.length === 2){
             if (Instructions.hasOwnProperty(elements[0])){
                 label = new Label(undefined);
+                if (!Instruction.validateInstruction(elements[0])){
+                    let message = InvalidInstructionError.generateMessage(lineIndex, elements[0])
+                    this.debugConsole.push(message);
+                    return undefined;
+                }
                 instruction = Instruction.GenerateInstruction(elements[0]);
                 argument = Argument.GenerateArgument(elements[1]);
             }
-            else if (Instructions.hasOwnProperty(elements[1])){
+            else if (Instruction.validateInstruction(elements[1])){
                 label = new Label(elements[0]);
                 instruction = Instruction.GenerateInstruction(elements[1]);
             }
@@ -75,7 +87,7 @@ export class Lexer {
             }
         }
         else{
-            if (Instructions.hasOwnProperty(elements[0])){
+            if (Instruction.validateInstruction(elements[0])){
                 label = new Label(undefined);
                 instruction = Instruction.GenerateInstruction(elements[0])
             }
@@ -93,6 +105,12 @@ export class Lexer {
                 message = InvalidArgumentError.generateMessage(lineIndex, argument, instruction);
                 
             }
+            this.debugConsole.push(message);
+            return undefined;
+        }
+
+        if(!argument.validateValue()){
+            let message = InvalidArgumentValueError.generateMessage(lineIndex, argument);
             this.debugConsole.push(message);
             return undefined;
         }

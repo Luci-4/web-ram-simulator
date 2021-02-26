@@ -30,31 +30,21 @@ var App = /** @class */ (function () {
     App.prototype.run = function (program, inputs) {
         // check if there were errors during init
         if (!this.init(program, inputs)) {
-            console.log(this.debugConsole);
             return 1;
         }
         while (this.execHead < this.lexer.programLength) {
             var currentStatement = this.lexer.contents[this.execHead];
             if (!currentStatement.execute(this)) {
-                console.log(this.debugConsole);
                 return 1;
             }
-            console.log(this.memory);
-            console.log(this.outputs);
         }
         return 0;
     };
     return App;
 }());
 exports.App = App;
-var app = new App();
-var program = "read 1\nread 2\nread 3\nload 1\nsub 2\nsub 3\nwrite 0\n";
-var inputs = [2, 4, 3];
-app.run(program, inputs);
-// console.log(app.lexer.contents);
-console.log(app.memory);
-console.log(app.outputs);
-console.log("CONSOLE:");
-console.log(app.debugConsole);
-// app.run(program, memory, inputs);
+// let app: App = new App()
+// let program: string = "asdfafdsgdfgadsfg asdfag asdfg asdfg\nkasdfjasdf\njsadfa fjasdf\n";
+// let inputs: number[] = [2, 4, 3];
+// app.run(program, inputs);
 //# sourceMappingURL=main.js.map

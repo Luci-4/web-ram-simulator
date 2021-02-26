@@ -5,6 +5,12 @@ import {Token} from "./token";
 
 abstract class Argument extends Token{
     value: string;
+    validateValue(){
+        if(/^[0-9]+$/.test(this.value)){
+            return true;
+        }
+        return false;
+    }
     constructor(value: string){
         super();
         this.value = value;
@@ -40,14 +46,19 @@ abstract class ReferenceArgument extends CellArgument {
 
 class LabelArg extends Argument{
     value: string;
-    
+    validateValue(){
+        if(this.value){
+            return true;
+        }
+        return false;
+    }
     getLabelIndex(app: App){
         return app.lexer.labelsWithIndices[this.value];
     }
 }
 
 class Integer extends CellArgument {
-
+    
     getCellValue(app: App){
         return parseInt(this.value);
     }

@@ -12,7 +12,9 @@ for (let i = 0; i < tx.length; i++) {
   
   tx[i].addEventListener("input", OnInput, false);
 }
-
+//initialize the console resizer div
+let resizer = document.getElementById("console-resizer");
+resizer.addEventListener('mousedown', initResize, false);
 function OnInput() {
   this.style.height = 'auto';
   
@@ -107,5 +109,54 @@ function save() {
 
 function run() {
     let program = document.getElementById("codeeditor").value
+    
+}
+
+
+// resizing console
+function initResize(e) {
+    window.addEventListener('mousemove', Resize, false);
+    window.addEventListener('mouseup', stopResize, false);
+ }
+
+
+ function Resize(e) {
+    let consoleElement = document.getElementById("textarea-console");
+    let outputSectionElement = document.getElementById("output-section");
+    let inputTapeElement = document.getElementById("input-tape");
+    let consoleUpperEdgePosition = Math.round(consoleElement.getBoundingClientRect().top);
+    let consoleElementHeight = consoleElement.style.height
+    
+    if(consoleElementHeight){
+        consoleElementHeight = parseInt(consoleElementHeight, 10);
+    } else {
+        consoleElementHeight = consoleElement.clientHeight;
+    
+    }
+        
+    
+    let newHeight = consoleElementHeight + consoleUpperEdgePosition - e.clientY;
+    
+    let container = document.getElementById("workspace");
+    
+    if(consoleElement.getBoundingClientRect().top - inputTapeElement.getBoundingClientRect().bottom < 80){
+        
+        container.style.display = "none";
+    }
+    else{
+        
+        container.style.display = "block";
+    }
+    
+    consoleElement.style.height = newHeight.toString() + 'px';
+    
+    
+ }
+ 
+//on mouseup remove windows functions mousemove & mouseup
+function stopResize(e) {
+    
+    window.removeEventListener('mousemove', Resize, false);
+    window.removeEventListener('mouseup', stopResize, false);
     
 }

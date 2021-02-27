@@ -4,8 +4,18 @@
     box-sizing: border-box;
     margin: none;
     padding: none;
+    
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
 
 html {
@@ -21,8 +31,7 @@ html {
 body {
     margin: 0;
     padding: 0;
-    /* height: 100vh;
-    width: 100vw; */
+    
     height: 100%;
     width: 100%;
     
@@ -58,23 +67,72 @@ nav {
     background-color: #071330;
     top: 0;
 }
+
+
 .input-tape {
     z-index: 2;
     position: sticky;
-    
+    display: flex;
+    flex-wrap: nowrap;
 
-    min-height: 80px;
+    height: 60px;
     padding: 0;
     
     width: 100%;
-    background-color:green;
+    background-color: green;
     top: 0;
+    justify-content: space-between;
+    
+    align-items: center;
 }
+.input-tape-nav{
+    cursor: pointer;
+}
+.left{
+
+}
+.tape {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    overflow: auto;
+}
+.input-tape-nav {
+    height: 60px;
+    padding: none;
+    border: none;
+    outline: none;
+    width: 20px;
+}
+
+.cell-container {
+    padding: none;
+    outline: none;
+    background-color:lightcyan;
+    height: 60px;
+    width: 10%;
+    display:flex;
+    flex-direction: column;
+}
+.cell {
+    padding: none;
+    outline: none;
+    background-color: lightblue;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+.caption{
+    font-size: 14px;;
+    text-align: center;
+}
+
 .output-section {
     z-index: 2;
     position: sticky;
     
-    min-height: 80px;
+    min-height: 160px;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -88,7 +146,7 @@ nav {
     
     font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
     color:white;
-    min-height: 40px;
+    min-height: 100px;
     /* height: 30%; */
     width: 100%;
     background-color: rebeccapurple;
@@ -110,7 +168,7 @@ nav {
 
 .output-tape {
     
-    height: 80px;
+    /* height: 80px; */
     padding: 0;
     min-height: 60px;
     width: 100%;

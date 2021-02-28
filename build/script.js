@@ -34,7 +34,7 @@ function switchBreakpoint(index) {
         let pointIndex = breakpoints.indexOf(parseInt(index));
         breakpoints.splice(pointIndex, 1);
     }
-    console.log(breakpoints);
+    
     point.className = classNameArray.join(" ");
     
     
@@ -122,7 +122,7 @@ function initResize(e) {
 
  function Resize(e) {
     let consoleElement = document.getElementById("textarea-console");
-    let outputSectionElement = document.getElementById("output-section");
+    
     let inputTapeElement = document.getElementById("input-tape");
     let consoleUpperEdgePosition = Math.round(consoleElement.getBoundingClientRect().top);
     let consoleElementHeight = consoleElement.style.height
@@ -161,37 +161,58 @@ function stopResize(e) {
     
 }
 
-function moveInputTapeRight(){
-    let tape = document.getElementById("input-tape-container");
+function moveTapeRight(type){
+    
+    let tape;
+    if(type === "in"){
+        
+        tape = document.getElementById("input-tape-container");
+    }
+    else if (type === "out"){
+        tape = document.getElementById("output-tape-container");
+    }
+    
+    
     let scrollStep = tape.clientWidth / 10;
     
-    if(secondToLastCellIsVisible()){
-        let newCell = document.getElementById("input-tape-container").lastElementChild.cloneNode(true);
-        let idSplit = newCell.id.split("-")
+    if(secondToLastCellIsVisible(type)){
+        let oldContainerId = `${type}put-tape-container`;
+        
+        let newCell = document.getElementById(oldContainerId).lastElementChild.cloneNode(true);
+        let idSplit = newCell.id.split("-");
         let newIndex = parseInt(idSplit[1]) + 1;
-        let newContainerId = `${idSplit[0]}-${newIndex}`
+        let newContainerId = `${idSplit[0]}-${newIndex}`;
         newCell.id = newContainerId;
         newCell.lastElementChild.innerHTML = newIndex.toString();
         tape.appendChild(newCell);
     }
     tape.scrollLeft += scrollStep;
-    
-    
-    // tape.scrollLeft(tape.offsetWidth);
 }
 
-function moveInputTapeLeft(){
+function moveTapeLeft(type){
+    let tape;
+    if (type === "in"){
+        tape = document.getElementById("input-tape-container");
+    }
+    else if (type == "out"){
+        tape = document.getElementById("output-tape-container");
+    }
     
-    let tape = document.getElementById("input-tape-container");
     let scrollStep = tape.clientWidth / 10;
     
     tape.scrollLeft -= scrollStep;
     
 }
 
-function secondToLastCellIsVisible(){
+function secondToLastCellIsVisible(type){
+    let lastElement;
+    if (type === "in"){
+        lastElement = document.getElementById("input-tape-container").lastElementChild.previousElementSibling;
+    }
+    else if (type == "out"){
+        lastElement = document.getElementById("output-tape-container").lastElementChild.previousElementSibling;
+    }
     
-    let lastElement = document.getElementById("input-tape-container").lastElementChild.previousElementSibling;
     
     return (lastElement.getBoundingClientRect().left >=0 && lastElement.getBoundingClientRect().right <= window.innerWidth);
 }

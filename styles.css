@@ -85,9 +85,6 @@ nav {
     
     align-items: center;
 }
-.input-tape-nav{
-    cursor: pointer;
-}
 
 .tape {
     
@@ -108,12 +105,13 @@ nav {
   }
 
 
-.input-tape-nav {
+.tape-nav {
     height: 60px;
     padding: none;
     border: none;
     outline: none;
     width: 20px;
+    cursor: pointer;
 }
 
 .cell-container {
@@ -182,13 +180,20 @@ nav {
 }
 
 .output-tape {
-    
-    /* height: 80px; */
+    z-index: 2;
+    position: sticky;
+    display: flex;
+    flex-wrap: nowrap;
+
+    height: 60px;
     padding: 0;
-    min-height: 60px;
+    
     width: 100%;
-    background-color: yellow;
-    bottom: 0;
+    background-color: green;
+    top: 0;
+    justify-content: space-between;
+    
+    align-items: center;
     
 }
 

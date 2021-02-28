@@ -18,7 +18,7 @@
         </nav>
         <div class="input-tape" id="input-tape">
             
-            <button class="input-tape-nav left" onclick="moveInputTapeLeft()"><</button>
+            <button class="tape-nav left" onclick="moveTapeLeft('in')"><</button>
             
             <div class="tape" id="input-tape-container">
                 <div class="cell-container" id='input-1'>
@@ -71,7 +71,7 @@
                 </div>
                 
             </div>
-            <button class="input-tape-nav right" id="tape-right" onclick="moveInputTapeRight()">></button>
+            <button class="tape-nav right" id="tape-right" onclick="moveTapeRight('in')">></button>
             <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
         </div>
 
@@ -102,7 +102,64 @@
             <div id="textarea-console" spellcheck="false" autocapitalize="false">
                 <div id="console-resizer"></div>
             </div>
-            <div class="output-tape"></div>
+            <div class="output-tape">
+                <button class="tape-nav left" onclick="moveTapeLeft('out')"><</button>
+            
+            <div class="tape" id="output-tape-container">
+                <div class="cell-container" id='output-1'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5).split('.').join('')">
+                    <div class="caption">1</div>
+                </div>
+                <div class="cell-container" id='output-2'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">2</div>
+                </div>
+                <div class="cell-container" id='output-3'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">3</div>
+                </div>
+                <div class="cell-container" id='output-4'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">4</div>
+                </div>
+                <div class="cell-container" id='output-5'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">5</div>
+                </div>
+                <div class="cell-container" id='output-6'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">6</div>
+                </div>
+                <div class="cell-container" id='output-7'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">7</div>
+                </div>
+                <div class="cell-container" id='output-8'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">8</div>
+                </div>
+                <div class="cell-container" id='output-9'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">9</div>
+                </div>
+                <div class="cell-container" id='output-10'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">10</div>
+                </div>
+                <div class="cell-container" id='output-11'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">11</div>
+                </div>
+                <div class="cell-container" id='output-12'>
+                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <div class="caption">12</div>
+                </div>
+                
+            </div>
+            <button class="tape-nav right" id="tape-right" onclick="moveTapeRight('out')">></button>
+            <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
+        </div>
+            </div>
         </div>
     </div>
 

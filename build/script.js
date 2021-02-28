@@ -160,3 +160,38 @@ function stopResize(e) {
     window.removeEventListener('mouseup', stopResize, false);
     
 }
+
+function moveInputTapeRight(){
+    let tape = document.getElementById("input-tape-container");
+    let scrollStep = tape.clientWidth / 10;
+    
+    if(secondToLastCellIsVisible()){
+        let newCell = document.getElementById("input-tape-container").lastElementChild.cloneNode(true);
+        let idSplit = newCell.id.split("-")
+        let newIndex = parseInt(idSplit[1]) + 1;
+        let newContainerId = `${idSplit[0]}-${newIndex}`
+        newCell.id = newContainerId;
+        newCell.lastElementChild.innerHTML = newIndex.toString();
+        tape.appendChild(newCell);
+    }
+    tape.scrollLeft += scrollStep;
+    
+    
+    // tape.scrollLeft(tape.offsetWidth);
+}
+
+function moveInputTapeLeft(){
+    
+    let tape = document.getElementById("input-tape-container");
+    let scrollStep = tape.clientWidth / 10;
+    
+    tape.scrollLeft -= scrollStep;
+    
+}
+
+function secondToLastCellIsVisible(){
+    
+    let lastElement = document.getElementById("input-tape-container").lastElementChild.previousElementSibling;
+    
+    return (lastElement.getBoundingClientRect().left >=0 && lastElement.getBoundingClientRect().right <= window.innerWidth);
+}

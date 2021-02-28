@@ -88,16 +88,26 @@ nav {
 .input-tape-nav{
     cursor: pointer;
 }
-.left{
 
-}
 .tape {
+    
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: space-between;
-    overflow: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    
 }
+.tape::-webkit-scrollbar {
+    display: none;
+  }
+
+
 .input-tape-nav {
     height: 60px;
     padding: none;
@@ -110,11 +120,16 @@ nav {
     padding: none;
     outline: none;
     background-color:lightcyan;
-    height: 60px;
+    /* height: 100%; */
     width: 10%;
+    flex-shrink: 0;
     display:flex;
     flex-direction: column;
+    scroll-snap-align: start;
+    
+    
 }
+
 .cell {
     padding: none;
     outline: none;
@@ -124,7 +139,7 @@ nav {
     text-align: center;
 }
 .caption{
-    font-size: 14px;;
+    font-size: 12px;;
     text-align: center;
 }
 

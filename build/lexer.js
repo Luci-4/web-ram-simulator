@@ -1,45 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Lexer = void 0;
-var instruction_1 = require("./instruction");
-var label_1 = require("./label");
-var argument_1 = require("./argument");
-var statement_1 = require("./statement");
-var exceptions_1 = require("./exceptions");
-var Lexer = /** @class */ (function () {
-    function Lexer(contents) {
-        var _this = this;
+const instruction_1 = require("./instruction");
+const label_1 = require("./label");
+const argument_1 = require("./argument");
+const statement_1 = require("./statement");
+const exceptions_1 = require("./exceptions");
+class Lexer {
+    constructor(contents) {
         this.debugConsole = [];
         // replace multiple whitespace characters with one space
-        var lines;
+        let lines;
         lines = contents.split("\n");
         // remove whitespaces around every line
-        lines = lines.map(function (line) { return line.trim(); });
+        lines = lines.map((line) => line.trim());
         // remove empty lines
-        lines = lines.filter(function (n) { return n; });
+        lines = lines.filter((n) => n);
         // convert lines to tokens
-        this.contents = lines.map(function (line, index) {
-            var elements = line.split(" ");
-            var statementNow = _this.GenerateTokens(elements, index + 1);
+        this.contents = lines.map((line, index) => {
+            let elements = line.split(" ");
+            let statementNow = this.GenerateTokens(elements, index + 1);
             return statementNow;
         });
         this.programLength = this.contents.length;
         this.labelsWithIndices = {};
     }
-    Lexer.prototype.GenerateTokens = function (elements, lineIndex) {
-        var label;
-        var instruction;
-        var argument;
+    GenerateTokens(elements, lineIndex) {
+        let label;
+        let instruction;
+        let argument;
         // todo: add error when there are duplicated labels
         if (elements.length > 3) {
-            var message = exceptions_1.UnexpectedTokenError.generateMessage(lineIndex, elements.length);
+            let message = exceptions_1.UnexpectedTokenError.generateMessage(lineIndex, elements.length);
             this.debugConsole.push(message);
             return undefined;
         }
         else if (elements.length === 3) {
             label = new label_1.Label(elements[0]);
             if (!instruction_1.Instruction.validateInstruction(elements[1])) {
-                var message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[1]);
+                let message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[1]);
                 this.debugConsole.push(message);
                 return undefined;
             }
@@ -50,7 +49,7 @@ var Lexer = /** @class */ (function () {
             if (instruction_1.Instructions.hasOwnProperty(elements[0])) {
                 label = new label_1.Label(undefined);
                 if (!instruction_1.Instruction.validateInstruction(elements[0])) {
-                    var message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
+                    let message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
                     this.debugConsole.push(message);
                     return undefined;
                 }
@@ -62,7 +61,7 @@ var Lexer = /** @class */ (function () {
                 instruction = instruction_1.Instruction.GenerateInstruction(elements[1]);
             }
             else {
-                var message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
+                let message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
                 this.debugConsole.push(message);
                 return undefined;
             }
@@ -73,13 +72,13 @@ var Lexer = /** @class */ (function () {
                 instruction = instruction_1.Instruction.GenerateInstruction(elements[0]);
             }
             else {
-                var message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
+                let message = exceptions_1.InvalidInstructionError.generateMessage(lineIndex, elements[0]);
                 this.debugConsole.push(message);
                 return undefined;
             }
         }
         if (!instruction.validateArgument(argument)) {
-            var message = void 0;
+            let message;
             if (typeof argument === 'undefined') {
                 message = exceptions_1.EmptyArgumentError.generateMessage(lineIndex, instruction);
             }
@@ -90,27 +89,25 @@ var Lexer = /** @class */ (function () {
             return undefined;
         }
         if (!argument.validateValue()) {
-            var message = exceptions_1.InvalidArgumentValueError.generateMessage(lineIndex, argument);
+            let message = exceptions_1.InvalidArgumentValueError.generateMessage(lineIndex, argument);
             this.debugConsole.push(message);
             return undefined;
         }
         return new statement_1.Statement(label, instruction, argument);
-    };
-    Lexer.prototype.mapLabels = function () {
-        var _this = this;
+    }
+    mapLabels() {
         // swap contents' indices with tokens labels' ids to create labelsWithIndices
-        Object.keys(this.contents).forEach(function (key) {
+        Object.keys(this.contents).forEach(key => {
             if (typeof key !== 'undefined') {
-                var index = parseInt(key);
-                var labelId = _this.contents[key].label.id;
+                let index = parseInt(key);
+                let labelId = this.contents[key].label.id;
                 // check if label if worth indexing
                 if (typeof labelId !== "undefined") {
-                    _this.labelsWithIndices[labelId] = index;
+                    this.labelsWithIndices[labelId] = index;
                 }
             }
         });
-    };
-    return Lexer;
-}());
+    }
+}
 exports.Lexer = Lexer;
 //# sourceMappingURL=lexer.js.map

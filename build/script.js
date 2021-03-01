@@ -1,5 +1,22 @@
+// import {test} from "./test.js";
+
 let lastLinesNum = 1;
 let breakpoints = [];
+
+const keywords = [
+    "read",
+    "load",
+    "store",
+    "add",
+    "sub",
+    "mult",
+    "div",
+    "jump",
+    "jgtz",
+    "jzero",
+    "write",
+    "halt"
+];
 
 function getNumberOfLines(){
     return document.getElementById("textarea-editor").value.split("\n").length;
@@ -40,7 +57,11 @@ function switchBreakpoint(index) {
     
     
 }
-function updateEditorMargin(currentLineNum){
+function updateEditorMargin(){
+    let currentLineNum = getNumberOfLines();
+    if (currentLineNum === lastLinesNum){
+        return
+    }
     while (lastLinesNum < currentLineNum){
         
         const divLine = document.createElement("div");
@@ -78,32 +99,128 @@ function updateEditorMargin(currentLineNum){
         linesContainer.removeChild(linesContainer.lastElementChild);
         
     }
+    lastLinesNum = currentLineNum;
 
     
 }
-window.addEventListener('load', function(){
-    document.getElementById('textarea').setAttribute('contenteditable', 'true');
-    
-});
+
+document.getElementById("textarea-editor").onkeydown = keyboardListenerCallback;
 document.getElementById("textarea-editor").addEventListener("input", (event) => {
     
-    let linesNum = getNumberOfLines();
+    
+    let editor = document.getElementById("textarea-editor");
+    
+    
+    
 
-    // if number of lines changed
-    if(linesNum != lastLinesNum){
-        updateEditorMargin(linesNum);
+    if(event.inputType === "deleteContentBackward"){
+        updateEditorMargin();
+        return;
+        
     }
-    lastLinesNum = linesNum;
+    if(event.inputType === "insertLineBreak"){
+        // editor.value = editor.value.slice(0, editor.selectionStart) + editor.value.slice(editor.selectionEnd);
+        updateEditorMargin();
+    }
+    
+    // let linesNum = getNumberOfLines();
+    
+    // // if number of lines changed
+    // if(linesNum != lastLinesNum){
+    //     updateEditorMargin(linesNum);
+    // }
+    //  = linesNum;
+
+    
+    
+    let cursorPos = editor.selectionStart;
+    
+    editor.setSelectionRange(cursorPos, cursorPos);
+    let val = editor.value;
+    
+    let previousSpacePos = Math.max(
+        val.slice(0, cursorPos).lastIndexOf(" "), 
+        val.slice(0, cursorPos).lastIndexOf("\n"), 
+        val.slice(0, cursorPos).lastIndexOf("\t"));
+    if(previousSpacePos === -1){
+        previousSpacePos = 0;
+    }
+    let nextSpacePos = Math.min(
+        val.slice(0, cursorPos).lastIndexOf(" "), 
+        val.slice(0, cursorPos).lastIndexOf("\n"), 
+        val.slice(0, cursorPos).lastIndexOf("\t"));
+    if(nextSpacePos === -1){
+        nextSpacePos = 0;
+    }
+    nextSpacePos += cursorPos;
+    val = val.slice(previousSpacePos, nextSpacePos).trim();
+    
+    let matchingWords = []
+    for (let word of keywords){
+        
+        if(/\S/.test(val) && word.substr(0, val.length).toUpperCase() === val.toUpperCase()){
+            
+            matchingWords.push(word);  
+        }
+    }
+    
+    
+    let firstHalf = editor.value.slice(0,cursorPos);
+    let secondHalf = editor.value.slice(cursorPos);
+
+    
+    if (matchingWords.length> 0){
+        let autoFillPart = matchingWords[0].slice(val.length)
+        
+        firstHalf += autoFillPart;
+        editor.value = firstHalf + secondHalf;
+        
+        
+        editor.setSelectionRange(cursorPos, cursorPos + autoFillPart.length);
+        document.getElementById("textarea-editor").focus;
+    }   
+    
+    
 })
+
+function keyboardListenerCallback(event){
+    
+    
+    let editor = document.getElementById("textarea-editor");
+    
+    if(event.key === "Tab"){
+        event.preventDefault();
+        let end = editor.selectionEnd;
+        let start = editor.selectionStart;
+        
+        let newCaretPosition = end;
+        if(start === end){
+            
+            newCaretPosition = start + 1;
+            
+            
+            editor.value = editor.value.slice(0, start) + "\t" + editor.value.slice(start, end);
+            editor.selectionStart = newCaretPosition;
+            editor.selectionEnd = newCaretPosition;
+            editor.selectionEnd = newCaretPosition;
+        }
+       
+        editor.selectionStart = newCaretPosition;
+        
+        
+
+    }
+    
+}
 
 
 function getContent(){
-    document.getElementById("textarea-editor").value = document.getElementById("textarea-editor").innerHTML;
+    document.getElementById("textarea-editor").value = document.getElementById("textarea-editor").innerHTML.replace(/[<>]/g,"");
 }
 
 function save() {
     getContent();
-    document.getElementById("save").submit();
+    // document.getElementById("save").submit();
     }
 
 

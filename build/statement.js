@@ -5,6 +5,10 @@ class Statement {
         this.argument = argument;
     }
     execute(app) {
+        if (typeof this.instruction === "undefined") {
+            app.execHead++;
+            return true;
+        }
         return this.instruction.execute(this.argument, app);
     }
 }

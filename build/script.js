@@ -34,12 +34,6 @@ function getInputs(){
                 inputs[index] = parseInt(cellValue);
             }
         }
-        
-        
-        
-        
-        
-        
     }
     return inputs;
 }
@@ -94,7 +88,7 @@ export function stop(type){
 
 export function run() {
     clearConsole();
-    changeIconToStop("run");
+    // changeIconToStop("run");
     let program = document.getElementById("textarea-editor").value;
     getInputs();
     app.run(program, getInputs())
@@ -205,18 +199,10 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
         
     }
     if(event.inputType === "insertLineBreak"){
-        // editor.value = editor.value.slice(0, editor.selectionStart) + editor.value.slice(editor.selectionEnd);
+        
         updateEditorMargin();
+        return;
     }
-    
-    // let linesNum = getNumberOfLines();
-    
-    // // if number of lines changed
-    // if(linesNum != lastLinesNum){
-    //     updateEditorMargin(linesNum);
-    // }
-    //  = linesNum;
-
     
     
     let cursorPos = editor.selectionStart;
@@ -239,8 +225,8 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
         nextSpacePos = 0;
     }
     nextSpacePos += cursorPos;
-    val = val.slice(previousSpacePos, nextSpacePos).trim();
     
+    val = val.slice(previousSpacePos, nextSpacePos).trim();
     let matchingWords = []
     for (let word of keywords){
         
@@ -256,7 +242,7 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
 
     
     if (matchingWords.length> 0){
-        let autoFillPart = matchingWords[0].slice(val.length)
+        let autoFillPart = matchingWords[0].slice(val.length);
         
         firstHalf += autoFillPart;
         editor.value = firstHalf + secondHalf;
@@ -264,41 +250,59 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
         
         editor.setSelectionRange(cursorPos, cursorPos + autoFillPart.length);
         document.getElementById("textarea-editor").focus;
-    }   
+        
+    }  
+    else{
+        editor.setSelectionRange(cursorPos, cursorPos + val.length);
+    }
     
     
 })
 
+function getFirstCharIndexInCurrentLine(start){
+    let editor = document.getElementById("textarea-editor");
+    let firstCharIndex = editor.value.substring(0, start).lastIndexOf("\n") + 1;
+    return firstCharIndex;
+}
 function keyboardListenerCallback(event){
     
-    console.log(event);
-    let editor = document.getElementById("textarea-editor");
     
+    let editor = document.getElementById("textarea-editor");
+    let end = editor.selectionEnd;
+    let start = editor.selectionStart;
+    
+    
+
     if(event.key === "Tab"){
         event.preventDefault();
-        let end = editor.selectionEnd;
-        let start = editor.selectionStart;
         
-        let newCaretPosition = end;
+        
+        
         if(start === end){
+            let tabOffset  = (start- getFirstCharIndexInCurrentLine(start)) % 4
             
-            newCaretPosition = start + 1;
+            if (tabOffset === 0){
+                
+                editor.value = editor.value.substring(0, start) + "\t" + editor.value.substring(end);
+            
+                editor.selectionEnd = editor.selectionStart = start + 1;
+            }
+            else {
+                
+                editor.value = editor.value.substring(0, start) + " ".repeat(4) + editor.value.substring(end);
+                editor.selectionEnd = editor.selectionStart = start + 4;
+            }
             
             
-            editor.value = editor.value.slice(0, start) + "\t" + editor.value.slice(start, end);
-            editor.selectionStart = newCaretPosition;
-            editor.selectionEnd = newCaretPosition;
-            editor.selectionEnd = newCaretPosition;
         }
-       
-        editor.selectionStart = newCaretPosition;
-        
-        
+        else {
+            
+
+            editor.selectionStart = editor.selectionEnd;
+        }
 
     }
 
-    
-    
 }
 
 

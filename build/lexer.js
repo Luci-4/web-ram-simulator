@@ -11,8 +11,11 @@ export class Lexer {
         lines = contents.split("\n");
         // remove whitespaces around every line
         lines = lines.map((line) => line.trim());
+        lines.forEach(line => {
+            console.log(line, line.length);
+        });
         // remove empty lines
-        lines = lines.filter((n) => n);
+        // lines = lines.filter((n: string) => n);
         // convert lines to tokens
         this.contents = lines.map((line, index) => {
             let elements = line.split(" ");
@@ -67,6 +70,13 @@ export class Lexer {
             if (Instruction.validateInstruction(elements[0])) {
                 label = new Label(undefined);
                 instruction = Instruction.GenerateInstruction(elements[0]);
+            }
+            // empty Statement for empty lines;
+            else if (elements[0].length === 0) {
+                label = new Label(undefined);
+                instruction = undefined;
+                argument = undefined;
+                return new Statement(label, instruction, argument);
             }
             else {
                 let message = InvalidInstructionError.generateMessage(lineIndex, elements[0]);

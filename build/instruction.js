@@ -11,7 +11,6 @@ class Instruction extends Token {
         return true;
     }
     static GenerateInstruction(text) {
-        console.log("here: ", text);
         return new Instructions[text]();
     }
     static validateInstruction(text) {
@@ -97,7 +96,6 @@ class Jzero extends JumpInstr {
 class Read extends OperationInst {
     execute(argument, app) {
         if (!this.validateInputDefinition(argument, app)) {
-            app.debugConsole.push(UndefinedInputError.generateMessage(app.execHead + 1));
             return false;
         }
         let address = argument.getAddress(app);
@@ -119,6 +117,7 @@ class Read extends OperationInst {
     }
     validateInputDefinition(argument, app) {
         if (typeof app.inputs[app.inputHead] === 'undefined') {
+            app.debugConsole.push(UndefinedInputError.generateMessage(app.execHead + 1));
             return false;
         }
         else {

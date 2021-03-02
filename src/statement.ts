@@ -7,11 +7,11 @@ import {App} from "./main.js";
 
 class Statement {
     label: Label | undefined;
-    instruction: Instruction;
+    instruction: Instruction | undefined;
     argument: Argument | undefined;
     constructor(
         label: Label | undefined, 
-        instruction: Instruction, 
+        instruction: Instruction | undefined, 
         argument: Argument | undefined)
     {
         this.label = label;
@@ -20,6 +20,10 @@ class Statement {
     }
 
     execute(app: App){
+        if (typeof this.instruction === "undefined"){
+            app.execHead++;
+            return true;
+        }
         return this.instruction.execute(this.argument, app);
     }
 

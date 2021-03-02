@@ -422,4 +422,5 @@ button.inactive:hover{
     line-height: 1.8;
     padding-top: 0;
     scrollbar-width: none;
+    tab-size: 4;
 }

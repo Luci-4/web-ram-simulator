@@ -46,7 +46,6 @@ class App {
         }
         while(this.execHead < this.lexer.programLength){
             let currentStatement = this.lexer.contents[this.execHead];
-            console.log(currentStatement);
             if (!currentStatement.execute(this)){
                 console.log("execution stopped with code 1");
                 return 1;

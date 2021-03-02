@@ -26,9 +26,12 @@ export class Lexer {
         
         // remove whitespaces around every line
         lines = lines.map((line: string) => line.trim());
-        
+        lines.forEach(line => {
+            console.log(line, line.length);
+        })
+       
         // remove empty lines
-        lines = lines.filter((n: string) => n);
+        // lines = lines.filter((n: string) => n);
 
         // convert lines to tokens
         this.contents = lines.map((line: string, index: number) => {
@@ -90,6 +93,13 @@ export class Lexer {
             if (Instruction.validateInstruction(elements[0])){
                 label = new Label(undefined);
                 instruction = Instruction.GenerateInstruction(elements[0])
+            }
+            // empty Statement for empty lines;
+            else if(elements[0].length === 0){
+                label = new Label(undefined);
+                instruction = undefined;
+                argument = undefined;
+                return new Statement(label, instruction, argument);
             }
             else {
                 let message = InvalidInstructionError.generateMessage(lineIndex, elements[0]);

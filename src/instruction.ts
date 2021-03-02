@@ -15,7 +15,7 @@ abstract class Instruction extends Token{
         return true;
     }
     static GenerateInstruction(text: string){
-        console.log("here: ", text);
+       
         return new Instructions[text]();
     }
 
@@ -100,7 +100,7 @@ class Jgtz extends JumpInstr {
 class Jzero extends JumpInstr {
     execute(argument: LabelArg, app: App): boolean {
         if(!this.validateLabelsExistance(argument.value, app)){
-            app.debugConsole.push(LabelNotFoundError.generateMessage(app.execHead, argument.value));
+            
             return false;
         }
 
@@ -118,7 +118,7 @@ class Jzero extends JumpInstr {
 class Read extends OperationInst {
     execute(argument: ReferenceArgument, app: App): boolean {
         if (!this.validateInputDefinition(argument, app)){
-            app.debugConsole.push(UndefinedInputError.generateMessage(app.execHead+1));
+            
             return false;
         }
         let address = argument.getAddress(app);
@@ -142,6 +142,7 @@ class Read extends OperationInst {
 
     validateInputDefinition(argument: ReferenceArgument, app: App): boolean {
         if(typeof app.inputs[app.inputHead] === 'undefined'){
+            app.debugConsole.push(UndefinedInputError.generateMessage(app.execHead+1));
             return false;
         }
         else{

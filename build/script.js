@@ -1,4 +1,6 @@
-// import {test} from "./test.js";
+import {App} from './main.js';
+let app = new App();
+
 
 let lastLinesNum = 1;
 let breakpoints = [];
@@ -17,6 +19,91 @@ const keywords = [
     "write",
     "halt"
 ];
+
+function getInputs(){
+    let inputTape = document.getElementById("input-tape-container");
+    let children = inputTape.children;
+    let inputs = [];
+    for(let cellContainer of children){
+        let index = parseInt(cellContainer.id.slice(cellContainer.id.indexOf("-")+1)) - 1;
+        let cellValue = undefined;
+        
+        if (cellContainer.firstElementChild.value.length !== 0){
+            cellValue = cellContainer.firstElementChild.value;
+            if (cellValue.length > 0){
+                inputs[index] = parseInt(cellValue);
+            }
+        }
+        
+        
+        
+        
+        
+        
+    }
+    return inputs;
+}
+
+function updateConsole(){
+    let debugcon = document.getElementById("textarea-console");
+    for(let message of app.debugConsole){
+        debugcon.innerHTML += message;
+        console.log(message);
+    }
+
+}
+function clearConsole(){
+    let debugcon = document.getElementById("textarea-console");
+    debugcon.innerHTML = "";
+}
+
+function updateOutputTape(){
+    let i;
+    let outputTape = document.getElementById("output-tape-container");
+    let cells = outputTape.children;
+
+    while (app.outputs.length > outputTape.childElementCount){
+        appendCellToTape("out", outputTape);
+    }
+    for(i = 0; i < app.outputs.length; i++){
+        cells[i].children[0].value = app.outputs[i];
+    }
+}
+
+function changeIconToStop(type){
+
+    let icon = document.getElementById(`${type}-icon`);
+    let button = document.getElementById(`${type}-button`);
+
+    icon.src = "/images/stop-icon.png";
+    button.onclick = `import('/build/script.js').then(o => o.stop(${type})`
+    
+}
+
+function changeIconBackToRunControl(type){
+    let icon = document.getElementById(`${type}-icon`);
+    let button = document.getElementById(`${type}-button`);
+
+    icon.src = `/images/${type}-icon.png`;
+    button.onclick = `import('/build/script.js').then(o => o.${type}()`
+}
+
+export function stop(type){
+
+}
+
+export function run() {
+    clearConsole();
+    changeIconToStop("run");
+    let program = document.getElementById("textarea-editor").value;
+    getInputs();
+    app.run(program, getInputs())
+    console.log("program after running");
+    updateConsole();
+    updateOutputTape();
+    // changeIconBackToRunControl("run");
+    
+}
 
 function getNumberOfLines(){
     return document.getElementById("textarea-editor").value.split("\n").length;
@@ -39,7 +126,7 @@ function OnInput() {
 }
 
 
-function switchBreakpoint(index) {
+export function switchBreakpoint(index) {
     let classNameArray = ["point"];
     let point = document.getElementById(index)
     let state = point.className.split(" ")[1];
@@ -112,7 +199,6 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
     
     
     
-
     if(event.inputType === "deleteContentBackward"){
         updateEditorMargin();
         return;
@@ -185,7 +271,7 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
 
 function keyboardListenerCallback(event){
     
-    
+    console.log(event);
     let editor = document.getElementById("textarea-editor");
     
     if(event.key === "Tab"){
@@ -210,6 +296,8 @@ function keyboardListenerCallback(event){
         
 
     }
+
+    
     
 }
 
@@ -218,16 +306,8 @@ function getContent(){
     document.getElementById("textarea-editor").value = document.getElementById("textarea-editor").innerHTML.replace(/[<>]/g,"");
 }
 
-function save() {
-    getContent();
-    // document.getElementById("save").submit();
-    }
 
 
-function run() {
-    let program = document.getElementById("codeeditor").value
-    
-}
 
 
 // resizing console
@@ -278,7 +358,19 @@ function stopResize(e) {
     
 }
 
-function moveTapeRight(type){
+function appendCellToTape(type, tape){
+    let oldContainerId = `${type}put-tape-container`;
+        
+        let newCell = document.getElementById(oldContainerId).lastElementChild.cloneNode(true);
+        let idSplit = newCell.id.split("-");
+        let newIndex = parseInt(idSplit[1]) + 1;
+        let newContainerId = `${idSplit[0]}-${newIndex}`;
+        newCell.id = newContainerId;
+        newCell.lastElementChild.innerHTML = newIndex.toString();
+        tape.appendChild(newCell);
+}
+
+export function moveTapeRight(type){
     
     let tape;
     if(type === "in"){
@@ -293,20 +385,12 @@ function moveTapeRight(type){
     let scrollStep = tape.clientWidth / 10;
     
     if(secondToLastCellIsVisible(type)){
-        let oldContainerId = `${type}put-tape-container`;
-        
-        let newCell = document.getElementById(oldContainerId).lastElementChild.cloneNode(true);
-        let idSplit = newCell.id.split("-");
-        let newIndex = parseInt(idSplit[1]) + 1;
-        let newContainerId = `${idSplit[0]}-${newIndex}`;
-        newCell.id = newContainerId;
-        newCell.lastElementChild.innerHTML = newIndex.toString();
-        tape.appendChild(newCell);
+        appendCellToTape(type, tape);
     }
     tape.scrollLeft += scrollStep;
 }
 
-function moveTapeLeft(type){
+export function moveTapeLeft(type){
     let tape;
     if (type === "in"){
         tape = document.getElementById("input-tape-container");
@@ -321,6 +405,11 @@ function moveTapeLeft(type){
     
 }
 
+export function showDropdown(tool){
+    let currentId = tool + "-dropdown";
+    document.getElementById(currentId).classList.toggle("show");
+}
+
 function secondToLastCellIsVisible(type){
     let lastElement;
     if (type === "in"){
@@ -332,4 +421,16 @@ function secondToLastCellIsVisible(type){
     
     
     return (lastElement.getBoundingClientRect().left >=0 && lastElement.getBoundingClientRect().right <= window.innerWidth);
+}
+
+window.onclick = function(event) {
+    // if (event.target.matches('.tool')!event.target.matches('.options')){
+        let dropdowns = document.getElementsByClassName('dropdown-content');
+        
+        for (let openDropdown of dropdowns){
+            if (openDropdown.classList.contains('show')){
+                openDropdown.classList.remove('show');
+            }
+        }
+    // }
 }

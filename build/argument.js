@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Pointer = exports.Address = exports.Integer = exports.LabelArg = exports.ReferenceArgument = exports.CellArgument = exports.Argument = void 0;
-const token_1 = require("./token");
-class Argument extends token_1.Token {
+import { Token } from "./token.js";
+class Argument extends Token {
     constructor(value) {
         super();
         this.value = value;
@@ -28,13 +25,10 @@ class Argument extends token_1.Token {
         }
     }
 }
-exports.Argument = Argument;
 class CellArgument extends Argument {
 }
-exports.CellArgument = CellArgument;
 class ReferenceArgument extends CellArgument {
 }
-exports.ReferenceArgument = ReferenceArgument;
 class LabelArg extends Argument {
     validateValue() {
         if (this.value) {
@@ -46,13 +40,11 @@ class LabelArg extends Argument {
         return app.lexer.labelsWithIndices[this.value];
     }
 }
-exports.LabelArg = LabelArg;
 class Integer extends CellArgument {
     getCellValue(app) {
         return parseInt(this.value);
     }
 }
-exports.Integer = Integer;
 class Address extends ReferenceArgument {
     getCellValue(app) {
         return app.memory[parseInt(this.value)];
@@ -61,7 +53,6 @@ class Address extends ReferenceArgument {
         return parseInt(this.value);
     }
 }
-exports.Address = Address;
 class Pointer extends ReferenceArgument {
     getCellValue(app) {
         return app.memory[app.memory[parseInt(this.value)]];
@@ -70,11 +61,11 @@ class Pointer extends ReferenceArgument {
         return app.memory[parseInt(this.value)];
     }
 }
-exports.Pointer = Pointer;
 const ArgumentsTypes = {
     "address": Address,
     "integer": Integer,
     "pointer": Pointer,
     "label": LabelArg
 };
+export { Argument, CellArgument, ReferenceArgument, LabelArg, Integer, Address, Pointer };
 //# sourceMappingURL=argument.js.map

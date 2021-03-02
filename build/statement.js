@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Statement = void 0;
 class Statement {
     constructor(label, instruction, argument) {
         this.label = label;
@@ -11,5 +8,5 @@ class Statement {
         return this.instruction.execute(this.argument, app);
     }
 }
-exports.Statement = Statement;
+export { Statement };
 //# sourceMappingURL=statement.js.map

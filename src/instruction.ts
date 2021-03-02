@@ -1,7 +1,7 @@
-import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer} from "./argument";
-import {Token} from "./token";
-import {App} from "./main";
-import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError } from "./exceptions";
+import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer} from "./argument.js";
+import {Token} from "./token.js";
+import {App} from "./main.js";
+import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError} from "./exceptions.js";
 
 abstract class Instruction extends Token{
     abstract execute(argument: Argument | undefined, app: App): boolean;
@@ -61,6 +61,7 @@ abstract class OperationInst extends Instruction {
     }
 
     validateCellDefinition(argument: CellArgument, app: App): boolean{
+        console.log("validating cell with value", argument.getCellValue(app));
         if(typeof argument.getCellValue(app) === 'undefined'){
             let message = UndefinedCellError.generateMessage(app.execHead);
             app.debugConsole.push(message);
@@ -98,9 +99,14 @@ class Jgtz extends JumpInstr {
 
 class Jzero extends JumpInstr {
     execute(argument: LabelArg, app: App): boolean {
-        if(!this.validateLabelsExistance(argument.value, app)){return false;}
+        if(!this.validateLabelsExistance(argument.value, app)){
+            app.debugConsole.push(LabelNotFoundError.generateMessage(app.execHead, argument.value));
+            return false;
+        }
 
-        if(!super.validateAccumulatorDefinition(app)){return false;}
+        if(!super.validateAccumulatorDefinition(app)){
+            return false;
+        }
 
         if(app.memory[0] === 0){
             app.execHead = app.lexer.labelsWithIndices[argument.value];
@@ -112,6 +118,7 @@ class Jzero extends JumpInstr {
 class Read extends OperationInst {
     execute(argument: ReferenceArgument, app: App): boolean {
         if (!this.validateInputDefinition(argument, app)){
+            app.debugConsole.push(UndefinedInputError.generateMessage(app.execHead+1));
             return false;
         }
         let address = argument.getAddress(app);

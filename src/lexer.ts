@@ -1,15 +1,15 @@
-import {Instruction, Instructions} from "./instruction";
-import {Label} from "./label";
-import {Argument} from "./argument";
-import { Statement } from "./statement";
-import {App} from "./main";
+import {Instruction, Instructions} from "./instruction.js";
+import {Label} from "./label.js";
+import {Argument} from "./argument.js";
+import { Statement } from "./statement.js";
+import {App} from "./main.js";
 import {DuplicateLabelsError, 
     UnexpectedTokenError, 
     InvalidInstructionError, 
     InvalidArgumentError,
     InvalidArgumentValueError,
     EmptyArgumentError
-} from "./exceptions"
+} from "./exceptions.js"
 
 
 export class Lexer {

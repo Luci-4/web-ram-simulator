@@ -12,15 +12,39 @@
 <body>
     <div class="main">
         <nav>
+            <div class="toolbar options">
+                <div class="dropdown">
+                    <button class="file-tool-button" onclick="import('/build/script.js').then(o => o.showDropdown('file'))">File</button>
+                    <div id="file-dropdown" class="dropdown-content">
+                        <button>Open <span class="shortcut">Ctrl+O</span></button>
+                        <button>Save <span class="shortcut">Ctrl+S</span></button>
+                        <button>Preferences <span class="shortcut">Ctrl+,</span></button>
+                        
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="run-tool-button" onclick="import('/build/script.js').then(o => o.showDropdown('run'))">Run</button>
+                    <div id="run-dropdown" class="dropdown-content">
+                        <button>Run <span class="shortcut">F5</span></button>
+                        <button>Debug <span class="shortcut">Ctrl+F5</span></button>
+                        <button>Toggle Breakpoint </button>
+                    </div>
+                </div>
+                
+                
+                <!-- <button class="help-tool-button">Help</button> -->
+            </div>
+            <div class="toolbar run-control">
+                <button class="run-button" id="run-button" onclick="import('/build/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
+                <button class="debug-button" id="debug-button"><img src="/images/bug-icon.png" alt=""></button>
+                
+            </div>
             
-            <button class="file-button" onclick="wrapInSpan()">File</button>
-            <button class="view-button">View</button>
-            <button class="view-button">Run</button>
             
         </nav>
         <div class="input-tape" id="input-tape">
             
-            <button class="tape-nav left" onclick="moveTapeLeft('in')"><</button>
+            <button class="tape-nav left" onclick="import('/build/script.js').then(o=> o.moveTapeLeft('in'))"><</button>
             
             <div class="tape" id="input-tape-container">
                 <div class="cell-container" id='input-1'>
@@ -73,7 +97,8 @@
                 </div>
                 
             </div>
-            <button class="tape-nav right" id="tape-right" onclick="moveTapeRight('in')">></button>
+            <button class="tape-nav right" id="tape-right" onclick="import('/build/script.js').then(o => o.moveTapeRight('in'))">></button>
+            
             <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
         </div>
 
@@ -85,7 +110,7 @@
                     <div class="margin" id="lines">
                         <div class="line">
                             <div id="pointtemplate">
-                                <button class="point inactive" id="1" onclick="switchBreakpoint(this.id)"></button>
+                                <button class="point inactive" id="1" onclick="import('/build/script.js').then(o => o.switchBreakpoint(this.id))"></button>
                             </div>
                             <div class="linenumber">1</div>
     
@@ -105,7 +130,7 @@
                 <div id="console-resizer"></div>
             </div>
             <div class="output-tape">
-                <button class="tape-nav left" onclick="moveTapeLeft('out')"><</button>
+                <button class="tape-nav left" onclick="import('/build/script.js').then(o => o.moveTapeLeft('out'))"><</button>
             
             <div class="tape" id="output-tape-container">
                 <div class="cell-container" id='output-1'>
@@ -158,14 +183,14 @@
                 </div>
                 
             </div>
-            <button class="tape-nav right" id="tape-right" onclick="moveTapeRight('out')">></button>
+            <button class="tape-nav right" id="tape-right" onclick="import('/build/script.js').then(o => o.moveTapeRight('out'))">></button>
             <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
         </div>
             </div>
         </div>
     </div>
-
-	<script src="build/script.js"></script>
+    <!-- <script type="module" src="build/main.js"></script> -->
+	<script type="module" src="build/script.js"></script>
 </body>
 
 </html>

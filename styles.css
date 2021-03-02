@@ -68,7 +68,125 @@ nav {
     top: 0;
 }
 
+.toolbar {
+    display: flex;
+    width: 100%;
+}
+.options {
+    left: 0;
+}
 
+
+.options button {
+    font-weight:600;
+    font-family: "Public Sans", sans-serif;
+    color: rgb(199, 199, 199);
+    background-color: #071330;
+    text-decoration: none;
+    font-size: 70%;
+    height: inherit;
+    border: none;
+    outline: none;
+    padding: 0px 20px;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    
+}
+.options button:hover{
+    background-color: #6c757e;
+}
+.dropdown {
+    float: left;
+    overflow: hidden;
+  }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: black;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0,0.2);
+    z-index: 1;
+    top: 35px;
+    font-weight:500;
+    font-size: 95%;
+    font-family: "Public Sans", sans-serif;
+    
+    
+}
+.dropdown-content button {
+    letter-spacing: 0.04rem;
+    color: white;
+    height: 50px;
+    /* padding: 12px 16px; */
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+.shortcut {
+    
+    letter-spacing: 0.05rem;
+}
+.dropdown-content button:hover {
+    background-color: #6c757e;
+}
+.show {
+    display: block;
+}
+
+
+
+.run-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    
+}
+
+.run-button {
+    height: 100%;
+    width: 40px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    /* right: 20px; */
+    /* margin-right: 20px; */
+}
+.run-control img:hover {
+    width: 25px;
+    height: 25px;
+}
+
+.debug-button {
+    height: 100%;
+    width: 40px;
+    outline: none;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    margin-right: 20px;
+    cursor: pointer;
+    
+}
+.run-control img {
+    top: 10px;
+    width: 21px;
+    height: 21px;
+}
+
+
+
+/* inputs */
 .input-tape {
     z-index: 2;
     position: sticky;
@@ -197,23 +315,7 @@ nav {
     
 }
 
-nav button {
-    font-weight:600;
-    font-family: "Public Sans", sans-serif;
-    color: rgb(199, 199, 199);
-    background-color: #071330;
-    text-decoration: none;
-    font-size: 70%;
-    height: inherit;
-    border: none;
-    outline: none;
-    padding: 0px 20px;
-    cursor: pointer;
-    
-}
-nav button:hover{
-    background-color: #6c757e;
-}
+
 
 
 .container {

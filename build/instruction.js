@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Instructions = exports.Instruction = void 0;
-const argument_1 = require("./argument");
-const token_1 = require("./token");
-const exceptions_1 = require("./exceptions");
-class Instruction extends token_1.Token {
+import { CellArgument, ReferenceArgument, LabelArg } from "./argument.js";
+import { Token } from "./token.js";
+import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError } from "./exceptions.js";
+class Instruction extends Token {
     validateAccumulatorDefinition(app) {
         if (typeof app.memory[0] === 'undefined') {
-            let message = exceptions_1.UndefinedAccumulatorError.generateMessage(app.execHead);
+            let message = UndefinedAccumulatorError.generateMessage(app.execHead);
             app.debugConsole.push(message);
             return false;
         }
@@ -24,17 +21,16 @@ class Instruction extends token_1.Token {
         return false;
     }
 }
-exports.Instruction = Instruction;
 class JumpInstr extends Instruction {
     validateArgument(argument) {
-        if (argument instanceof argument_1.LabelArg) {
+        if (argument instanceof LabelArg) {
             return true;
         }
         return false;
     }
     validateLabelsExistance(labelId, app) {
         if (!app.lexer.labelsWithIndices.hasOwnProperty(labelId)) {
-            let message = exceptions_1.LabelNotFoundError.generateMessage(app.execHead, labelId);
+            let message = LabelNotFoundError.generateMessage(app.execHead, labelId);
             app.debugConsole.push(message);
             return false;
         }
@@ -46,14 +42,15 @@ class OperationInst extends Instruction {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof argument_1.CellArgument) {
+        if (argument instanceof CellArgument) {
             return true;
         }
         return false;
     }
     validateCellDefinition(argument, app) {
+        console.log("validating cell with value", argument.getCellValue(app));
         if (typeof argument.getCellValue(app) === 'undefined') {
-            let message = exceptions_1.UndefinedCellError.generateMessage(app.execHead);
+            let message = UndefinedCellError.generateMessage(app.execHead);
             app.debugConsole.push(message);
             return false;
         }
@@ -100,6 +97,7 @@ class Jzero extends JumpInstr {
 class Read extends OperationInst {
     execute(argument, app) {
         if (!this.validateInputDefinition(argument, app)) {
+            app.debugConsole.push(UndefinedInputError.generateMessage(app.execHead + 1));
             return false;
         }
         let address = argument.getAddress(app);
@@ -112,7 +110,7 @@ class Read extends OperationInst {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof argument_1.ReferenceArgument) {
+        if (argument instanceof ReferenceArgument) {
             return true;
         }
         else {
@@ -163,7 +161,7 @@ class Store extends OperationInst {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof argument_1.ReferenceArgument) {
+        if (argument instanceof ReferenceArgument) {
             return true;
         }
         else {
@@ -252,5 +250,5 @@ const Instructions = {
     "write": Write,
     "halt": Halt
 };
-exports.Instructions = Instructions;
+export { Instruction, Instructions };
 //# sourceMappingURL=instruction.js.map

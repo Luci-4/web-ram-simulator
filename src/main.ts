@@ -1,11 +1,11 @@
-import {Lexer} from "./lexer";
+import {Lexer} from "./lexer.js";
 
-export class App {
+class App {
     memory: number[]
     inputs: number[];
     outputs: number[];
     lexer: Lexer;
-    // TODO: move some of those to lexer
+    
     execHead: number;
     inputHead: number;
     outputHead: number;
@@ -46,18 +46,20 @@ export class App {
         }
         while(this.execHead < this.lexer.programLength){
             let currentStatement = this.lexer.contents[this.execHead];
-            
+            console.log(currentStatement);
             if (!currentStatement.execute(this)){
-                
+                console.log("execution stopped with code 1");
                 return 1;
             }
             
         }
+        console.log("execution stopped with code 0");
         return 0;
+        
     }
 }
 
-
+export {App};
 // let app: App = new App()
 // let program: string = "asdfafdsgdfgadsfg asdfag asdfg asdfg\nkasdfjasdf\njsadfa fjasdf\n";
 // let inputs: number[] = [2, 4, 3];

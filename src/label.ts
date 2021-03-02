@@ -1,4 +1,4 @@
-import {Token} from "./token";
+import {Token} from "./token.js";
 
 class Label extends Token{
     id: string | undefined;

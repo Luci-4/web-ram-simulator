@@ -1,6 +1,6 @@
-import { Instruction } from "./instruction";
-import {App} from "./main";
-import {Token} from "./token";
+import { Instruction } from "./instruction.js";
+import {App} from "./main.js";
+import {Token} from "./token.js";
 
 
 abstract class Argument extends Token{

@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Label = void 0;
-const token_1 = require("./token");
-class Label extends token_1.Token {
+import { Token } from "./token.js";
+class Label extends Token {
     constructor(text) {
         super();
         this.id = text;
     }
 }
-exports.Label = Label;
+export { Label };
 //# sourceMappingURL=label.js.map

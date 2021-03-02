@@ -1,7 +1,7 @@
-import {Label} from "./label";
-import {Instruction, Instructions} from "./instruction";
-import {Argument} from "./argument";
-import {App} from "./main";
+import {Label} from "./label.js";
+import {Instruction, Instructions} from "./instruction.js";
+import {Argument} from "./argument.js";
+import {App} from "./main.js";
 
 
 

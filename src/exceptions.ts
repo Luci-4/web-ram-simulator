@@ -50,6 +50,12 @@ class UndefinedCellError {
     }
 }
 
+class UndefinedInputError {
+    static generateMessage(lineIndex: number){
+        return `UndefinedInputError: in line ${lineIndex}`;
+    }
+}
+
 
 
 class LabelNotFoundError {
@@ -65,7 +71,8 @@ export {DuplicateLabelsError,
     UnexpectedTokenError, 
     InvalidInstructionError, 
     UndefinedAccumulatorError, 
-    UndefinedCellError, 
+    UndefinedCellError,
+    UndefinedInputError,
     InvalidArgumentError, 
     InvalidArgumentValueError,
     EmptyArgumentError,

@@ -10,14 +10,16 @@ class App {
     inputHead: number;
     outputHead: number;
     debugConsole: string[];
+    breakpoints: number[];
 
 
-    init(program: string, inputs: number[]): boolean {
+    init(program: string, inputs: number[], breakpoints=[]): boolean {
         this.memory = [];
         this.inputs = inputs;
         this.outputs = [];
         this.debugConsole = [];
         this.lexer = new Lexer(program);
+        this.breakpoints = breakpoints;
 
         // check if all tokens could be generated properly
         let foundInvalidStatements = this.lexer.contents.some(element => typeof element === "undefined")
@@ -56,6 +58,27 @@ class App {
         return 0;
         
     }
+
+    debug(program: string, inputs: number[], breakpoints: number[]){
+        if(!this.init(program, inputs, breakpoints)){
+            return 1;
+        }
+
+    }
+    continueToTheNextPoint(){
+
+    }
+    step(){
+        let currentStatement = this.lexer.contents[this.execHead];
+        if(!currentStatement.execute(this)){
+
+            console.log("step execution stopped with code 1");
+            return 1;
+        }
+        console.log(this.execHead);
+    }
+
+    
 }
 
 export {App};

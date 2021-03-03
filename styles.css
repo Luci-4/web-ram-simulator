@@ -40,8 +40,8 @@ body {
     font-size: 1.125rem;
     
     font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
-    background-color: #071330;
-    
+    background-color: #061027;
+    /* background-color: #002400; */
     /* background: #071330; */
     
 }
@@ -161,10 +161,20 @@ nav {
     /* right: 20px; */
     /* margin-right: 20px; */
 }
-.run-control img:hover {
+.run-button img:hover {
     width: 25px;
     height: 25px;
 }
+.debug-button img:hover {
+    width: 25px;
+    height: 25px;
+}
+
+.stop-active img:hover{
+    width: 25px;
+    height: 25px;
+}
+
 
 .debug-button {
     height: 100%;
@@ -174,10 +184,24 @@ nav {
     justify-content: center;
     align-items: center;
     background-color: transparent;
-    margin-right: 20px;
+    
     cursor: pointer;
     
 }
+
+.stop-button {
+    height: 100%;
+    width: 40px;
+    outline: none;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+
 .run-control img {
     top: 10px;
     width: 21px;
@@ -272,6 +296,21 @@ nav {
     background-color:red;
     bottom: 0;
 }
+.debug-controls {
+    display: none;
+}
+.debug-controls > button{
+    height: 100%;
+    border: none;
+    outline: none;
+    color: white;
+    
+    background-color: transparent;
+}
+.debug-controls > button:hover{
+    cursor: pointer;
+    background-color: rgb(121, 121, 121);
+}
 
 #textarea-console {
     
@@ -316,8 +355,6 @@ nav {
 }
 
 
-
-
 .container {
     
     height: 100%;
@@ -355,7 +392,7 @@ nav {
     padding-left: 10px;
     display: flex;
     color: #828285;
-    background-color: purple;
+    background-color: inherit;
     width: 80px;
     left: 0;
     
@@ -423,4 +460,5 @@ button.inactive:hover{
     padding-top: 0;
     scrollbar-width: none;
     tab-size: 4;
+    background: inherit;
 }

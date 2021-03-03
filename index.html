@@ -36,7 +36,8 @@
             </div>
             <div class="toolbar run-control">
                 <button class="run-button" id="run-button" onclick="import('/build/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
-                <button class="debug-button" id="debug-button"><img src="/images/bug-icon.png" alt=""></button>
+                <button class="debug-button" id="debug-button" onclick="import('/build/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt=""></button>
+                <button class="stop-button" id="stop-button" onclick="import('/build/script.js').then(o => o.stopRun())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
                 
             </div>
             
@@ -108,7 +109,7 @@
             <div class="workspace" id="workspace">
                 <div class="editor">
                     <div class="margin" id="lines">
-                        <div class="line">
+                        <div class="line" id="line-1">
                             <div id="pointtemplate">
                                 <button class="point inactive" id="1" onclick="import('/build/script.js').then(o => o.switchBreakpoint(this.id))"></button>
                             </div>
@@ -125,11 +126,17 @@
                 
             </div>
         </div>
+        <div class="debug-controls" id="debug-controls">
+           
+            <button class="debugger-step" onclick="import('/build/script.js').then(o => o.step())">-></button>
+            <button class="debugger-continue" onclick="import('/build/script.js').then(o => o.continueToTheNextPoint())">>></button>
+        </div>
         <div class="output-section" id="output-section">
+           
             <div id="textarea-console" spellcheck="false" autocapitalize="false">
                 <div id="console-resizer"></div>
             </div>
-            <div class="output-tape">
+            <div class="output-tape" id="output-tape">
                 <button class="tape-nav left" onclick="import('/build/script.js').then(o => o.moveTapeLeft('out'))"><</button>
             
             <div class="tape" id="output-tape-container">

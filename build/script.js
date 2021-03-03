@@ -19,6 +19,86 @@ const keywords = [
     "write",
     "halt"
 ];
+const colorThemes = {
+    DARK : {
+        Editor: "#181818",
+        EditorHighlight: "",
+        ConsoleBackground: "black",
+        EditorTextColor: "",
+        ConsoleTextColor: "",
+        ButonOnHover: "",
+        ToolbarBackground: "#242424",
+        TapeCellBackground: "",
+        TapeBackground: "",
+        TapeButtons: ""
+    },
+
+    BLUE : {
+        Editor: "#071330",
+        EditorHighlight: "",
+        // CONSOLE: "#09193d",
+        ConsoleBackground: "#061027",
+        EditorTextColor: "#df9e25",
+        ConsoleTextColor: "",
+        ButonOnHover: "",
+        ToolbarBackground: "#09193d",
+        TapeCellBackground: "",
+        TapeBackground: "",
+        TapeCaptionsBackground: "",
+        TapeButtons: ""
+    },
+
+    MATRIX : {
+        Editor: "black",
+        EditorHighlight: "",
+        ConsoleBackground: "black",
+        EditorTextColor: "green",
+        ConsoleTextColor: "#46e446",
+        ButonOnHover: "",
+        ToolbarBackground: "#002400",
+        TapeCellBackground: "",
+        TapeBackground: "",
+        TapeCaptionsBackground:"",
+        TapeButtons: ""
+    },
+    RANDOM : {
+        Editor: "black",
+        EditorHighlight: "red",
+        ConsoleBackground: "purple",
+        EditorTextColor: "green",
+        ConsoleTextColor: "white",
+        ButonOnHover: "#6c757e",
+        ToolbarBackground: "#071330",
+        TapeCellBackground: "lightblue",
+        TapeBackground: "thistle",
+        TapeCaptionsBackground: "lightcoral",
+        TapeButtons: "blue"
+    }
+
+
+}
+let colorTheme = colorThemes['RANDOM'];
+
+function setColorTheme(){
+    document.body.style.background = colorThemes["Editor"];
+    document.getElementById("textarea-editor").style.background = colorTheme["Editor"];
+    document.getElementById("textarea-editor").style.color = colorTheme["EditorTextColor"];
+    document.getElementsByTagName("nav")[0].style.background = colorTheme["ToolbarBackground"];
+    document.getElementById("textarea-console").style.background = colorTheme["ConsoleBackground"];
+    document.getElementById("textarea-console").style.color = colorTheme["ConsoleTextColor"];
+    document.getElementById("input-tape").style.background = colorTheme["TapeBackground"];
+    document.getElementById("output-tape").style.background = colorTheme["TapeBackground"];
+    document.getElementById("lines").style.background = colorTheme["Editor"];
+    let cells = document.getElementsByClassName("cell")
+    for(let cell of cells){
+        cell.style.background = colorTheme["TapeCellBackground"];
+    }
+    let captions = document.getElementsByClassName("caption");
+    for(let caption of captions){
+        caption.style.background = colorTheme["TapeCaptionsBackground"];
+    }
+
+}
 
 function getInputs(){
     let inputTape = document.getElementById("input-tape-container");
@@ -64,38 +144,133 @@ function updateOutputTape(){
     }
 }
 
-function changeIconToStop(type){
+function enableStopIcon(type){
 
-    let icon = document.getElementById(`${type}-icon`);
-    let button = document.getElementById(`${type}-button`);
+    let icon = document.getElementById(`stop-icon`);
+    let button = document.getElementById(`stop-button`);
 
     icon.src = "/images/stop-icon.png";
-    button.onclick = `import('/build/script.js').then(o => o.stop(${type})`
+    button.classList.add("stop-active");
+    button.classList.add(`${type}-active`);
+}
+function disableStopIcon(){
+    let icon = document.getElementById(`stop-icon`);
+    let button = document.getElementById(`stop-button`);
+    clearMarginLineHighlights();
+    icon.src = "/images/stop-inactive-icon.png";
+    button.classList.remove("stop-active");
+
+    if (button.classList.contains(`run-active`)){
+        button.classList.remove(`run-active`);
+        stop("run");
+    }
+    else if(button.classList.contains(`debug-active`)){
+        button.classList.remove(`debug-active`);
+        stop("debug");
+    }
     
 }
 
-function changeIconBackToRunControl(type){
-    let icon = document.getElementById(`${type}-icon`);
-    let button = document.getElementById(`${type}-button`);
+function clearOutputTape(){
+    let tape = document.getElementById("output-tape-container").children;
+    for(let cell of tape){
+        let inputField = cell.firstElementChild;
+        inputField.value = "";
+    }
+}
+function stop(type){
+    if(type === "run"){
+        app.execHead = app.lexer.programLength;
+        updateConsole();
+        updateOutputTape();
 
-    icon.src = `/images/${type}-icon.png`;
-    button.onclick = `import('/build/script.js').then(o => o.${type}()`
+    }
+    else if (type === "debug"){
+        hideDebugControls();
+        updateConsole();
+        clearOutputTape();
+    }
+    
 }
 
-export function stop(type){
-
+export function stopRun(){
+    let button = document.getElementById("")
+    disableStopIcon();
+    clearMarginLineHighlights();
 }
 
 export function run() {
+    enableStopIcon("run");
     clearConsole();
-    // changeIconToStop("run");
     let program = document.getElementById("textarea-editor").value;
-    getInputs();
+    
     app.run(program, getInputs())
-    console.log("program after running");
-    updateConsole();
+    
+    
+    disableStopIcon();
+    
+    
+}
+
+function clearMarginLineHighlights(){
+    let lines = document.getElementById("lines").children;
+    for(let line of lines){
+        if(line.style.backgroundColor === colorTheme["EditorHighlight"]){
+            line.style.backgroundColor = colorTheme["Editor"];
+        }
+    }
+
+}
+
+function updateLineMarginHighlight(){
+    console.log(app.lexer.contents.length, app.execHead);
+    if (app.lexer.contents.length === app.execHead){
+        disableStopIcon();
+        return;
+    }
+    let currentMarginLine = document.getElementById(`line-${app.execHead+1}`);
+    console.log(currentMarginLine);
+    currentMarginLine.style.backgroundColor = colorTheme["EditorHighlight"];
+}
+
+function showDebugControls(){
+    document.getElementById("debug-controls").style.display = "inline";
+    
+}
+
+function hideDebugControls(){
+    document.getElementById("debug-controls").style.display = "none";
+}
+export function debug(){
+    clearConsole();
+    enableStopIcon("debug");
+    showDebugControls();
+    let program = document.getElementById("textarea-editor").value;
+    let firstMarginLine = document.getElementById("line-1");
+    firstMarginLine.style.backgroundColor = colorTheme['EditorHighlight'];
+    if (app.debug(program, getInputs(), breakpoints) ===  1){
+        
+        disableStopIcon();
+    }
+    
+   
+}
+
+export function continueToTheNextPoint(){
+    clearMarginLineHighlights();
+    app.continueToTheNextPoint();
+    updateLineMarginHighlight();
+}
+// TODO: debug step, implement the rest of debug and add color themes
+
+export function step(){
+    clearMarginLineHighlights();
     updateOutputTape();
-    // changeIconBackToRunControl("run");
+    updateLineMarginHighlight();
+    if(app.step() ===  1){
+        disableStopIcon();
+    }
+
     
 }
 
@@ -156,6 +331,7 @@ function updateEditorMargin(){
         const divLineNumber = document.createElement("div");
         divLineNumber.className = "linenumber";
         lastLinesNum++;
+        divLine.id = `line-${lastLinesNum}`;
         const buttonPoint = buttonTemplate.cloneNode();
         
         buttonPoint.id = lastLinesNum.toString();
@@ -311,9 +487,6 @@ function getContent(){
 }
 
 
-
-
-
 // resizing console
 function initResize(e) {
     window.addEventListener('mousemove', Resize, false);
@@ -438,3 +611,5 @@ window.onclick = function(event) {
         }
     // }
 }
+
+setColorTheme();

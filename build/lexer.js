@@ -76,7 +76,6 @@ export class Lexer {
                 label = new Label(undefined);
                 instruction = undefined;
                 argument = undefined;
-                return new Statement(label, instruction, argument);
             }
             else {
                 let message = InvalidInstructionError.generateMessage(lineIndex, elements[0]);
@@ -84,7 +83,7 @@ export class Lexer {
                 return undefined;
             }
         }
-        if (!instruction.validateArgument(argument)) {
+        if (typeof instruction !== "undefined" && !instruction.validateArgument(argument)) {
             let message;
             if (typeof argument === 'undefined') {
                 message = EmptyArgumentError.generateMessage(lineIndex, instruction);
@@ -95,7 +94,7 @@ export class Lexer {
             this.debugConsole.push(message);
             return undefined;
         }
-        if (!argument.validateValue()) {
+        if (typeof argument !== "undefined" && !argument.validateValue()) {
             let message = InvalidArgumentValueError.generateMessage(lineIndex, argument);
             this.debugConsole.push(message);
             return undefined;

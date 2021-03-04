@@ -6,10 +6,12 @@ import {Token} from "./token.js";
 abstract class Argument extends Token{
     value: string;
     validateValue(){
-        if(/^[0-9]+$/.test(this.value)){
-            return true;
+        
+        if(isNaN(Number(this.value))){
+            
+            return false;
         }
-        return false;
+        return true;
     }
     constructor(value: string){
         super();

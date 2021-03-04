@@ -4,7 +4,7 @@ let app = new App();
 
 let lastLinesNum = 1;
 let breakpoints = [];
-
+var nIntervId;
 const keywords = [
     "read",
     "load",
@@ -89,7 +89,7 @@ function setColorTheme(){
     document.getElementById("input-tape").style.background = colorTheme["TapeBackground"];
     document.getElementById("output-tape").style.background = colorTheme["TapeBackground"];
     document.getElementById("lines").style.background = colorTheme["Editor"];
-    let cells = document.getElementsByClassName("cell")
+    let cells = document.getElementsByClassName("cell");
     for(let cell of cells){
         cell.style.background = colorTheme["TapeCellBackground"];
     }
@@ -120,9 +120,10 @@ function getInputs(){
 
 function updateConsole(){
     let debugcon = document.getElementById("textarea-console");
+    
     for(let message of app.debugConsole){
         debugcon.innerHTML += message;
-        console.log(message);
+        
     }
 
 }
@@ -152,6 +153,7 @@ function enableStopIcon(type){
     icon.src = "/images/stop-icon.png";
     button.classList.add("stop-active");
     button.classList.add(`${type}-active`);
+    button.style.cursor = "pointer";
 }
 function disableStopIcon(){
     let icon = document.getElementById(`stop-icon`);
@@ -159,15 +161,9 @@ function disableStopIcon(){
     clearMarginLineHighlights();
     icon.src = "/images/stop-inactive-icon.png";
     button.classList.remove("stop-active");
+    button.style.cursor = "auto";
 
-    if (button.classList.contains(`run-active`)){
-        button.classList.remove(`run-active`);
-        stop("run");
-    }
-    else if(button.classList.contains(`debug-active`)){
-        button.classList.remove(`debug-active`);
-        stop("debug");
-    }
+    
     
 }
 
@@ -178,38 +174,68 @@ function clearOutputTape(){
         inputField.value = "";
     }
 }
-function stop(type){
-    if(type === "run"){
-        app.execHead = app.lexer.programLength;
-        updateConsole();
-        updateOutputTape();
-
-    }
-    else if (type === "debug"){
-        hideDebugControls();
-        updateConsole();
-        clearOutputTape();
-    }
-    
-}
-
-export function stopRun(){
-    let button = document.getElementById("")
+function stopRun(){
+    let button = document.getElementById(`stop-button`);
     disableStopIcon();
+    button.classList.remove(`run-active`);
+    app.execHead = app.lexer.programLength;
+    updateConsole();
+    updateOutputTape();
+
+}
+function stopDebug(){
+    let button = document.getElementById(`stop-button`);
+    hideDebugControls();
+    button.classList.remove(`debug-active`);
+    updateConsole();
+    clearOutputTape();
     clearMarginLineHighlights();
+    disableStopIcon();
+}
+    
+        
+
+export function stop(){
+    clearInterval(nIntervId);
+    let button = document.getElementById(`stop-button`);
+
+    if (button.classList.contains(`run-active`)){ stopRun(); }
+
+    else if(button.classList.contains(`debug-active`)){ stopDebug(); }
+    
+   
 }
 
 export function run() {
-    enableStopIcon("run");
+    stop();
+    // visual setup
     clearConsole();
+    clearOutputTape();
+    enableStopIcon("run");
+    
+    // load the program
     let program = document.getElementById("textarea-editor").value;
     
-    app.run(program, getInputs())
+    // interpret and check for errors
+    if(!app.init(program, getInputs())){
+        stop();
+        return 1;
+    }
+    nIntervId = setInterval(step, 500);
     
-    
-    disableStopIcon();
-    
-    
+}
+
+function step(){
+    let stepResult = app.step();
+    if (stepResult === 1){
+        console.log("app.step returned 1");
+        stop();
+    }
+    else if (stepResult === 0){
+        console.log("app.step returned 0")
+        stop();
+    }
+    updateOutputTape();
 }
 
 function clearMarginLineHighlights(){
@@ -223,13 +249,12 @@ function clearMarginLineHighlights(){
 }
 
 function updateLineMarginHighlight(){
-    console.log(app.lexer.contents.length, app.execHead);
+    
     if (app.lexer.contents.length === app.execHead){
         disableStopIcon();
         return;
     }
     let currentMarginLine = document.getElementById(`line-${app.execHead+1}`);
-    console.log(currentMarginLine);
     currentMarginLine.style.backgroundColor = colorTheme["EditorHighlight"];
 }
 
@@ -242,35 +267,52 @@ function hideDebugControls(){
     document.getElementById("debug-controls").style.display = "none";
 }
 export function debug(){
+
+    stop();
+
+    // visual setup
     clearConsole();
+    clearOutputTape();
     enableStopIcon("debug");
+
     showDebugControls();
     let program = document.getElementById("textarea-editor").value;
     let firstMarginLine = document.getElementById("line-1");
-    firstMarginLine.style.backgroundColor = colorTheme['EditorHighlight'];
-    if (app.debug(program, getInputs(), breakpoints) ===  1){
-        
-        disableStopIcon();
+    // firstMarginLine.style.backgroundColor = colorTheme['EditorHighlight'];
+
+    // interpret and check for errors
+    if (!app.init(program, getInputs(), breakpoints)){
+        stop();
+        return 1;
     }
+    stepDebugger();
+}
+
+function stopOnBreakpoint(){
+
+    clearInterval(nIntervId);
+    let continueBtn = document.getElementById("debugger-continue");
+    continueBtn.disabled = false;
+    continueBtn.style.cursor = "pointer";
+
+}
+export function stepDebugger(){
     
-   
+    clearMarginLineHighlights();
+    updateLineMarginHighlight();
+    step();
+    if(app.breakpoints.includes(app.execHead)){
+        stopOnBreakpoint();
+    }
+
 }
 
 export function continueToTheNextPoint(){
-    clearMarginLineHighlights();
-    app.continueToTheNextPoint();
-    updateLineMarginHighlight();
-}
-// TODO: debug step, implement the rest of debug and add color themes
-
-export function step(){
-    clearMarginLineHighlights();
-    updateOutputTape();
-    updateLineMarginHighlight();
-    if(app.step() ===  1){
-        disableStopIcon();
-    }
-
+    let continueBtn = document.getElementById("debugger-continue");
+    continueBtn.disabled = true;
+    continueBtn.style.cursor = "auto";
+    
+    nIntervId = setInterval(stepDebugger, 500);
     
 }
 
@@ -313,7 +355,7 @@ export function switchBreakpoint(index) {
     
     
 }
-function updateEditorMargin(){
+export function updateEditorMargin(){
     let currentLineNum = getNumberOfLines();
     if (currentLineNum === lastLinesNum){
         return
@@ -429,8 +471,11 @@ document.getElementById("textarea-editor").addEventListener("input", (event) => 
         
     }  
     else{
-        editor.setSelectionRange(cursorPos, cursorPos + val.length);
+        editor.setSelectionRange(cursorPos, cursorPos);
+        
     }
+    
+    
     
     
 })
@@ -441,7 +486,6 @@ function getFirstCharIndexInCurrentLine(start){
     return firstCharIndex;
 }
 function keyboardListenerCallback(event){
-    
     
     let editor = document.getElementById("textarea-editor");
     let end = editor.selectionEnd;

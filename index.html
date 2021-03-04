@@ -37,7 +37,7 @@
             <div class="toolbar run-control">
                 <button class="run-button" id="run-button" onclick="import('/build/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
                 <button class="debug-button" id="debug-button" onclick="import('/build/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt=""></button>
-                <button class="stop-button" id="stop-button" onclick="import('/build/script.js').then(o => o.stopRun())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
+                <button class="stop-button" id="stop-button" onclick="import('/build/script.js').then(o => o.stop())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
                 
             </div>
             
@@ -119,7 +119,7 @@
 
                     </div>
                     
-                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false" wrap="off";></textarea>
+                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false" wrap="off" onpaste="import('/build/script.js').then(o => o.updateEditorMargin())"></textarea>
                 </div>
                 
 
@@ -128,8 +128,8 @@
         </div>
         <div class="debug-controls" id="debug-controls">
            
-            <button class="debugger-step" onclick="import('/build/script.js').then(o => o.step())">-></button>
-            <button class="debugger-continue" onclick="import('/build/script.js').then(o => o.continueToTheNextPoint())">>></button>
+            <button class="debugger-step" onclick="import('/build/script.js').then(o => o.stepDebugger())">-></button>
+            <button class="debugger-continue" id="debugger-continue" onclick="import('/build/script.js').then(o => o.continueToTheNextPoint())">>></button>
         </div>
         <div class="output-section" id="output-section">
            
@@ -141,51 +141,51 @@
             
             <div class="tape" id="output-tape-container">
                 <div class="cell-container" id='output-1'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5).split('.').join('')">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">1</div>
                 </div>
                 <div class="cell-container" id='output-2'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">2</div>
                 </div>
                 <div class="cell-container" id='output-3'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">3</div>
                 </div>
                 <div class="cell-container" id='output-4'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">4</div>
                 </div>
                 <div class="cell-container" id='output-5'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">5</div>
                 </div>
                 <div class="cell-container" id='output-6'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">6</div>
                 </div>
                 <div class="cell-container" id='output-7'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">7</div>
                 </div>
                 <div class="cell-container" id='output-8'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">8</div>
                 </div>
                 <div class="cell-container" id='output-9'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">9</div>
                 </div>
                 <div class="cell-container" id='output-10'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">10</div>
                 </div>
                 <div class="cell-container" id='output-11'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">11</div>
                 </div>
                 <div class="cell-container" id='output-12'>
-                    <input class="output cell" type="number" pattern="[0-9]*" oninput="this.value=this.value.slice(0,5)">
+                    <input class="output cell" type="number" pattern="[0-9]*" readonly="true">
                     <div class="caption">12</div>
                 </div>
                 

@@ -11,9 +11,6 @@ export class Lexer {
         lines = contents.split("\n");
         // remove whitespaces around every line
         lines = lines.map((line) => line.trim());
-        lines.forEach(line => {
-            console.log(line, line.length);
-        });
         // remove empty lines
         // lines = lines.filter((n: string) => n);
         // convert lines to tokens

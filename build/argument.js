@@ -5,10 +5,10 @@ class Argument extends Token {
         this.value = value;
     }
     validateValue() {
-        if (/^[0-9]+$/.test(this.value)) {
-            return true;
+        if (isNaN(Number(this.value))) {
+            return false;
         }
-        return false;
+        return true;
     }
     static GenerateArgument(text) {
         if (/^[0-9]+$/.test(text)) {

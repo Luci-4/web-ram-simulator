@@ -26,9 +26,7 @@ export class Lexer {
         
         // remove whitespaces around every line
         lines = lines.map((line: string) => line.trim());
-        lines.forEach(line => {
-            console.log(line, line.length);
-        })
+        
        
         // remove empty lines
         // lines = lines.filter((n: string) => n);
@@ -123,6 +121,7 @@ export class Lexer {
             this.debugConsole.push(message);
             return undefined;
         }
+        
         return new Statement(label, instruction, argument);
         
     }

@@ -35,7 +35,7 @@ class UndefinedAccumulatorError {
 }
 class UndefinedCellError {
     static generateMessage(lineIndex) {
-        return `UndefinedCellError: in line ${lineIndex}\n`;
+        return `UndefinedCellError: in line ${lineIndex + 1}\n`;
     }
 }
 class UndefinedInputError {
@@ -48,5 +48,10 @@ class LabelNotFoundError {
         return `LabelNotFoundError: in line ${lineIndex} label ${labelId} doesn't exist\n`;
     }
 }
-export { DuplicateLabelsError, UnexpectedTokenError, InvalidInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError };
+class ZeroDivisionError {
+    static generateMessage(lineIndex) {
+        return `ZeroDivisionError: in line ${lineIndex}`;
+    }
+}
+export { DuplicateLabelsError, UnexpectedTokenError, InvalidInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };
 //# sourceMappingURL=exceptions.js.map

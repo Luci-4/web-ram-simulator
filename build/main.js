@@ -1,6 +1,7 @@
 import { Lexer } from "./lexer.js";
 class App {
     init(program, inputs, breakpoints = []) {
+        console.log("in init");
         this.memory = [];
         this.inputs = inputs;
         this.outputs = [];
@@ -22,35 +23,39 @@ class App {
         this.outputHead = 0;
         return true;
     }
-    run(program, inputs) {
+    run() {
         // check if there were errors during init
-        if (!this.init(program, inputs)) {
-            return 1;
-        }
-        while (this.execHead < this.lexer.programLength) {
-            let currentStatement = this.lexer.contents[this.execHead];
-            if (!currentStatement.execute(this)) {
-                console.log("execution stopped with code 1");
-                return 1;
-            }
-        }
-        console.log("execution stopped with code 0");
-        return 0;
+        // if (!this.init(program, inputs)){
+        //     return 1;
+        // }
+        // while(this.execHead < this.lexer.programLength){
+        //     let currentStatement = this.lexer.contents[this.execHead];
+        //     if (!currentStatement.execute(this)){
+        //         console.log("execution stopped with code 1");
+        //         return 1;
+        //     }
+        // }
+        this.intervalId = setInterval(this.step, 500);
+    }
+    delay() {
     }
     debug(program, inputs, breakpoints) {
         if (!this.init(program, inputs, breakpoints)) {
             return 1;
         }
     }
-    continueToTheNextPoint() {
-    }
     step() {
-        let currentStatement = this.lexer.contents[this.execHead];
-        if (!currentStatement.execute(this)) {
-            console.log("step execution stopped with code 1");
+        if (this.execHead >= this.lexer.programLength) {
+            console.log("In app.step program ended");
             return 1;
         }
-        console.log(this.execHead);
+        let currentStatement = this.lexer.contents[this.execHead];
+        console.log("executing", this.execHead, currentStatement);
+        let result = currentStatement.execute(this);
+        if (!result) {
+            console.log("In app.step error while running");
+            return 1;
+        }
     }
 }
 export { App };

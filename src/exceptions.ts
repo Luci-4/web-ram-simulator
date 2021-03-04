@@ -46,7 +46,7 @@ class UndefinedAccumulatorError {
 
 class UndefinedCellError {
     static generateMessage(lineIndex: number) {
-        return `UndefinedCellError: in line ${lineIndex}\n`;
+        return `UndefinedCellError: in line ${lineIndex+1}\n`;
     }
 }
 
@@ -64,6 +64,12 @@ class LabelNotFoundError {
     }
 }
 
+class ZeroDivisionError {
+    static generateMessage(lineIndex: number){
+        return `ZeroDivisionError: in line ${lineIndex}`;
+    }
+}
+
 
 
 
@@ -76,6 +82,7 @@ export {DuplicateLabelsError,
     InvalidArgumentError, 
     InvalidArgumentValueError,
     EmptyArgumentError,
-    LabelNotFoundError
+    LabelNotFoundError,
+    ZeroDivisionError
 }
  

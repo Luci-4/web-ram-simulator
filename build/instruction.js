@@ -1,6 +1,6 @@
 import { CellArgument, ReferenceArgument, LabelArg } from "./argument.js";
 import { Token } from "./token.js";
-import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError } from "./exceptions.js";
+import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError } from "./exceptions.js";
 class Instruction extends Token {
     validateAccumulatorDefinition(app) {
         if (typeof app.memory[0] === 'undefined') {
@@ -47,7 +47,6 @@ class OperationInst extends Instruction {
         return false;
     }
     validateCellDefinition(argument, app) {
-        console.log("validating cell with value", argument.getCellValue(app));
         if (typeof argument.getCellValue(app) === 'undefined') {
             let message = UndefinedCellError.generateMessage(app.execHead);
             app.debugConsole.push(message);
@@ -208,8 +207,18 @@ class Mult extends OperationInst {
     }
 }
 class Div extends OperationInst {
+    validateDivisor(argument, app) {
+        if (argument.getCellValue(app) === 0) {
+            app.debugConsole.push(ZeroDivisionError.generateMessage(app.execHead));
+            return false;
+        }
+        return true;
+    }
     execute(argument, app) {
         if (!super.validateAccumulatorDefinition(app)) {
+            return false;
+        }
+        if (!this.validateDivisor(argument, app)) {
             return false;
         }
         if (!super.validateCellDefinition(argument, app)) {

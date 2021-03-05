@@ -1,5 +1,5 @@
 import { Instruction } from "./instruction.js";
-import {App} from "./main.js";
+import {Parser} from "./parser.js";
 import {Token} from "./token.js";
 
 
@@ -7,8 +7,7 @@ abstract class Argument extends Token{
     value: string;
     validateValue(){
         
-        if(isNaN(Number(this.value))){
-            
+        if(this.value.length === 0 || isNaN(Number(this.value))){
             return false;
         }
         return true;
@@ -39,50 +38,50 @@ abstract class Argument extends Token{
 }
 
 abstract class CellArgument extends Argument{
-    abstract getCellValue(app: App): number;
+    abstract getCellValue(parser: Parser): number;
 }
 
 abstract class ReferenceArgument extends CellArgument {
-    abstract getAddress(app: App): number;
+    abstract getAddress(parser: Parser): number;
 }
 
 class LabelArg extends Argument{
     value: string;
     validateValue(){
-        if(this.value){
+        if(this.value.length > 0){
             return true;
         }
         return false;
     }
-    getLabelIndex(app: App){
-        return app.lexer.labelsWithIndices[this.value];
+    getLabelIndex(parser: Parser){
+        return parser.lexer.labelsWithIndices[this.value];
     }
 }
 
 class Integer extends CellArgument {
     
-    getCellValue(app: App){
+    getCellValue(parser: Parser){
         return parseInt(this.value);
     }
 }
 
 class Address extends ReferenceArgument {
-    getCellValue(app: App){
-        return app.memory[parseInt(this.value)];
+    getCellValue(parser: Parser){
+        return parser.memory[parseInt(this.value)];
     }
 
-    getAddress(app: App){
+    getAddress(parser: Parser){
         return parseInt(this.value);
     }
 }
 
 class Pointer extends ReferenceArgument {
-    getCellValue(app: App){
-        return app.memory[app.memory[parseInt(this.value)]];
+    getCellValue(parser: Parser){
+        return parser.memory[parser.memory[parseInt(this.value)]];
     }
 
-    getAddress(app: App){
-        return app.memory[parseInt(this.value)];
+    getAddress(parser: Parser){
+        return parser.memory[parseInt(this.value)];
     }
 }
 

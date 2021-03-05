@@ -297,7 +297,7 @@ nav {
 .output-section {
     z-index: 2;
     position: sticky;
-    min-height: 160px;
+    min-height: 220px;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -325,13 +325,14 @@ nav {
 #textarea-console {
     font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
     color:white;
-    min-height: 100px;
+    min-height: 160px;
     /* height: 30%; */
     width: 100%;
     /* resize: vertical; */
     overflow: auto;
     display: flex;
     flex-direction: column;
+    font-weight: 300;
     
 }
 
@@ -340,8 +341,8 @@ nav {
     width: 100%;
     height: 10px;
     top: 0;
-    background-color: white;
-    opacity: 0.3;
+    background-color: #95a9ff;
+    /* opacity: 0.3; */
     display: flex;
     cursor: n-resize;
     justify-content: center;
@@ -372,8 +373,11 @@ nav {
     
     align-items: center;
     
+    
 }
-
+.output {
+    cursor: auto;
+}
 
 .container {
     
@@ -428,7 +432,7 @@ button.point{
     outline:none;
     border-radius: 50%;
     justify-content: right;
-    
+    cursor: pointer;
     
 }
 

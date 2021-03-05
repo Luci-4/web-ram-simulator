@@ -4,12 +4,12 @@ class Statement {
         this.instruction = instruction;
         this.argument = argument;
     }
-    execute(app) {
+    execute(parser) {
         if (typeof this.instruction === "undefined") {
-            app.execHead++;
+            parser.execHead++;
             return true;
         }
-        return this.instruction.execute(this.argument, app);
+        return this.instruction.execute(this.argument, parser);
     }
 }
 export { Statement };

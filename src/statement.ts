@@ -1,7 +1,7 @@
 import {Label} from "./label.js";
 import {Instruction, Instructions} from "./instruction.js";
 import {Argument} from "./argument.js";
-import {App} from "./main.js";
+import {Parser} from "./parser.js";
 
 
 
@@ -19,12 +19,12 @@ class Statement {
         this.argument = argument;
     }
 
-    execute(app: App){
+    execute(parser: Parser){
         if (typeof this.instruction === "undefined"){
-            app.execHead++;
+            parser.execHead++;
             return true;
         }
-        return this.instruction.execute(this.argument, app);
+        return this.instruction.execute(this.argument, parser);
     }
 
     

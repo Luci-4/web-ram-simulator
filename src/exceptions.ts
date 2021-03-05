@@ -52,7 +52,7 @@ class UndefinedCellError {
 
 class UndefinedInputError {
     static generateMessage(lineIndex: number){
-        return `UndefinedInputError: in line ${lineIndex}`;
+        return `UndefinedInputError: in line ${lineIndex}\n`;
     }
 }
 
@@ -66,7 +66,7 @@ class LabelNotFoundError {
 
 class ZeroDivisionError {
     static generateMessage(lineIndex: number){
-        return `ZeroDivisionError: in line ${lineIndex}`;
+        return `ZeroDivisionError: in line ${lineIndex}\n`;
     }
 }
 

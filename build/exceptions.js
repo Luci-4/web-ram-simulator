@@ -40,7 +40,7 @@ class UndefinedCellError {
 }
 class UndefinedInputError {
     static generateMessage(lineIndex) {
-        return `UndefinedInputError: in line ${lineIndex}`;
+        return `UndefinedInputError: in line ${lineIndex}\n`;
     }
 }
 class LabelNotFoundError {
@@ -50,7 +50,7 @@ class LabelNotFoundError {
 }
 class ZeroDivisionError {
     static generateMessage(lineIndex) {
-        return `ZeroDivisionError: in line ${lineIndex}`;
+        return `ZeroDivisionError: in line ${lineIndex}\n`;
     }
 }
 export { DuplicateLabelsError, UnexpectedTokenError, InvalidInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };

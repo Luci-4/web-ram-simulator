@@ -14,7 +14,7 @@
         <nav>
             <div class="toolbar options">
                 <div class="dropdown">
-                    <button class="file-tool-button" onclick="import('/build/script.js').then(o => o.showDropdown('file'))">File</button>
+                    <button class="file-tool-button" onclick="import('/scripts/script.js').then(o => o.showDropdown('file'))">File</button>
                     <div id="file-dropdown" class="dropdown-content">
                         <button>Open <span class="shortcut">Ctrl+O</span></button>
                         <button>Save <span class="shortcut">Ctrl+S</span></button>
@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="dropdown">
-                    <button class="run-tool-button" onclick="import('/build/script.js').then(o => o.showDropdown('run'))">Run</button>
+                    <button class="run-tool-button" onclick="import('/scripts/script.js').then(o => o.showDropdown('run'))">Run</button>
                     <div id="run-dropdown" class="dropdown-content">
                         <button>Run <span class="shortcut">F10</span></button>
                         <button>Debug <span class="shortcut">Ctrl+F10</span></button>
@@ -35,9 +35,9 @@
                 <!-- <button class="help-tool-button">Help</button> -->
             </div>
             <div class="toolbar run-control">
-                <button class="run-button" id="run-button" onclick="import('/build/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
-                <button class="debug-button" id="debug-button" onclick="import('/build/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt=""></button>
-                <button class="stop-button" id="stop-button" onclick="import('/build/script.js').then(o => o.stop())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
+                <button class="run-button" id="run-button" onclick="import('/scripts/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
+                <button class="debug-button" id="debug-button" onclick="import('/scripts/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt=""></button>
+                <button class="stop-button" id="stop-button" onclick="import('/scripts/script.js').then(o => o.stop())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
                 
             </div>
             
@@ -45,7 +45,7 @@
         </nav>
         <div class="input-tape" id="input-tape">
             
-            <button class="tape-nav left" onclick="import('/build/script.js').then(o=> o.moveTapeLeft('in'))"><</button>
+            <button class="tape-nav left" onclick="import('/scripts/script.js').then(o=> o.moveTapeLeft('in'))"><</button>
             
             <div class="tape" id="input-tape-container">
                 <div class="cell-container" id='input-1'>
@@ -98,7 +98,7 @@
                 </div>
                 
             </div>
-            <button class="tape-nav right" id="tape-right" onclick="import('/build/script.js').then(o => o.moveTapeRight('in'))">></button>
+            <button class="tape-nav right" id="tape-right" onclick="import('/scripts/script.js').then(o => o.moveTapeRight('in'))">></button>
             
             <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
         </div>
@@ -111,7 +111,7 @@
                     <div class="margin" id="lines">
                         <div class="line" id="line-1">
                             <div id="pointtemplate">
-                                <button class="point inactive" id="1" onclick="import('/build/script.js').then(o => o.switchBreakpoint(this.id))"></button>
+                                <button class="point inactive" id="1" onclick="import('/scripts/script.js').then(o => o.switchBreakpoint(this.id))"></button>
                             </div>
                             <div class="linenumber">1</div>
     
@@ -119,7 +119,7 @@
 
                     </div>
                     
-                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false" wrap="off" onpaste="import('/build/script.js').then(o => o.updateEditorMargin())"></textarea>
+                    <textarea id="textarea-editor" contenteditable="true" spellcheck="false" autocapitalize="false" wrap="off" onpaste="import('/scripts/script.js').then(o => o.updateEditorMargin())"></textarea>
                 </div>
                 
 
@@ -128,8 +128,8 @@
         </div>
         <div class="debug-controls" id="debug-controls">
            
-            <button class="debugger-step" onclick="import('/build/script.js').then(o => o.stepDebugger())">-></button>
-            <button class="debugger-continue" id="debugger-continue" onclick="import('/build/script.js').then(o => o.continueToTheNextPoint())">>></button>
+            <button class="debugger-step" onclick="import('/scripts/script.js').then(o => o.stepDebugger())">-></button>
+            <button class="debugger-continue" id="debugger-continue" onclick="import('/scripts/script.js').then(o => o.continueToTheNextPoint())">>></button>
         </div>
         <div class="output-section" id="output-section">
            
@@ -138,7 +138,7 @@
                 <div id=console-lines></div>
             </div>
             <div class="output-tape" id="output-tape">
-                <button class="tape-nav left" onclick="import('/build/script.js').then(o => o.moveTapeLeft('out'))"><</button>
+                <button class="tape-nav left" onclick="import('/scripts/script.js').then(o => o.moveTapeLeft('out'))"><</button>
             
             <div class="tape" id="output-tape-container">
                 <div class="cell-container" id='output-1'>
@@ -191,14 +191,14 @@
                 </div>
                 
             </div>
-            <button class="tape-nav right" id="tape-right" onclick="import('/build/script.js').then(o => o.moveTapeRight('out'))">></button>
+            <button class="tape-nav right" id="tape-right" onclick="import('/scripts/script.js').then(o => o.moveTapeRight('out'))">></button>
             <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
         </div>
             </div>
         </div>
     </div>
     <!-- <script type="module" src="build/main.js"></script> -->
-	<script type="module" src="build/script.js"></script>
+	<script type="module" src="scripts/script.js"></script>
 </body>
 
 </html>

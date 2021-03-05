@@ -5,7 +5,7 @@ class Argument extends Token {
         this.value = value;
     }
     validateValue() {
-        if (isNaN(Number(this.value))) {
+        if (this.value.length === 0 || isNaN(Number(this.value))) {
             return false;
         }
         return true;
@@ -31,34 +31,34 @@ class ReferenceArgument extends CellArgument {
 }
 class LabelArg extends Argument {
     validateValue() {
-        if (this.value) {
+        if (this.value.length > 0) {
             return true;
         }
         return false;
     }
-    getLabelIndex(app) {
-        return app.lexer.labelsWithIndices[this.value];
+    getLabelIndex(parser) {
+        return parser.lexer.labelsWithIndices[this.value];
     }
 }
 class Integer extends CellArgument {
-    getCellValue(app) {
+    getCellValue(parser) {
         return parseInt(this.value);
     }
 }
 class Address extends ReferenceArgument {
-    getCellValue(app) {
-        return app.memory[parseInt(this.value)];
+    getCellValue(parser) {
+        return parser.memory[parseInt(this.value)];
     }
-    getAddress(app) {
+    getAddress(parser) {
         return parseInt(this.value);
     }
 }
 class Pointer extends ReferenceArgument {
-    getCellValue(app) {
-        return app.memory[app.memory[parseInt(this.value)]];
+    getCellValue(parser) {
+        return parser.memory[parser.memory[parseInt(this.value)]];
     }
-    getAddress(app) {
-        return app.memory[parseInt(this.value)];
+    getAddress(parser) {
+        return parser.memory[parseInt(this.value)];
     }
 }
 const ArgumentsTypes = {

@@ -1,7 +1,6 @@
 import { Lexer } from "./lexer.js";
-class App {
+class Parser {
     init(program, inputs, breakpoints = []) {
-        console.log("in init");
         this.memory = [];
         this.inputs = inputs;
         this.outputs = [];
@@ -24,20 +23,7 @@ class App {
         return true;
     }
     run() {
-        // check if there were errors during init
-        // if (!this.init(program, inputs)){
-        //     return 1;
-        // }
-        // while(this.execHead < this.lexer.programLength){
-        //     let currentStatement = this.lexer.contents[this.execHead];
-        //     if (!currentStatement.execute(this)){
-        //         console.log("execution stopped with code 1");
-        //         return 1;
-        //     }
-        // }
         this.intervalId = setInterval(this.step, 500);
-    }
-    delay() {
     }
     debug(program, inputs, breakpoints) {
         if (!this.init(program, inputs, breakpoints)) {
@@ -46,21 +32,15 @@ class App {
     }
     step() {
         if (this.execHead >= this.lexer.programLength) {
-            console.log("In app.step program ended");
-            return 1;
+            return 0;
         }
         let currentStatement = this.lexer.contents[this.execHead];
         console.log("executing", this.execHead, currentStatement);
         let result = currentStatement.execute(this);
         if (!result) {
-            console.log("In app.step error while running");
             return 1;
         }
     }
 }
-export { App };
-// let app: App = new App()
-// let program: string = "asdfafdsgdfgadsfg asdfag asdfg asdfg\nkasdfjasdf\njsadfa fjasdf\n";
-// let inputs: number[] = [2, 4, 3];
-// app.run(program, inputs);
-//# sourceMappingURL=main.js.map
+export { Parser };
+//# sourceMappingURL=parser.js.map

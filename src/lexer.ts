@@ -2,7 +2,7 @@ import {Instruction, Instructions} from "./instruction.js";
 import {Label} from "./label.js";
 import {Argument} from "./argument.js";
 import { Statement } from "./statement.js";
-import {App} from "./main.js";
+import {Parser} from "./parser.js";
 import {DuplicateLabelsError, 
     UnexpectedTokenError, 
     InvalidInstructionError, 

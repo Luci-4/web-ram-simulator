@@ -40,7 +40,7 @@ body {
     font-size: 1.125rem;
     
     font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
-    background-color: #061027;
+    background-color: #040e27;
     /* background-color: #002400; */
     /* background: #071330; */
     
@@ -254,6 +254,9 @@ nav {
     outline: none;
     width: 20px;
     cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: inherit;
 }
 
 .cell-container {
@@ -273,27 +276,34 @@ nav {
 .cell {
     padding: none;
     outline: none;
+    
+    
+    border-top: none;
+    border-left: none;
+    border-bottom: none;
+    
+    
     background-color: lightblue;
     width: 100%;
     height: 100%;
     text-align: center;
 }
 .caption{
-    font-size: 12px;;
+    font-size: 70%;
     text-align: center;
+    font-weight: 700;
 }
 
 .output-section {
     z-index: 2;
     position: sticky;
-    
     min-height: 160px;
     padding: 0;
     display: flex;
     flex-direction: column;
     
     width: 100%;
-    background-color:red;
+    
     bottom: 0;
 }
 .debug-controls {
@@ -309,17 +319,15 @@ nav {
 }
 .debug-controls > button:hover{
     cursor: pointer;
-    background-color: rgb(121, 121, 121);
+    background-color: #797979;
 }
 
 #textarea-console {
-    
     font-family: Monaco, Menlo, "Ubuntu Mono", "Droid Sans Mono", Consolas, monospace;
     color:white;
     min-height: 100px;
     /* height: 30%; */
     width: 100%;
-    background-color: rebeccapurple;
     /* resize: vertical; */
     overflow: auto;
     display: flex;
@@ -332,8 +340,20 @@ nav {
     width: 100%;
     height: 10px;
     top: 0;
-    background-color: transparent;
+    background-color: white;
+    opacity: 0.3;
+    display: flex;
     cursor: n-resize;
+    justify-content: center;
+    font-size: 70%;
+}
+
+#console-lines {
+    /* display: flex; */
+    /* flex-direction: column-reverse; */
+    height: 100%;
+    margin-top: 20px;
+    margin-left: 6px;
 }
 
 .output-tape {

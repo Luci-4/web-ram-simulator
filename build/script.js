@@ -30,22 +30,27 @@ const colorThemes = {
         ToolbarBackground: "#242424",
         TapeCellBackground: "",
         TapeBackground: "",
-        TapeButtons: ""
+        TapeButtons: "",
+        TapeTextColor: "",
+        TapeCaptionColor: "#061027"
     },
 
     BLUE : {
-        Editor: "#071330",
-        EditorHighlight: "",
+        // Editor: "#071330",
+        Editor: "#040e27",
+        EditorHighlight: "#0C4160",
         // CONSOLE: "#09193d",
         ConsoleBackground: "#061027",
         EditorTextColor: "#df9e25",
-        ConsoleTextColor: "",
+        ConsoleTextColor: "#C3CEDA",
         ButonOnHover: "",
-        ToolbarBackground: "#09193d",
-        TapeCellBackground: "",
-        TapeBackground: "",
-        TapeCaptionsBackground: "",
-        TapeButtons: ""
+        ToolbarBackground: "#071330",
+        TapeCellBackground: "#0074B7",
+        TapeBackground: "#738FA7",
+        TapeCaptionsBackground: "#7EC8E3",
+        TapeButtons: "#C3CEDA",
+        TapeTextColor: "#C3CEDA",
+        TapeCaptionColor: "#061027"
     },
 
     MATRIX : {
@@ -59,7 +64,9 @@ const colorThemes = {
         TapeCellBackground: "",
         TapeBackground: "",
         TapeCaptionsBackground:"",
-        TapeButtons: ""
+        TapeButtons: "",
+        TapeTextColor: "",
+        TapeCaptionColor: "#061027"
     },
     RANDOM : {
         Editor: "black",
@@ -72,12 +79,13 @@ const colorThemes = {
         TapeCellBackground: "lightblue",
         TapeBackground: "thistle",
         TapeCaptionsBackground: "lightcoral",
-        TapeButtons: "blue"
+        TapeButtons: "blue",
+        TapeCaptionColor: "#061027"
     }
 
 
 }
-let colorTheme = colorThemes['RANDOM'];
+let colorTheme = colorThemes['BLUE'];
 
 function setColorTheme(){
     document.body.style.background = colorThemes["Editor"];
@@ -92,12 +100,25 @@ function setColorTheme(){
     let cells = document.getElementsByClassName("cell");
     for(let cell of cells){
         cell.style.background = colorTheme["TapeCellBackground"];
+        cell.style.color = colorTheme["TapeTextColor"];
     }
+
     let captions = document.getElementsByClassName("caption");
     for(let caption of captions){
         caption.style.background = colorTheme["TapeCaptionsBackground"];
+        caption.style.color = colorTheme["TapeCaptionColor"];
+    }
+    let tapeNavButtons = document.getElementsByClassName("tape-nav");
+    for(let button of tapeNavButtons){
+        button.style.background = colorTheme["TapeButtons"];
     }
 
+}
+// document.addEventListener('keydown', generalKeyboardCallback);
+document.getElementById("textarea-editor").oninput = generalKeyboardCallback;
+
+function generalKeyboardCallback(event){
+    updateEditorMargin();
 }
 
 function getInputs(){
@@ -119,7 +140,7 @@ function getInputs(){
 }
 
 function updateConsole(){
-    let debugcon = document.getElementById("textarea-console");
+    let debugcon = document.getElementById("console-lines");
     
     for(let message of app.debugConsole){
         debugcon.innerHTML += message;
@@ -128,8 +149,10 @@ function updateConsole(){
 
 }
 function clearConsole(){
-    let debugcon = document.getElementById("textarea-console");
+    let debugcon = document.getElementById("console-lines");
+    
     debugcon.innerHTML = "";
+    
 }
 
 function updateOutputTape(){
@@ -241,9 +264,9 @@ function step(){
 function clearMarginLineHighlights(){
     let lines = document.getElementById("lines").children;
     for(let line of lines){
-        if(line.style.backgroundColor === colorTheme["EditorHighlight"]){
-            line.style.backgroundColor = colorTheme["Editor"];
-        }
+        
+        line.style.backgroundColor = colorTheme["Editor"];
+        
     }
 
 }
@@ -486,7 +509,7 @@ function getFirstCharIndexInCurrentLine(start){
     return firstCharIndex;
 }
 function keyboardListenerCallback(event){
-    
+    updateEditorMargin();
     let editor = document.getElementById("textarea-editor");
     let end = editor.selectionEnd;
     let start = editor.selectionStart;

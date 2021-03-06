@@ -56,12 +56,20 @@ export function updateLineMarginHighlight(){
 }
 
 export function enableBreakpointButtons(){
-    // TODO: implement
+    let breakpointbtns = document.getElementsByClassName("point");
+    for(let pointBtn of breakpointbtns){
+        pointBtn.disabled = false;
+        pointBtn.style.cursor = "pointer";
+    }
 }
 
 
 export function disableBreakpointButtons(){
-    // TODO: implement
+    let breakpointbtns = document.getElementsByClassName("point");
+    for(let pointBtn of breakpointbtns){
+        pointBtn.disabled = true;
+        pointBtn.style.cursor = "auto";
+    }
 }
 
 

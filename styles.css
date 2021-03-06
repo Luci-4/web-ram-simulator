@@ -93,6 +93,22 @@ nav {
     width: 100%;
     
 }
+.options label{
+    font-weight:600;
+    font-family: "Public Sans", sans-serif;
+    color: rgb(199, 199, 199);
+    background-color: #071330;
+    text-decoration: none;
+    font-size: 70%;
+    height: inherit;
+    border: none;
+    outline: none;
+    padding: 0px 20px;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    
+}
 .options button:hover{
     background-color: #6c757e;
 }
@@ -114,7 +130,8 @@ nav {
     
     
 }
-.dropdown-content button {
+
+.dropdown-content button{
     letter-spacing: 0.04rem;
     color: white;
     height: 50px;
@@ -129,12 +146,34 @@ nav {
     align-items: center;
 
 }
+.dropdown-content label{
+    letter-spacing: 0.04rem;
+    color: white;
+    height: 50px;
+    /* padding: 12px 16px; */
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+
+input[type="file"] {
+    display: none;
+}
+
 .shortcut {
     
     letter-spacing: 0.05rem;
 }
-.dropdown-content button:hover {
+.dropdown-content label:hover {
     background-color: #6c757e;
+    cursor: pointer;
 }
 .show {
     display: block;

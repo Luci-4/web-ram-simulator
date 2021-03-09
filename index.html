@@ -111,7 +111,7 @@
         <div class="container" id="container">
             
             <div class="workspace" id="workspace">
-                <div class="editor">
+                <div class="editor" id="editor">
                     <div class="margin" id="lines">
                         <div class="line" id="line-1">
                             <div id="pointtemplate">
@@ -135,12 +135,13 @@
             <button class="debugger-step" onclick="import('/scripts/script.js').then(o => o.stepDebugger())"><img id="next-icon" src="/images/next-icon.png" alt=""></button>
             <button class="debugger-continue" id="debugger-continue" onclick="import('/scripts/script.js').then(o => o.continueToTheNextPoint())"><img id="next-icon" src="/images/continue-icon.png" alt=""></button>
         </div>
-        <div class="output-section" id="output-section">
+        <div id="textarea-console" spellcheck="false" autocapitalize="false">
+            <!-- <div id="console-resizer"></div> -->
+            <div id=console-lines></div>
+        </div>
+        <!-- <div class="output-section" id="output-section"> -->
            
-            <div id="textarea-console" spellcheck="false" autocapitalize="false">
-                <div id="console-resizer"></div>
-                <div id=console-lines></div>
-            </div>
+            
             <div class="output-tape" id="output-tape">
                 <button class="tape-nav left" onclick="import('/scripts/script.js').then(o => o.moveTapeLeft('out'))"><</button>
             
@@ -197,9 +198,8 @@
             </div>
             <button class="tape-nav right" id="tape-right" onclick="import('/scripts/script.js').then(o => o.moveTapeRight('out'))">></button>
             <!-- <a class="input-tape-nav right"href="#input-11"></a> -->
-        </div>
             </div>
-        </div>
+        <!-- </div> -->
     </div>
     <!-- <script type="module" src="build/main.js"></script> -->
 	<script type="module" src="scripts/script.js"></script>

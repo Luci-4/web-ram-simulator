@@ -36,17 +36,17 @@ const colorThemes = {
 
     MATRIX : {
         Editor: "black",
-        EditorHighlight: "",
+        EditorHighlight: "grey",
         ConsoleBackground: "black",
         EditorTextColor: "green",
-        ConsoleTextColor: "#46e446",
+        ConsoleTextColor: "green",
         ButonOnHover: "",
         ToolbarBackground: "#002400",
-        TapeCellBackground: "",
-        TapeBackground: "",
-        TapeCaptionsBackground:"",
-        TapeButtons: "",
-        TapeTextColor: "",
+        TapeCellBackground: "grey",
+        TapeBackground: "red",
+        TapeCaptionsBackground:"blue",
+        TapeButtons: "green",
+        TapeTextColor: "green",
         TapeCaptionColor: "#061027"
     },
     RANDOM : {

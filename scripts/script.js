@@ -10,7 +10,7 @@ import {
 import {
     updateConsole, 
     clearConsole, 
-    initResize
+    // initResize
 } from './console.js';
 
 import {
@@ -60,9 +60,6 @@ function setup(){
         
         app.editor[i].addEventListener("input", OnInput, false);
       }
-      //initialize the console resizer div
-      let resizer = document.getElementById("console-resizer");
-      resizer.addEventListener('mousedown', initResize, false);
 
 }
 function loadColorTheme(){

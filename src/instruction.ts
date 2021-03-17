@@ -16,11 +16,11 @@ abstract class Instruction extends Token{
     }
     static GenerateInstruction(text: string){
        
-        return new Instructions[text]();
+        return new Instructions[text.toLowerCase()]();
     }
 
     static validateInstruction(text) {
-        if(Instructions.hasOwnProperty(text)){
+        if(Instructions.hasOwnProperty(text.toLowerCase())){
             return true;
         }
         return false;

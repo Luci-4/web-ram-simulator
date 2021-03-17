@@ -4,7 +4,7 @@ import {Label} from "./label";
 
 class DuplicateLabelsError {
     static generateMessage(lineIndex: number, label: Label){
-        return `DuplicateLabelsError:in line ${lineIndex} label ${label.id} already exists\n`;
+        return `DuplicateLabelsError: in line ${lineIndex} label '${label.id}' already exists\n`;
     }
 }
 

@@ -1,23 +1,22 @@
-import { Instruction, Instructions } from "./instruction.js";
+import { Instruction } from "./instruction.js";
 import { Label } from "./label.js";
 import { Argument } from "./argument.js";
 import { Statement } from "./statement.js";
-import { UnexpectedTokenError, InvalidInstructionError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError } from "./exceptions.js";
+import { DuplicateLabelsError, UnexpectedTokenError, InvalidInstructionError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError } from "./exceptions.js";
 export class Lexer {
     constructor(contents) {
         this.debugConsole = [];
+        this.contents = [];
         // replace multiple whitespace characters with one space
         let lines;
         lines = contents.split("\n");
         // remove whitespaces around every line
         lines = lines.map((line) => line.trim());
-        // remove empty lines
-        // lines = lines.filter((n: string) => n);
         // convert lines to tokens
-        this.contents = lines.map((line, index) => {
+        lines.forEach((line, index) => {
             let elements = line.split(" ");
             let statementNow = this.GenerateTokens(elements, index + 1);
-            return statementNow;
+            this.contents.push(statementNow);
         });
         this.programLength = this.contents.length;
         this.labelsWithIndices = {};
@@ -26,7 +25,6 @@ export class Lexer {
         let label;
         let instruction;
         let argument;
-        // todo: add error when there are duplicated labels
         if (elements.length > 3) {
             let message = UnexpectedTokenError.generateMessage(lineIndex, elements.length);
             this.debugConsole.push(message);
@@ -43,16 +41,13 @@ export class Lexer {
             argument = Argument.GenerateArgument(elements[2]);
         }
         else if (elements.length === 2) {
-            if (Instructions.hasOwnProperty(elements[0])) {
+            // empty, instruction, argument
+            if (Instruction.validateInstruction(elements[0])) {
                 label = new Label(undefined);
-                if (!Instruction.validateInstruction(elements[0])) {
-                    let message = InvalidInstructionError.generateMessage(lineIndex, elements[0]);
-                    this.debugConsole.push(message);
-                    return undefined;
-                }
                 instruction = Instruction.GenerateInstruction(elements[0]);
                 argument = Argument.GenerateArgument(elements[1]);
             }
+            // label, instruction, empty
             else if (Instruction.validateInstruction(elements[1])) {
                 label = new Label(elements[0]);
                 instruction = Instruction.GenerateInstruction(elements[1]);
@@ -96,6 +91,11 @@ export class Lexer {
             this.debugConsole.push(message);
             return undefined;
         }
+        if (!this.validateLabelUniqueness(label)) {
+            let message = DuplicateLabelsError.generateMessage(lineIndex, label);
+            this.debugConsole.push(message);
+            return undefined;
+        }
         return new Statement(label, instruction, argument);
     }
     mapLabels() {
@@ -110,6 +110,19 @@ export class Lexer {
                 }
             }
         });
+    }
+    validateLabelUniqueness(label) {
+        let labels = [];
+        // TODO: fix autocomplete in the middle of other text
+        this.contents.forEach(statement => {
+            if (typeof statement !== "undefined" && typeof statement.label.id !== "undefined") {
+                labels.push(statement.label.id);
+            }
+        });
+        if (labels.includes(label.id)) {
+            return false;
+        }
+        return true;
     }
 }
 //# sourceMappingURL=lexer.js.map

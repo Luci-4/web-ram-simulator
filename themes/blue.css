@@ -47,3 +47,8 @@ nav {
 .line-highlight {
     background: #0C4160 !important;
 }
+
+
+.cell-highlight {
+    background: #0097ee;
+}

@@ -27,6 +27,7 @@ export function disableStopIcon(){
     let icon = document.getElementById(`stop-icon`);
     let button = document.getElementById(`stop-button`);
     clearMarginLineHighlights();
+    clearCellHighlight();
     icon.src = "/images/stop-inactive-icon.png";
     button.classList.remove("stop-active");
     button.style.cursor = "auto";
@@ -81,4 +82,26 @@ export function showDebugControls(){
 
 export function hideDebugControls(){
     document.getElementById("debug-controls").style.display = "none";
+}
+
+function clearCellHighlight(){
+    let inputTape = document.getElementById("input-tape-container");
+    let outputTape = document.getElementById("output-tape-container");
+    for (let cellContainer of inputTape.children){
+        
+        cellContainer.children[0].classList.remove("cell-highlight");
+    }
+
+    for (let cellContainer of outputTape.children){
+        
+        cellContainer.children[0].classList.remove("cell-highlight");
+    }
+}
+
+export function updateCellHighlight(){
+    clearCellHighlight();
+    let inputTape = document.getElementById("input-tape-container");
+    let outputTape = document.getElementById("output-tape-container");
+    inputTape.children[app.parser.inputHead].children[0].classList.add("cell-highlight");
+    outputTape.children[app.parser.outputHead].children[0].classList.add("cell-highlight");
 }

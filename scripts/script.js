@@ -30,7 +30,8 @@ import {
     enableContinueButton,
     disableContinueButton,
     disableBreakpointButtons,
-    enableBreakpointButtons
+    enableBreakpointButtons,
+    updateCellHighlight
 } from './debug-gui.js';
 
 import {
@@ -161,6 +162,7 @@ export function stepDebugger(){
     
     clearMarginLineHighlights();
     updateLineMarginHighlight();
+    updateCellHighlight();
     step();
     if(app.parser.breakpoints.includes(app.parser.execHead)){
         stopOnBreakpoint();

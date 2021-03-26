@@ -122,7 +122,7 @@ nav {
     display: none;
     position: absolute;
     background-color: black;
-    min-width: 200px;
+    min-width: 300px;
     box-shadow: 0px 10px 20px 0px rgba(0, 0, 0,0.6);
     z-index: 1;
     top: 35px;
@@ -502,4 +502,14 @@ button.inactive:hover{
     scrollbar-width: none;
     tab-size: 4;
     background: inherit;
+}
+
+
+#filename-prompt {
+    width: 40%;
+    height: 40%;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    left: 50%;
 }

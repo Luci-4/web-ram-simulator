@@ -21,6 +21,7 @@
                         <label for="file-upload">Open <span class="shortcut">Ctrl+O</span></label>
                         <input id="file-upload" type="file" accept=".txt">
                         <button onclick="import('/scripts/script.js').then(o => o.save())">Save <span class="shortcut">Ctrl+S</span></button>
+                        <button onclick="import('/scripts/script.js').then(o => o.saveAs())">Save As... <span class="shortcut">Ctrl+Shift+S</span></button>
                         <button>Preferences <span class="shortcut">Ctrl+,</span></button>
                         
                     </div>

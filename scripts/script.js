@@ -327,6 +327,15 @@ function generateFileName(){
     let date = year + dateDataArr.join("");
     return date;
 }
+export function saveAs(){
+    let fileName = window.prompt("File name:");
+    
+    if (fileName === null){
+        return;
+    }
+
+    save(fileName);
+}
 
 export function save(filename = ""){
     if(filename.length === 0){

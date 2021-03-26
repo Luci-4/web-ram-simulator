@@ -48,7 +48,6 @@ setup();
 
 
 function setup(){
-    loadColorTheme();
     app.editor.onkeydown = keyboardListenerCallback;
     app.editor.addEventListener("input", onEditorInputCallback);
     app.editor.oninput = updateEditorMargin;
@@ -62,34 +61,7 @@ function setup(){
       }
 
 }
-function loadColorTheme(){
-    let colorTheme = app.colorTheme;
-    document.body.style.background = colorTheme["Editor"];
-    app.editor.style.background = colorTheme["Editor"];
-    app.editor.style.color = colorTheme["EditorTextColor"];
-    document.getElementsByTagName("nav")[0].style.background = colorTheme["ToolbarBackground"];
-    document.getElementById("textarea-console").style.background = colorTheme["ConsoleBackground"];
-    document.getElementById("textarea-console").style.color = colorTheme["ConsoleTextColor"];
-    document.getElementById("input-tape").style.background = colorTheme["TapeBackground"];
-    document.getElementById("output-tape").style.background = colorTheme["TapeBackground"];
-    document.getElementById("lines").style.background = colorTheme["Editor"];
-    let cells = document.getElementsByClassName("cell");
-    for(let cell of cells){
-        cell.style.background = colorTheme["TapeCellBackground"];
-        cell.style.color = colorTheme["TapeTextColor"];
-    }
 
-    let captions = document.getElementsByClassName("caption");
-    for(let caption of captions){
-        caption.style.background = colorTheme["TapeCaptionsBackground"];
-        caption.style.color = colorTheme["TapeCaptionColor"];
-    }
-    let tapeNavButtons = document.getElementsByClassName("tape-nav");
-    for(let button of tapeNavButtons){
-        button.style.background = colorTheme["TapeButtons"];
-    }
-
-}
 
 function stopRun(){
     let button = document.getElementById(`stop-button`);

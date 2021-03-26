@@ -1,0 +1,45 @@
+body {
+    background: #040e27;
+}
+
+#textarea-editor {
+    background: #040e27;
+    color: #df9e25;
+}
+
+nav {
+    background: #071330;
+
+}
+
+#textarea-console {
+    background: #061027;
+    color: #C3CEDA;
+}
+
+#input-tape {
+    background: #738FA7;
+}
+
+#output-tape{
+    background: #738FA7;
+}
+
+
+#lines {
+    background: #040e27;
+}
+
+.cell {
+    background: #0074B7;
+    color: #C3CEDA;
+}
+
+.caption {
+    background: #7EC8E3;
+    color: #061027;
+}
+
+.tape-nav {
+    background: #C3CEDA;
+}

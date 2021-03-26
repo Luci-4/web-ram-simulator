@@ -43,3 +43,7 @@ nav {
 .tape-nav {
     background: #C3CEDA;
 }
+
+.line-highlight {
+    background: #0C4160 !important;
+}

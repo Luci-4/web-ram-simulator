@@ -5,7 +5,7 @@ export function clearMarginLineHighlights(){
     let lines = document.getElementById("lines").children;
     for(let line of lines){
         
-        line.style.backgroundColor = app.colorTheme["Editor"];
+        line.classList.remove("line-highlight");
         
     }
 
@@ -52,7 +52,7 @@ export function updateLineMarginHighlight(){
         return;
     }
     let currentMarginLine = document.getElementById(`line-${app.parser.execHead+1}`);
-    currentMarginLine.style.backgroundColor = app.colorTheme["EditorHighlight"];
+    currentMarginLine.classList.add("line-highlight");
 }
 
 export function enableBreakpointButtons(){

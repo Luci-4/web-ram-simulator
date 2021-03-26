@@ -189,55 +189,25 @@ input[type="file"] {
     justify-content: flex-end;
     
 }
-
-.run-button {
+.run-control > button {
     height: 100%;
     width: 40px;
     border: none;
     outline: none;
-    background-color: transparent;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    /* right: 20px; */
-    /* margin-right: 20px; */
-}
-.run-button img:hover {
-    width: 25px;
-    height: 25px;
-}
-.debug-button img:hover {
-    width: 25px;
-    height: 25px;
-}
-
-.stop-active img:hover{
-    width: 25px;
-    height: 25px;
-}
-
-
-.debug-button {
-    height: 100%;
-    width: 40px;
-    outline: none;
-    border: none;
     justify-content: center;
     align-items: center;
     background-color: transparent;
     
     cursor: pointer;
-    
+}
+
+
+.run-control > button img:hover {
+    width: 25px;
+    height: 25px;
 }
 
 .stop-button {
-    height: 100%;
-    width: 40px;
-    outline: none;
-    border: none;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent;
     margin-right: 20px;
     
 }
@@ -355,10 +325,9 @@ input[type="file"] {
     
     bottom: 0;
 }
-.debug-controls {
+
+.debug-control {
     display: none;
-}
-.debug-controls > button{
     height: 100%;
     border: none;
     outline: none;

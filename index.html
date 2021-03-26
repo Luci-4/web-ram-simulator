@@ -42,6 +42,10 @@
             <div class="toolbar run-control">
                 <button class="run-button" id="run-button" onclick="import('/scripts/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
                 <button class="debug-button" id="debug-button" onclick="import('/scripts/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt=""></button>
+           
+                <button class="debugger-step debug-control" onclick="import('/scripts/script.js').then(o => o.stepDebugger())"><img id="next-icon" src="/images/next-icon.png" alt=""></button>
+                <button class="debugger-continue debug-control" id="debugger-continue" onclick="import('/scripts/script.js').then(o => o.continueToTheNextPoint())"><img id="next-icon" src="/images/continue-icon.png" alt=""></button>
+                
                 <button class="stop-button" id="stop-button" onclick="import('/scripts/script.js').then(o => o.stop())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
                 
             </div>
@@ -130,11 +134,6 @@
 
                 
             </div>
-        </div>
-        <div class="debug-controls" id="debug-controls">
-           
-            <button class="debugger-step" onclick="import('/scripts/script.js').then(o => o.stepDebugger())"><img id="next-icon" src="/images/next-icon.png" alt=""></button>
-            <button class="debugger-continue" id="debugger-continue" onclick="import('/scripts/script.js').then(o => o.continueToTheNextPoint())"><img id="next-icon" src="/images/continue-icon.png" alt=""></button>
         </div>
         <div id="textarea-console" spellcheck="false" autocapitalize="false">
             <!-- <div id="console-resizer"></div> -->

@@ -75,13 +75,21 @@ export function disableBreakpointButtons(){
 
 
 export function showDebugControls(){
-    document.getElementById("debug-controls").style.display = "inline";
+    // document.getElementById("debug-controls").style.display = "inline";
+    let controlButtons = document.getElementsByClassName("debug-control");
+    for (let button of controlButtons){
+        button.style.display = "inline";
+    }
     
 }
 
 
 export function hideDebugControls(){
-    document.getElementById("debug-controls").style.display = "none";
+    // document.getElementById("debug-controls").style.display = "none";
+    let controlButtons = document.getElementsByClassName("debug-control");
+    for (let button of controlButtons){
+        button.style.display = "none";
+    }
 }
 
 function clearCellHighlight(){

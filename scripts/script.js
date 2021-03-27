@@ -5,8 +5,8 @@ import {
     clearOutputTape, 
     appendCellToTape, 
     isSecondToLastCellIsVisible,
-    loadInputs,
-    inputTapeListenerCallback
+    inputTapeListenerCallback,
+    loadInputs
 } from './inout.js';
 
 import {
@@ -44,6 +44,9 @@ import {
     loadEditorContents
 } from './editor.js';
 
+import {
+    getCookieObj
+} from './cookies.js';
 
 var nIntervId;
 setup();
@@ -53,7 +56,7 @@ setup();
 
 function setup(){
     app.editor.onkeydown = keyboardListenerCallback;
-    document.getElementById("input-tape-container").onkeyup = inputTapeListenerCallback;
+    app.inputTape.onkeyup = inputTapeListenerCallback;
     app.editor.addEventListener("input", onEditorInputCallback);
     app.editor.oninput = updateEditorMargin;
     window.onclick = windowOnclickCallback;
@@ -250,10 +253,10 @@ export function moveTapeRight(type){
     let tape;
     if(type === "in"){
         
-        tape = document.getElementById("input-tape-container");
+        tape = app.inputTape;
     }
     else if (type === "out"){
-        tape = document.getElementById("output-tape-container");
+        tape = app.outputTape;
     }
     
     
@@ -269,10 +272,10 @@ export function moveTapeRight(type){
 export function moveTapeLeft(type){
     let tape;
     if (type === "in"){
-        tape = document.getElementById("input-tape-container");
+        tape = app.inputTape;
     }
     else if (type == "out"){
-        tape = document.getElementById("output-tape-container");
+        tape = app.outputTape;
     }
     
     let scrollStep = tape.clientWidth / 10;
@@ -369,29 +372,8 @@ function loadFile(event){
     reader.readAsText(event.target.files[0]);
     
 }
-export function saveCookies(){
-    let today = new Date();
-    let expiry = new Date(today.getTime() + 30 * 24 * 3600 * 1000); // plus 30 days
-    let value = app.editor.value;
-    let inputs = JSON.stringify(getInputs());
-    
-    document.cookie="code" + "=" + escape(value) + "; path=/; expires=" + expiry.toGMTString();
-    document.cookie="inputs" + "=" + escape(inputs) + "; path=/; expires=" + expiry.toGMTString();
 
-    console.log(document.cookie);
-}
-
-function getCookieObj(){
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let cookieObj = {};
-    decodedCookie.split("; ").forEach(e => {
-        let currentIndex = e.indexOf("=");
-        let key = e.substring(0, currentIndex);
-        cookieObj[key] = e.substring(currentIndex+1);
-    });
-    return cookieObj;
-}
-export function loadLastSessionData(){
+function loadLastSessionData(){
     let cookieObj = getCookieObj();
 
     loadInputs(cookieObj);

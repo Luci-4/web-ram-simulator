@@ -93,14 +93,12 @@ export function hideDebugControls(){
 }
 
 function clearCellHighlight(){
-    let inputTape = document.getElementById("input-tape-container");
-    let outputTape = document.getElementById("output-tape-container");
-    for (let cellContainer of inputTape.children){
+    for (let cellContainer of app.inputTape.children){
         
         cellContainer.children[0].classList.remove("cell-highlight");
     }
 
-    for (let cellContainer of outputTape.children){
+    for (let cellContainer of app.outputTape.children){
         
         cellContainer.children[0].classList.remove("cell-highlight");
     }
@@ -108,8 +106,6 @@ function clearCellHighlight(){
 
 export function updateCellHighlight(){
     clearCellHighlight();
-    let inputTape = document.getElementById("input-tape-container");
-    let outputTape = document.getElementById("output-tape-container");
-    inputTape.children[app.parser.inputHead].children[0].classList.add("cell-highlight");
-    outputTape.children[app.parser.outputHead].children[0].classList.add("cell-highlight");
+    app.inputTape.children[app.parser.inputHead].children[0].classList.add("cell-highlight");
+    app.outputTape.children[app.parser.outputHead].children[0].classList.add("cell-highlight");
 }

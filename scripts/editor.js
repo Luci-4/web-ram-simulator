@@ -1,5 +1,6 @@
 import {updateEditorMargin} from './script.js';
 import app from './app.js';
+import { saveEditorToCookies } from './cookies.js';
 
 function getCurrentFocusedText(){
     let cursorPos = app.editor.selectionStart;
@@ -86,7 +87,7 @@ function getFirstCharIndexInCurrentLine(start){
 
 export function keyboardListenerCallback(event){
     updateEditorMargin();
-    saveCookies();    
+    saveEditorToCookies();    
     let end = app.editor.selectionEnd;
     let start = app.editor.selectionStart;
     

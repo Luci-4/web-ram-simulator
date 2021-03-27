@@ -20,6 +20,8 @@ class App{
             "halt"
         ];
         this.editor = document.getElementById("textarea-editor");
+        this.inputTape = document.getElementById("input-tape-container");
+        this.outputTape = document.getElementById("output-tape-container");
     }
     
 }

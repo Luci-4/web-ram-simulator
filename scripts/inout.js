@@ -1,12 +1,10 @@
-import { LabelNotFoundError } from '../build/exceptions.js';
 import app from './app.js';
+import {getInputValues, saveInputsToCookies } from './cookies.js';
 import { generateNewTapeCell } from './generatehtml.js';
-import {saveCookies} from './script.js';
 
 // run inputs
 export function getInputs(){
-    let inputTape = document.getElementById("input-tape-container");
-    let children = inputTape.children;
+    let children = app.inputTape.children;
     let inputs = [];
     for(let cellContainer of children){
         let index = parseInt(cellContainer.id.slice(cellContainer.id.indexOf("-")+1)) - 1;
@@ -25,11 +23,10 @@ export function getInputs(){
 // run update output
 export function updateOutputTape(){
     let i;
-    let outputTape = document.getElementById("output-tape-container");
-    let cells = outputTape.children;
+    let cells = app.outputTape.children;
 
-    while (app.parser.outputs.length > outputTape.childElementCount){
-        appendCellToTape("out", outputTape);
+    while (app.parser.outputs.length > app.outputTape.childElementCount){
+        appendCellToTape("out", app.outputTape);
     }
     for(i = 0; i < app.parser.outputs.length; i++){
         cells[i].children[0].value = app.parser.outputs[i];
@@ -37,8 +34,7 @@ export function updateOutputTape(){
 }
 
 export function clearOutputTape(){
-    let tape = document.getElementById("output-tape-container").children;
-    for(let cell of tape){
+    for(let cell of app.outputTape.children){
         let inputField = cell.firstElementChild;
         inputField.value = "";
     }
@@ -52,10 +48,10 @@ export function appendCellToTape(type, tape){
 export function isSecondToLastCellIsVisible(type){
     let lastElement;
     if (type === "in"){
-        lastElement = document.getElementById("input-tape-container").lastElementChild.previousElementSibling;
+        lastElement = app.inputTape.lastElementChild.previousElementSibling;
     }
     else if (type == "out"){
-        lastElement = document.getElementById("output-tape-container").lastElementChild.previousElementSibling;
+        lastElement = app.outputTape.lastElementChild.previousElementSibling;
     }
     
     
@@ -63,22 +59,15 @@ export function isSecondToLastCellIsVisible(type){
 }
 
 export function loadInputs(cookieObj){
-    let inputTape = document.getElementById("input-tape-container");
-    let children = inputTape.children;
-    let inputs = cookieObj["inputs"]
-        .replace(/\[/g, '')
-        .replace(/\]/g, '')
-        .split(",")
-        .map(e=>{
-            return parseInt(e);
-        })
-    console.log(inputs);
+    let children = app.inputTape.children;
+    
+    let inputs = getInputValues(cookieObj)
     inputs.forEach((input, index) => {
         children[index].children[0].value = input;
     });
 }
 
 export function inputTapeListenerCallback(){
-    saveCookies();
+    saveInputsToCookies(getInputs());
 
 }

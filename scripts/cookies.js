@@ -12,6 +12,7 @@ export function saveEditorToCookies(){
 }
 
 export function saveInputsToCookies(inputs){
+    console.log(inputs);
     let inputsStr = JSON.stringify(inputs);
     saveCookies("inputs", inputsStr);
 }
@@ -29,6 +30,7 @@ export function getCookieObj(){
 
 
 export function getInputValues(cookieObj){
+    
     let inputs = cookieObj["inputs"]
         .replace(/\[/g, '')
         .replace(/\]/g, '')

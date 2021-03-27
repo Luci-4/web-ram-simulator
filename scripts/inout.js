@@ -1,5 +1,7 @@
+import { LabelNotFoundError } from '../build/exceptions.js';
 import app from './app.js';
 import { generateNewTapeCell } from './generatehtml.js';
+import {saveCookies} from './script.js';
 
 // run inputs
 export function getInputs(){
@@ -58,4 +60,25 @@ export function isSecondToLastCellIsVisible(type){
     
     
     return (lastElement.getBoundingClientRect().left >=0 && lastElement.getBoundingClientRect().right <= window.innerWidth);
+}
+
+export function loadInputs(cookieObj){
+    let inputTape = document.getElementById("input-tape-container");
+    let children = inputTape.children;
+    let inputs = cookieObj["inputs"]
+        .replace(/\[/g, '')
+        .replace(/\]/g, '')
+        .split(",")
+        .map(e=>{
+            return parseInt(e);
+        })
+    console.log(inputs);
+    inputs.forEach((input, index) => {
+        children[index].children[0].value = input;
+    });
+}
+
+export function inputTapeListenerCallback(){
+    saveCookies();
+
 }

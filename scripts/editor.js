@@ -1,6 +1,6 @@
 import {updateEditorMargin} from './script.js';
 import app from './app.js';
-updateEditorMargin();
+
 function getCurrentFocusedText(){
     let cursorPos = app.editor.selectionStart;
     
@@ -135,14 +135,13 @@ export function OnInput() {
     this.style.height = 'auto';
     
     this.style.height = (this.scrollHeight) + 'px';
-  }
+}
 
-function saveCookies(){
-    let today = new Date();
-    let expiry = new Date(today.getTime() + 30 * 24 * 3600 * 1000); // plus 30 days
-    let name = "ramachinecode";
-    let value = app.editor.value;
+
+
+export function loadEditorContents(cookieObj){
     
-    document.cookie=name + "=" + escape(value) + "; path=/; expires=" + expiry.toGMTString();
-    console.log(document.cookie);
+    console.log(cookieObj);
+    let value = cookieObj["code"];
+    app.editor.value = value;
 }

@@ -4,7 +4,9 @@ import {
     updateOutputTape, 
     clearOutputTape, 
     appendCellToTape, 
-    isSecondToLastCellIsVisible
+    isSecondToLastCellIsVisible,
+    loadInputs,
+    inputTapeListenerCallback
 } from './inout.js';
 
 import {
@@ -38,7 +40,8 @@ import {
     onEditorInputCallback,
     keyboardListenerCallback,
     getNumberOfLines,
-    OnInput
+    OnInput,
+    loadEditorContents
 } from './editor.js';
 
 
@@ -50,6 +53,7 @@ setup();
 
 function setup(){
     app.editor.onkeydown = keyboardListenerCallback;
+    document.getElementById("input-tape-container").onkeyup = inputTapeListenerCallback;
     app.editor.addEventListener("input", onEditorInputCallback);
     app.editor.oninput = updateEditorMargin;
     window.onclick = windowOnclickCallback;
@@ -59,7 +63,9 @@ function setup(){
         app.editor[i].setAttribute('style', 'height:' + (app.editor[i].scrollHeight) + 'px;overflow-y:hidden;');
         
         app.editor[i].addEventListener("input", OnInput, false);
-      }
+    }
+    loadLastSessionData();
+    updateEditorMargin();
 
 }
 
@@ -362,4 +368,32 @@ function loadFile(event){
     });
     reader.readAsText(event.target.files[0]);
     
+}
+export function saveCookies(){
+    let today = new Date();
+    let expiry = new Date(today.getTime() + 30 * 24 * 3600 * 1000); // plus 30 days
+    let value = app.editor.value;
+    let inputs = JSON.stringify(getInputs());
+    
+    document.cookie="code" + "=" + escape(value) + "; path=/; expires=" + expiry.toGMTString();
+    document.cookie="inputs" + "=" + escape(inputs) + "; path=/; expires=" + expiry.toGMTString();
+
+    console.log(document.cookie);
+}
+
+function getCookieObj(){
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let cookieObj = {};
+    decodedCookie.split("; ").forEach(e => {
+        let currentIndex = e.indexOf("=");
+        let key = e.substring(0, currentIndex);
+        cookieObj[key] = e.substring(currentIndex+1);
+    });
+    return cookieObj;
+}
+export function loadLastSessionData(){
+    let cookieObj = getCookieObj();
+
+    loadInputs(cookieObj);
+    loadEditorContents(cookieObj);
 }

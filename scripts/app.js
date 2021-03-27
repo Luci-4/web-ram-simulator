@@ -1,6 +1,5 @@
 import {Parser} from '../build/parser.js';
 
-
 class App{
     constructor(){
         this.parser = new Parser();
@@ -21,9 +20,6 @@ class App{
             "halt"
         ];
         this.editor = document.getElementById("textarea-editor");
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let value = decodedCookie.substring("rammachinecode".length);
-        this.editor.value = value;
     }
     
 }

@@ -1,6 +1,6 @@
 import {updateEditorMargin} from './script.js';
 import app from './app.js';
-
+updateEditorMargin();
 function getCurrentFocusedText(){
     let cursorPos = app.editor.selectionStart;
     
@@ -86,7 +86,7 @@ function getFirstCharIndexInCurrentLine(start){
 
 export function keyboardListenerCallback(event){
     updateEditorMargin();
-    
+    saveCookies();    
     let end = app.editor.selectionEnd;
     let start = app.editor.selectionStart;
     
@@ -136,4 +136,13 @@ export function OnInput() {
     
     this.style.height = (this.scrollHeight) + 'px';
   }
-  
+
+function saveCookies(){
+    let today = new Date();
+    let expiry = new Date(today.getTime() + 30 * 24 * 3600 * 1000); // plus 30 days
+    let name = "ramachinecode";
+    let value = app.editor.value;
+    
+    document.cookie=name + "=" + escape(value) + "; path=/; expires=" + expiry.toGMTString();
+    console.log(document.cookie);
+}

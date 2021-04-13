@@ -121,7 +121,7 @@ export function run() {
         stop();
         return 1;
     }
-    nIntervId = setInterval(step, 500);
+    nIntervId = setInterval(step, app.interval);
     
 }
 
@@ -183,7 +183,7 @@ export function stepDebugger(){
 export function continueToTheNextPoint(){
     
     disableContinueButton();
-    nIntervId = setInterval(stepDebugger, 500);
+    nIntervId = setInterval(stepDebugger, app.interval);
     
 }
 

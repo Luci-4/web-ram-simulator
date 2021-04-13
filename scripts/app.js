@@ -22,6 +22,7 @@ class App{
         this.editor = document.getElementById("textarea-editor");
         this.inputTape = document.getElementById("input-tape-container");
         this.outputTape = document.getElementById("output-tape-container");
+        this.interval = 5;
     }
     
 }

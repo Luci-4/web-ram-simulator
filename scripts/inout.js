@@ -62,10 +62,10 @@ export function loadInputs(cookieObj){
     let children = app.inputTape.children;
     
     let inputs = getInputValues(cookieObj)
-    console.log(inputs);
+    
     inputs.forEach((input, index) => {
         if(!Number.isNaN(input)){
-            console.log(input)
+            
             children[index].children[0].value = input;
         }
         

@@ -56,7 +56,7 @@ class Parser {
             return 0;
         }
         let currentStatement = this.lexer.contents[this.execHead];
-        console.log("executing", this.execHead, currentStatement);
+        
         let result = currentStatement.execute(this);
         if(!result){
             return 1;

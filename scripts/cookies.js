@@ -12,7 +12,7 @@ export function saveEditorToCookies(){
 }
 
 export function saveInputsToCookies(inputs){
-    console.log(inputs);
+    
     let inputsStr = JSON.stringify(inputs);
     saveCookies("inputs", inputsStr);
 }

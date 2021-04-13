@@ -4,28 +4,30 @@ import { saveEditorToCookies } from './cookies.js';
 
 function getCurrentFocusedText(){
     let cursorPos = app.editor.selectionStart;
-    
+    const whitespaceChars = [
+        " ",
+        "\n",
+        "\t"
+    ]
     // editor.setSelectionRange(cursorPos, cursorPos);
     let val = app.editor.value;
     
     let previousSpacePos = Math.max(
-        val.slice(0, cursorPos).lastIndexOf(" "), 
-        val.slice(0, cursorPos).lastIndexOf("\n"), 
-        val.slice(0, cursorPos).lastIndexOf("\t")
+        ...whitespaceChars.map(char => {
+            return val.slice(0, cursorPos).lastIndexOf(char)
+        })
     );
 
     if(previousSpacePos === -1){
         previousSpacePos = 0;
     }
-    let nextSpacePos = Math.min(
-        val.slice(0, cursorPos).lastIndexOf(" "), 
-        val.slice(0, cursorPos).lastIndexOf("\n"), 
-        val.slice(0, cursorPos).lastIndexOf("\t")
+    
+    let nextSpacePos = Math.min(...whitespaceChars
+        .map(char => {
+            return val.indexOf(char, cursorPos);
+        })
+        .filter(pos => pos >= 0)
     );
-    if(nextSpacePos === -1){
-        nextSpacePos = 0;
-    }
-    nextSpacePos += cursorPos;
     
     return val.slice(previousSpacePos, nextSpacePos).trim();
 }

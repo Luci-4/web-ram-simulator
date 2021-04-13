@@ -18,19 +18,19 @@
                     <button class="file-tool-button" onclick="import('/scripts/script.js').then(o => o.showDropdown('file'))">File</button>
                     <div id="file-dropdown" class="dropdown-content">
                         <!-- <button for="file-upload">Open <span class="shortcut">Ctrl+O</span></button> -->
-                        <label for="file-upload">Open <span class="shortcut">Ctrl+O</span></label>
+                        <label for="file-upload">Open <!--<span class="shortcut">Ctrl+O</span>--></label>
                         <input id="file-upload" type="file" accept=".txt">
-                        <button onclick="import('/scripts/script.js').then(o => o.save())">Save <span class="shortcut">Ctrl+S</span></button>
-                        <button onclick="import('/scripts/script.js').then(o => o.saveAs())">Save As... <span class="shortcut">Ctrl+Shift+S</span></button>
-                        <button>Preferences <span class="shortcut">Ctrl+,</span></button>
+                        <button onclick="import('/scripts/script.js').then(o => o.save())">Save <!--<span class="shortcut">Ctrl+S</span>--></button>
+                        <button onclick="import('/scripts/script.js').then(o => o.saveAs())">Save As... <!--<span class="shortcut">Ctrl+Shift+S</span>--></button>
+                        <!-- <button>Preferences <span class="shortcut">Ctrl+,</span></button> -->
                         
                     </div>
                 </div>
                 <div class="dropdown">
                     <button class="run-tool-button" onclick="import('/scripts/script.js').then(o => o.showDropdown('run'))">Run</button>
                     <div id="run-dropdown" class="dropdown-content">
-                        <button onclick="import('/scripts/script.js').then(o => o.run())">Run <span class="shortcut">F10</span></button>
-                        <button onclick="import('/scripts/script.js').then(o => o.debug())">Debug <span class="shortcut">Ctrl+F10</span></button>
+                        <button onclick="import('/scripts/script.js').then(o => o.run())">Run <!--<span class="shortcut">F10</span>--></button>
+                        <button onclick="import('/scripts/script.js').then(o => o.debug())">Debug <!--<span class="shortcut">Ctrl+F10</span>--></button>
                     </div>
                 </div>
                 

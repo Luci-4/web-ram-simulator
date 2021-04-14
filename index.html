@@ -7,7 +7,7 @@
     
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/themes/blue.css">
-    <link rel="icon" type="image/png" href="./images/ram-icon.png">
+    <link rel="icon" type="image/png" href="./images/ram-icon7.png">
     <title>RAMachine Simulator</title>
 </head>
 <body>
@@ -41,13 +41,13 @@
 
             </div>
             <div class="toolbar run-control">
-                <button class="run-button" id="run-button" onclick="import('/scripts/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt=""></button>
-                <button class="debug-button" id="debug-button" onclick="import('/scripts/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt=""></button>
+                <button class="run-button" id="run-button" onclick="import('/scripts/script.js').then(o => o.run())"><img id="run-icon" src="/images/run-icon.png" alt="Run"></button>
+                <button class="debug-button" id="debug-button" onclick="import('/scripts/script.js').then(o => o.debug())"><img id="debug-icon" src="/images/debug-icon.png" alt="Debug"></button>
            
-                <button class="debugger-step debug-control" onclick="import('/scripts/script.js').then(o => o.stepDebugger())"><img id="next-icon" src="/images/next-icon.png" alt=""></button>
-                <button class="debugger-continue debug-control" id="debugger-continue" onclick="import('/scripts/script.js').then(o => o.continueToTheNextPoint())"><img id="next-icon" src="/images/continue-icon.png" alt=""></button>
+                <button class="debugger-step debug-control" onclick="import('/scripts/script.js').then(o => o.stepDebugger())"><img id="next-icon" src="/images/next-icon.png" alt="Next line"></button>
+                <button class="debugger-continue debug-control" id="debugger-continue" onclick="import('/scripts/script.js').then(o => o.continueToTheNextPoint())"><img id="continue-icon" src="/images/continue-icon.png" alt="Continue to the next breakpoint"></button>
                 
-                <button class="stop-button" id="stop-button" onclick="import('/scripts/script.js').then(o => o.stop())"><img id="stop-icon" src="/images/stop-inactive-icon.png"></button>
+                <button class="stop-button" id="stop-button" onclick="import('/scripts/script.js').then(o => o.stop())"><img id="stop-icon" src="/images/stop-inactive-icon.png" alt="Stop"></button>
                 
             </div>
             

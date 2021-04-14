@@ -145,5 +145,5 @@ export function OnInput() {
 export function loadEditorContents(cookieObj){
     
     let value = cookieObj["code"];
-    app.editor.value = value;
+    app.editor.value = value ? value : "";
 }

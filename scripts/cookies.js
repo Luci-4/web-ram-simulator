@@ -32,7 +32,7 @@ export function getCookieObj(){
 export function getInputValues(cookieObj){
     
     let inputs = cookieObj["inputs"]
-        .replace(/\[/g, '')
+        ?.replace(/\[/g, '')
         .replace(/\]/g, '')
         .split(",")
         .map(e=>{

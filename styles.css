@@ -463,6 +463,7 @@ button.active {
 
 button.inactive:hover{
     background-color: red;
+    opacity: 0.6;
 }
 
 

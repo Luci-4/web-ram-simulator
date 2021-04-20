@@ -75,6 +75,9 @@ class Jgtz extends JumpInstr {
         if (parser.memory[0] > 0) {
             parser.execHead = parser.lexer.labelsWithIndices[argument.value];
         }
+        else {
+            parser.execHead++;
+        }
         return true;
     }
 }
@@ -88,6 +91,9 @@ class Jzero extends JumpInstr {
         }
         if (parser.memory[0] === 0) {
             parser.execHead = parser.lexer.labelsWithIndices[argument.value];
+        }
+        else {
+            parser.execHead++;
         }
         return true;
     }

@@ -128,11 +128,13 @@ export function run() {
 function step(){
     let stepResult = app.parser.step();
     if (stepResult === 1){
-        console.log("returned 1");
+        app.parser.debugConsole.push("returned with code 1\n")
+        
         stop();
     }
     else if (stepResult === 0){
-        console.log("returned 0")
+        app.parser.debugConsole.push("returned with code 0\n")
+        
         stop();
     }
     updateOutputTape();

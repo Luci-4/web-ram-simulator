@@ -1,12 +1,18 @@
 import { Instruction } from "./instruction.js";
 import {Emulator} from "./emulator.js";
 import {Token} from "./token.js";
+import { Error_, InvalidArgumentValueError } from "./exceptions.js";
 
 abstract class Argument extends Token{
 
-    static GenerateArgument(text: string | undefined){
+    value: string | undefined;
+    constructor(value: string | undefined){
+        super();
+        this.value = value;
+    }
+    public static Generate(text: string | undefined): Argument{
         if (typeof text === "undefined"){
-            return new ArgumentsTypes["null"]();
+            return new ArgumentsTypes["null"](text);
         }
         else if(/^[0-9]+$/.test(text)){
             return new ArgumentsTypes["address"](text);
@@ -24,9 +30,28 @@ abstract class Argument extends Token{
             return new ArgumentsTypes["label"](text);
         }
     }
-}
-class Null extends Argument{
+    abstract validateValue(): boolean;
 
+    validate(lineIndex: number): [boolean, Error_[]]{
+        const errors: Error_[] = []
+        let status = true;
+        if(!this.validateValue()){
+            errors.push(new InvalidArgumentValueError(lineIndex, this))
+            status = false
+        }
+        
+        return [status, errors]
+    }
+}
+class NullArgument extends Argument{
+    value: undefined; 
+    validateValue(){
+        if(typeof this.value === "undefined"){
+            return true;
+
+        }
+        return false;
+    }
 }
 abstract class PopulatedArgument extends Argument{
     value: string;
@@ -37,12 +62,6 @@ abstract class PopulatedArgument extends Argument{
         }
         return true;
     }
-    constructor(value: string){
-        super();
-        this.value = value;
-    }
-
-    
 }
 
 abstract class CellArgument extends PopulatedArgument{
@@ -67,7 +86,6 @@ class LabelArg extends PopulatedArgument{
 }
 
 class Integer extends CellArgument {
-    
     getCellValue(emulator: Emulator){
         return parseInt(this.value);
     }
@@ -94,7 +112,7 @@ class Pointer extends ReferenceArgument {
 }
 
 const ArgumentsTypes = {
-    "null": Null,
+    "null": NullArgument,
     "address": Address,
     "integer": Integer, 
     "pointer": Pointer,
@@ -105,7 +123,7 @@ const ArgumentsTypes = {
 export {
     Argument,
     PopulatedArgument,
-    Null,
+    NullArgument,
     CellArgument,
     ReferenceArgument,
     LabelArg,

@@ -1,6 +1,6 @@
 import {Argument, PopulatedArgument} from "./argument";
 import {Instruction} from "./instruction";
-import {Label} from "./label";
+import {Label, PopulatedLabel} from "./label";
 
 abstract class Error_ {
     lineIndex: number;
@@ -69,9 +69,9 @@ class InvalidArgumentError extends Error_{
 }
 
 class InvalidArgumentValueError extends Error_{
-    argument: PopulatedArgument;
+    argument: Argument;
 
-    constructor(lineIndex: number, argument: PopulatedArgument){
+    constructor(lineIndex: number, argument: Argument){
         super(lineIndex);
         this.argument = argument;
     }

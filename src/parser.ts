@@ -1,5 +1,5 @@
 import {Instruction} from "./instruction.js";
-import {Label} from "./label.js";
+import {Label, PopulatedLabel} from "./label.js";
 import {Argument} from "./argument.js";
 import { Statement } from "./statement.js";
 import {DuplicateLabelsError, 
@@ -7,18 +7,20 @@ import {DuplicateLabelsError,
     InvalidInstructionError, 
     InvalidArgumentError,
     InvalidArgumentValueError,
-    EmptyArgumentError
+    EmptyArgumentError,
+    Error_,
+    UnidentifiedInstructionError
 } from "./exceptions.js"
 
 
 export class Parser {
-    contents: (Statement | undefined)[];
+    contents: (Statement)[];
     programLength: number;
     labelsWithIndices: {[key: string]: number};
-    debugConsole: string[];
+    errors: Array<Error_>;
 
     constructor(contents: string) {
-        this.debugConsole = [];
+        this.errors = [];
         this.contents = [];
         // replace multiple whitespace characters with one space
         let lines: string[];
@@ -41,22 +43,45 @@ export class Parser {
         this.labelsWithIndices = {};
         
     }
+    IdentifyInstruction(elements: string[]): number{
+        for(let elemInd = 0; elemInd < elements.length; elemInd++){
+            if(Instruction.validateInstruction(elements[elemInd])){
+                return elemInd;
+            }
+        }
+        return -1;
+    }
 
     GenerateTokens(elements: string[], lineIndex: number): Statement | undefined{
-        let label: Label | undefined;
-        let instruction: Instruction | undefined;
-        let argument: Argument | undefined;
-    
+        // let label: Label | undefined;
+        // let instruction: Instruction | undefined;
+        // let argument: Argument | undefined;
+
         if(elements.length > 3){
-            let message = UnexpectedTokenError.generateMessage(lineIndex, elements.length);
-            this.debugConsole.push(message);
+            this.errors.push(new UnexpectedTokenError(lineIndex, elements.length))
             return undefined;
         }
-        else if (elements.length === 3){
+        const instrInd: number = this.IdentifyInstruction(elements); 
+
+        if (instrInd < 0){
+            this.errors.push(new UnidentifiedInstructionError(lineIndex))
+            return undefined;
+        }
+        const labelInd = instrInd - 1;
+        const argumentInd = instrInd + 1;
+        const statement = new Statement(
+            lineIndex,
+            Label.Generate(elements[labelInd]),
+            Instruction.Generate(elements[instrInd]),
+            Argument.Generate(elements[labelInd])
+        )
+        const [status, errors] = statement.validate(this)
+        // ------------------ done till this point ----------------------
+
+        if (elements.length === 3){
             label = new Label(elements[0]);
             if (!Instruction.validateInstruction(elements[1])){
-                let message = InvalidInstructionError.generateMessage(lineIndex, elements[1])
-                this.debugConsole.push(message);
+                this.errors.push(new InvalidInstructionError(lineIndex, elements[1]))
                 return undefined;
             }
             instruction = Instruction.GenerateInstruction(elements[1]);
@@ -76,8 +101,7 @@ export class Parser {
             }
 
             else {
-                let message = InvalidInstructionError.generateMessage(lineIndex, elements[0]);
-                this.debugConsole.push(message);
+                this.errors.push(new InvalidInstructionError(lineIndex, elements[0]))
                 return undefined;
             }
         }
@@ -93,32 +117,29 @@ export class Parser {
                 argument = undefined;
             }
             else {
-                let message = InvalidInstructionError.generateMessage(lineIndex, elements[0]);
-                this.debugConsole.push(message);
+                this.errors.push(new InvalidInstructionError(lineIndex, elements[0]))
                 return undefined;
             }
         }
         if (typeof instruction !== "undefined" && !instruction.validateArgument(argument)) {
-            let message: string;
+            let error: Error_;
             if (typeof argument === 'undefined') {
-                message = EmptyArgumentError.generateMessage(lineIndex, instruction);
+                error = new EmptyArgumentError(lineIndex, instruction);
             } else {
-                message = InvalidArgumentError.generateMessage(lineIndex, argument, instruction);
+                error = new InvalidArgumentError(lineIndex, argument, instruction);
                 
             }
-            this.debugConsole.push(message);
+            this.errors.push(error)
             return undefined;
         }
 
         if(typeof argument !== "undefined" && !argument.validateValue()){
-            let message = InvalidArgumentValueError.generateMessage(lineIndex, argument);
-            this.debugConsole.push(message);
+            this.errors.push(new InvalidArgumentValueError(lineIndex, argument));
             return undefined;
         }
 
         if (!this.validateLabelUniqueness(label)) {
-            let message = DuplicateLabelsError.generateMessage(lineIndex, label);
-            this.debugConsole.push(message);
+            this.errors.push(new DuplicateLabelsError(lineIndex, label));
             return undefined;
         }
         
@@ -142,10 +163,10 @@ export class Parser {
     }
 
     validateLabelUniqueness(label: Label){
-        let labels = [];
+        let labels: Array<string|undefined> = [];
         // TODO: fix autocomplete in the middle of other text
         this.contents.forEach(statement => {
-            if(typeof statement !== "undefined" && typeof statement.label.id !== "undefined"){
+            if(typeof statement?.label?.id !== "undefined"){
                 labels.push(statement.label.id);
             }
             

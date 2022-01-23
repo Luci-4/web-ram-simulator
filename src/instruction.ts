@@ -1,7 +1,7 @@
-import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer} from "./argument.js";
+import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer, NullArgument, PopulatedArgument} from "./argument.js";
 import {Token} from "./token.js";
 import {Emulator} from "./emulator.js";
-import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError} from "./exceptions.js";
+import { EmptyArgumentError, Error_, InvalidArgumentError, LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError} from "./exceptions.js";
 
 abstract class Instruction extends Token{
     abstract execute(argument: Argument | undefined, emulator: Emulator): boolean;
@@ -13,7 +13,7 @@ abstract class Instruction extends Token{
         }
         return true;
     }
-    static GenerateInstruction(text: string){
+    static Generate(text: string): Instruction{
         const instrClass = getKeyValue(Instructions)(text.toLowerCase());
 
         return new instrClass();
@@ -24,6 +24,21 @@ abstract class Instruction extends Token{
             return true;
         }
         return false;
+    }
+    validate(lineIndex: number, argument: Argument): [boolean, Error_[]]{
+        const errors: Error_[] = [];
+        let status = true;
+        if(!this.validateArgument(argument)){
+            if(argument instanceof NullArgument){
+                errors.push(new EmptyArgumentError(lineIndex, this))
+            }
+            else if(argument instanceof PopulatedArgument){
+                errors.push(new InvalidArgumentError(lineIndex, argument, this))
+            }
+            status = false
+        }
+        
+        return [status, errors]
     }
 }
 
@@ -268,7 +283,7 @@ class Div extends OperationInst {
 }
 
 class Halt extends Instruction {
-    execute(argument: Argument | undefined, emulator: Emulator): boolean {
+    execute(argument: Argument, emulator: Emulator): boolean {
         emulator.execHead = emulator.parser.programLength;
         return true;
     }
@@ -277,7 +292,7 @@ class Halt extends Instruction {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if(typeof argument === 'undefined'){
+        if(argument instanceof NullArgument){
             return true;
         }
         return false;

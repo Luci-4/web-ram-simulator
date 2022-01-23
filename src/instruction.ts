@@ -1,15 +1,15 @@
 import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer} from "./argument.js";
 import {Token} from "./token.js";
-import {Parser} from "./parser.js";
+import {Emulator} from "./emulator.js";
 import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError} from "./exceptions.js";
 
 abstract class Instruction extends Token{
-    abstract execute(argument: Argument | undefined, parser: Parser): boolean;
+    abstract execute(argument: Argument | undefined, emulator: Emulator): boolean;
     abstract validateArgument(token: Token): boolean;
-    validateAccumulatorDefinition(parser: Parser): boolean{
-        if(typeof parser.memory[0] === 'undefined'){
-            let message = UndefinedAccumulatorError.generateMessage(parser.execHead);
-            parser.debugConsole.push(message);
+    validateAccumulatorDefinition(emulator: Emulator): boolean{
+        if(typeof emulator.memory[0] === 'undefined'){
+            let message = UndefinedAccumulatorError.generateMessage(emulator.execHead);
+            emulator.debugConsole.push(message);
             return false;
         }
         return true;
@@ -37,10 +37,10 @@ abstract class JumpInstr extends Instruction {
       
     }
 
-    validateLabelsExistance(labelId: string, parser: Parser): boolean{
-        if (!parser.lexer.labelsWithIndices.hasOwnProperty(labelId)){
-            let message = LabelNotFoundError.generateMessage(parser.execHead, labelId);
-            parser.debugConsole.push(message);
+    validateLabelsExistance(labelId: string, emulator: Emulator): boolean{
+        if (!emulator.lexer.labelsWithIndices.hasOwnProperty(labelId)){
+            let message = LabelNotFoundError.generateMessage(emulator.execHead, labelId);
+            emulator.debugConsole.push(message);
             return false;
         }
         return true;
@@ -60,11 +60,11 @@ abstract class OperationInst extends Instruction {
         return false;
     }
 
-    validateCellDefinition(argument: CellArgument, parser: Parser): boolean{
+    validateCellDefinition(argument: CellArgument, emulator: Emulator): boolean{
         
-        if(typeof argument.getCellValue(parser) === 'undefined'){
-            let message = UndefinedCellError.generateMessage(parser.execHead);
-            parser.debugConsole.push(message);
+        if(typeof argument.getCellValue(emulator) === 'undefined'){
+            let message = UndefinedCellError.generateMessage(emulator.execHead);
+            emulator.debugConsole.push(message);
             return false;
         }
         return true;
@@ -73,26 +73,26 @@ abstract class OperationInst extends Instruction {
 }
 
 class Jump extends JumpInstr{
-    execute(argument: LabelArg, parser: Parser): boolean{
-        if (!this.validateLabelsExistance(argument.value, parser)){return false;}
+    execute(argument: LabelArg, emulator: Emulator): boolean{
+        if (!this.validateLabelsExistance(argument.value, emulator)){return false;}
 
-        parser.execHead = argument.getLabelIndex(parser);
+        emulator.execHead = argument.getLabelIndex(emulator);
         return true;
     }
 
 }
 
 class Jgtz extends JumpInstr {
-    execute(argument: LabelArg, parser: Parser): boolean {
-        if(!this.validateLabelsExistance(argument.value, parser)){return false;}
+    execute(argument: LabelArg, emulator: Emulator): boolean {
+        if(!this.validateLabelsExistance(argument.value, emulator)){return false;}
 
-        if (!super.validateAccumulatorDefinition(parser)){return false}
-        if(parser.memory[0] > 0) {
+        if (!super.validateAccumulatorDefinition(emulator)){return false}
+        if(emulator.memory[0] > 0) {
             
-            parser.execHead = parser.lexer.labelsWithIndices[argument.value];
+            emulator.execHead = emulator.lexer.labelsWithIndices[argument.value];
         }
         else {
-            parser.execHead++;
+            emulator.execHead++;
         }
         return true;
 
@@ -101,36 +101,36 @@ class Jgtz extends JumpInstr {
 }
 
 class Jzero extends JumpInstr {
-    execute(argument: LabelArg, parser: Parser): boolean {
-        if(!this.validateLabelsExistance(argument.value, parser)){
+    execute(argument: LabelArg, emulator: Emulator): boolean {
+        if(!this.validateLabelsExistance(argument.value, emulator)){
             
             return false;
         }
 
-        if(!super.validateAccumulatorDefinition(parser)){
+        if(!super.validateAccumulatorDefinition(emulator)){
             return false;
         }
 
-        if(parser.memory[0] === 0){
-            parser.execHead = parser.lexer.labelsWithIndices[argument.value];
+        if(emulator.memory[0] === 0){
+            emulator.execHead = emulator.lexer.labelsWithIndices[argument.value];
         }
         else {
-            parser.execHead++;
+            emulator.execHead++;
         }
         return true;
     }
 }
 
 class Read extends OperationInst {
-    execute(argument: ReferenceArgument, parser: Parser): boolean {
-        if (!this.validateInputDefinition(argument, parser)){
+    execute(argument: ReferenceArgument, emulator: Emulator): boolean {
+        if (!this.validateInputDefinition(argument, emulator)){
             
             return false;
         }
-        let address = argument.getAddress(parser);
-        parser.memory[address] = parser.inputs[parser.inputHead];
-        parser.inputHead++;
-        parser.execHead++;
+        let address = argument.getAddress(emulator);
+        emulator.memory[address] = emulator.inputs[emulator.inputHead];
+        emulator.inputHead++;
+        emulator.execHead++;
         return true;
     }
 
@@ -146,9 +146,9 @@ class Read extends OperationInst {
         }
     }
 
-    validateInputDefinition(argument: ReferenceArgument, parser: Parser): boolean {
-        if(typeof parser.inputs[parser.inputHead] === 'undefined'){
-            parser.debugConsole.push(UndefinedInputError.generateMessage(parser.execHead+1));
+    validateInputDefinition(argument: ReferenceArgument, emulator: Emulator): boolean {
+        if(typeof emulator.inputs[emulator.inputHead] === 'undefined'){
+            emulator.debugConsole.push(UndefinedInputError.generateMessage(emulator.execHead+1));
             return false;
         }
         else{
@@ -159,12 +159,12 @@ class Read extends OperationInst {
 }
 
 class Write extends OperationInst {
-    execute(argument: CellArgument, parser: Parser): boolean {
-        if (!super.validateCellDefinition(argument, parser)){return false;}
+    execute(argument: CellArgument, emulator: Emulator): boolean {
+        if (!super.validateCellDefinition(argument, emulator)){return false;}
 
-        parser.outputs[parser.outputHead] = argument.getCellValue(parser);
-        parser.outputHead++;
-        parser.execHead++;
+        emulator.outputs[emulator.outputHead] = argument.getCellValue(emulator);
+        emulator.outputHead++;
+        emulator.execHead++;
         return true;
     }
 
@@ -172,23 +172,23 @@ class Write extends OperationInst {
 }
 
 class Load extends OperationInst {
-    execute(argument: CellArgument, parser: Parser): boolean {
-        if (!super.validateCellDefinition(argument, parser)){return false;}
+    execute(argument: CellArgument, emulator: Emulator): boolean {
+        if (!super.validateCellDefinition(argument, emulator)){return false;}
         
-        parser.memory[0] = argument.getCellValue(parser);;
-        parser.execHead++;
+        emulator.memory[0] = argument.getCellValue(emulator);;
+        emulator.execHead++;
         return true;
     }
 }
 
 class Store extends OperationInst {
 
-    execute(argument: ReferenceArgument, parser: Parser): boolean {
+    execute(argument: ReferenceArgument, emulator: Emulator): boolean {
 
-        if(!super.validateAccumulatorDefinition(parser)){return false;}
+        if(!super.validateAccumulatorDefinition(emulator)){return false;}
 
-        parser.memory[argument.getAddress(parser)] = parser.memory[0];
-        parser.execHead++;
+        emulator.memory[argument.getAddress(emulator)] = emulator.memory[0];
+        emulator.execHead++;
         return true;
     }
 
@@ -207,13 +207,13 @@ class Store extends OperationInst {
 }
 
 class Add extends OperationInst {
-    execute(argument: CellArgument,parser: Parser): boolean {
-        if(!super.validateAccumulatorDefinition(parser)){return false;}
+    execute(argument: CellArgument,emulator: Emulator): boolean {
+        if(!super.validateAccumulatorDefinition(emulator)){return false;}
 
-        if (!super.validateCellDefinition(argument, parser)){return false;}
+        if (!super.validateCellDefinition(argument, emulator)){return false;}
 
-        parser.memory[0] += argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] += argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 
@@ -221,27 +221,27 @@ class Add extends OperationInst {
 }
 
 class Sub extends OperationInst {
-    execute(argument: CellArgument, parser: Parser): boolean {
+    execute(argument: CellArgument, emulator: Emulator): boolean {
         
-        if(!super.validateAccumulatorDefinition(parser)){return false;}
+        if(!super.validateAccumulatorDefinition(emulator)){return false;}
         
-        if (!super.validateCellDefinition(argument, parser)){return false;}
+        if (!super.validateCellDefinition(argument, emulator)){return false;}
         
-        parser.memory[0] -= argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] -= argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 
 }
 
 class Mult extends OperationInst {
-    execute(argument: CellArgument, parser: Parser): boolean {
-        if(!super.validateAccumulatorDefinition(parser)){return false;}
+    execute(argument: CellArgument, emulator: Emulator): boolean {
+        if(!super.validateAccumulatorDefinition(emulator)){return false;}
         
-        if (!super.validateCellDefinition(argument, parser)){return false;}
+        if (!super.validateCellDefinition(argument, emulator)){return false;}
 
-        parser.memory[0] *= argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] *= argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 
@@ -249,29 +249,29 @@ class Mult extends OperationInst {
 
 class Div extends OperationInst {
 
-    validateDivisor(argument: CellArgument, parser: Parser){
-        if(argument.getCellValue(parser) === 0){
-            parser.debugConsole.push(ZeroDivisionError.generateMessage(parser.execHead));
+    validateDivisor(argument: CellArgument, emulator: Emulator){
+        if(argument.getCellValue(emulator) === 0){
+            emulator.debugConsole.push(ZeroDivisionError.generateMessage(emulator.execHead));
             return false;
         }
         return true;
     }
 
-    execute(argument: CellArgument, parser: Parser): boolean {
-        if(!super.validateAccumulatorDefinition(parser)){return false;}
-        if(!this.validateDivisor(argument, parser)){return false}
-        if (!super.validateCellDefinition(argument, parser)){return false;}
+    execute(argument: CellArgument, emulator: Emulator): boolean {
+        if(!super.validateAccumulatorDefinition(emulator)){return false;}
+        if(!this.validateDivisor(argument, emulator)){return false}
+        if (!super.validateCellDefinition(argument, emulator)){return false;}
 
-        parser.memory[0] /= argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] /= argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 
 }
 
 class Halt extends Instruction {
-    execute(argument: Argument | undefined, parser: Parser): boolean {
-        parser.execHead = parser.lexer.programLength;
+    execute(argument: Argument | undefined, emulator: Emulator): boolean {
+        emulator.execHead = emulator.lexer.programLength;
         return true;
     }
 

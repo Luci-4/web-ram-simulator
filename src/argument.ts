@@ -1,5 +1,5 @@
 import { Instruction } from "./instruction.js";
-import {Parser} from "./parser.js";
+import {Emulator} from "./emulator.js";
 import {Token} from "./token.js";
 
 abstract class Argument extends Token{
@@ -46,11 +46,11 @@ abstract class PopulatedArgument extends Argument{
 }
 
 abstract class CellArgument extends PopulatedArgument{
-    abstract getCellValue(parser: Parser): number;
+    abstract getCellValue(emulator: Emulator): number;
 }
 
 abstract class ReferenceArgument extends CellArgument {
-    abstract getAddress(parser: Parser): number;
+    abstract getAddress(emulator: Emulator): number;
 }
 
 class LabelArg extends PopulatedArgument{
@@ -61,35 +61,35 @@ class LabelArg extends PopulatedArgument{
         }
         return false;
     }
-    getLabelIndex(parser: Parser){
-        return parser.lexer.labelsWithIndices[this.value];
+    getLabelIndex(emulator: Emulator){
+        return emulator.parser.labelsWithIndices[this.value];
     }
 }
 
 class Integer extends CellArgument {
     
-    getCellValue(parser: Parser){
+    getCellValue(emulator: Emulator){
         return parseInt(this.value);
     }
 }
 
 class Address extends ReferenceArgument {
-    getCellValue(parser: Parser){
-        return parser.memory[parseInt(this.value)];
+    getCellValue(emulator: Emulator){
+        return emulator.memory[parseInt(this.value)];
     }
 
-    getAddress(parser: Parser){
+    getAddress(emulator: Emulator){
         return parseInt(this.value);
     }
 }
 
 class Pointer extends ReferenceArgument {
-    getCellValue(parser: Parser){
-        return parser.memory[parser.memory[parseInt(this.value)]];
+    getCellValue(emulator: Emulator){
+        return emulator.memory[emulator.memory[parseInt(this.value)]];
     }
 
-    getAddress(parser: Parser){
-        return parser.memory[parseInt(this.value)];
+    getAddress(emulator: Emulator){
+        return emulator.memory[parseInt(this.value)];
     }
 }
 

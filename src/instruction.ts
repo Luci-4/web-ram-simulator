@@ -8,18 +8,18 @@ abstract class Instruction extends Token{
     abstract validateArgument(token: Token): boolean;
     validateAccumulatorDefinition(emulator: Emulator): boolean{
         if(typeof emulator.memory[0] === 'undefined'){
-            let message = UndefinedAccumulatorError.generateMessage(emulator.execHead);
-            emulator.debugConsole.push(message);
+            emulator.errors.push(new UndefinedAccumulatorError(emulator.execHead));
             return false;
         }
         return true;
     }
     static GenerateInstruction(text: string){
-       
-        return new Instructions[text.toLowerCase()]();
+        const instrClass = getKeyValue(Instructions)(text.toLowerCase());
+
+        return new instrClass();
     }
 
-    static validateInstruction(text) {
+    static validateInstruction(text: string) {
         if(Instructions.hasOwnProperty(text.toLowerCase())){
             return true;
         }
@@ -38,9 +38,8 @@ abstract class JumpInstr extends Instruction {
     }
 
     validateLabelsExistance(labelId: string, emulator: Emulator): boolean{
-        if (!emulator.lexer.labelsWithIndices.hasOwnProperty(labelId)){
-            let message = LabelNotFoundError.generateMessage(emulator.execHead, labelId);
-            emulator.debugConsole.push(message);
+        if (!emulator.parser.labelsWithIndices.hasOwnProperty(labelId)){
+            emulator.errors.push(new LabelNotFoundError(emulator.execHead, labelId));
             return false;
         }
         return true;
@@ -63,8 +62,7 @@ abstract class OperationInst extends Instruction {
     validateCellDefinition(argument: CellArgument, emulator: Emulator): boolean{
         
         if(typeof argument.getCellValue(emulator) === 'undefined'){
-            let message = UndefinedCellError.generateMessage(emulator.execHead);
-            emulator.debugConsole.push(message);
+            emulator.errors.push(new UndefinedCellError(emulator.execHead));
             return false;
         }
         return true;
@@ -89,7 +87,7 @@ class Jgtz extends JumpInstr {
         if (!super.validateAccumulatorDefinition(emulator)){return false}
         if(emulator.memory[0] > 0) {
             
-            emulator.execHead = emulator.lexer.labelsWithIndices[argument.value];
+            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
         }
         else {
             emulator.execHead++;
@@ -112,7 +110,7 @@ class Jzero extends JumpInstr {
         }
 
         if(emulator.memory[0] === 0){
-            emulator.execHead = emulator.lexer.labelsWithIndices[argument.value];
+            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
         }
         else {
             emulator.execHead++;
@@ -148,7 +146,7 @@ class Read extends OperationInst {
 
     validateInputDefinition(argument: ReferenceArgument, emulator: Emulator): boolean {
         if(typeof emulator.inputs[emulator.inputHead] === 'undefined'){
-            emulator.debugConsole.push(UndefinedInputError.generateMessage(emulator.execHead+1));
+            emulator.errors.push(new UndefinedInputError(emulator.execHead+1));
             return false;
         }
         else{
@@ -251,7 +249,7 @@ class Div extends OperationInst {
 
     validateDivisor(argument: CellArgument, emulator: Emulator){
         if(argument.getCellValue(emulator) === 0){
-            emulator.debugConsole.push(ZeroDivisionError.generateMessage(emulator.execHead));
+            emulator.errors.push(new ZeroDivisionError(emulator.execHead));
             return false;
         }
         return true;
@@ -271,7 +269,7 @@ class Div extends OperationInst {
 
 class Halt extends Instruction {
     execute(argument: Argument | undefined, emulator: Emulator): boolean {
-        emulator.execHead = emulator.lexer.programLength;
+        emulator.execHead = emulator.parser.programLength;
         return true;
     }
 
@@ -285,8 +283,8 @@ class Halt extends Instruction {
         return false;
     }
 }
-
-const Instructions = {
+const getKeyValue = <T extends object, U extends keyof T>(obj: T) => (key: U) => obj[key];
+const Instructions: {[key: string]: {new(): Instruction}} = {
     "read": Read,
     "load": Load,
     "store": Store,

@@ -1,36 +1,35 @@
+import { Error_ } from "./exceptions.js";
 import {Parser} from "./parser.js";
-interface Emulator {
-
-    memory: number[]
+class Emulator {
+    memory: number[];
     inputs: number[];
     outputs: number[];
+    private debugConsole: string[];
+    errors: Error_[];
     parser: Parser;
-    
+    breakpoints: number[];
     execHead: number;
     inputHead: number;
     outputHead: number;
-    debugConsole: string[];
-    breakpoints: number[];
     intervalId: ReturnType<typeof setInterval>;
-}
-class Emulator {
-
 
     init(program: string, inputs: number[], breakpoints: number[] = []): boolean {
         this.memory = [];
         this.inputs = inputs;
         this.outputs = [];
         this.debugConsole = [];
-        this.parser= new Parser(program);
+        this.errors = [];
+        this.parser = new Parser(program);
         this.breakpoints = breakpoints;
 
         // check if all tokens could be generated properly
         let foundInvalidStatements = this.parser.contents.some(element => typeof element === "undefined")
         if (foundInvalidStatements){
             // load all messagesparser's console
-            this.parser.debugConsole.forEach((message: string) => {
-                this.debugConsole.push(message);
+            this.parser.errors.forEach((error: Error_) => {
+                this.errors.push(error);
             });
+            this.debugConsole = this.errors.map((e: Error_) => e.generateMessage()) 
             return false;
         }
 

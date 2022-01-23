@@ -2,14 +2,15 @@ import {Argument, PopulatedArgument} from "./argument";
 import {Instruction} from "./instruction";
 import {Label} from "./label";
 
-class Error {
+abstract class Error_ {
     lineIndex: number;
 
     constructor(lineIndex: number){
         this.lineIndex = lineIndex;
     }
+    abstract generateMessage(): string;
 }
-class DuplicateLabelsError extends Error{
+class DuplicateLabelsError extends Error_{
     label: Label;
 
     constructor(lineIndex: number, label: Label){
@@ -22,7 +23,7 @@ class DuplicateLabelsError extends Error{
     }
 }
 
-class UnexpectedTokenError extends Error{
+class UnexpectedTokenError extends Error_{
     count: number;
 
     constructor(lineIndex: number, count: number){
@@ -34,12 +35,12 @@ class UnexpectedTokenError extends Error{
         return `UnexpectedTokenError: in line ${this.lineIndex} expected max 3 tokens, got ${this.count}\n`;
     }
 }
-class UnidentifiedInstructionError extends Error {
+class UnidentifiedInstructionError extends Error_ {
     generateMessage(){
         return `UnidentifiedInstructionError: in line ${this.lineIndex} could not identify any instruction\n`;
     }
 }
-class InvalidInstructionError extends Error{
+class InvalidInstructionError extends Error_{
     text: string;
 
     constructor(lineIndex: number, text: string){
@@ -52,7 +53,7 @@ class InvalidInstructionError extends Error{
     }
 }
 
-class InvalidArgumentError extends Error{
+class InvalidArgumentError extends Error_{
     argument: PopulatedArgument;
     instruction: Instruction
 
@@ -67,7 +68,7 @@ class InvalidArgumentError extends Error{
     }
 }
 
-class InvalidArgumentValueError extends Error{
+class InvalidArgumentValueError extends Error_{
     argument: PopulatedArgument;
 
     constructor(lineIndex: number, argument: PopulatedArgument){
@@ -80,7 +81,7 @@ class InvalidArgumentValueError extends Error{
     }
 }
 
-class EmptyArgumentError extends Error{
+class EmptyArgumentError extends Error_{
     instruction: Instruction;
 
     constructor(lineIndex: number, instruction: Instruction){
@@ -93,25 +94,25 @@ class EmptyArgumentError extends Error{
     }
 }
 
-class UndefinedAccumulatorError extends Error{
+class UndefinedAccumulatorError extends Error_{
     generateMessage() {
         return `UndefinedAccumulatorError: in line ${this.lineIndex}\n`;
     }
 }
 
-class UndefinedCellError extends Error{
+class UndefinedCellError extends Error_{
     generateMessage() {
         return `UndefinedCellError: in line ${this.lineIndex+1}\n`;
     }
 }
 
-class UndefinedInputError extends Error{
+class UndefinedInputError extends Error_{
     generateMessage(){
         return `UndefinedInputError: in line ${this.lineIndex}\n`;
     }
 }
 
-class LabelNotFoundError extends Error{
+class LabelNotFoundError extends Error_{
     labelId: string;
 
     constructor(lineIndex: number, labelId: string){
@@ -123,7 +124,7 @@ class LabelNotFoundError extends Error{
     }
 }
 
-class ZeroDivisionError extends Error{
+class ZeroDivisionError extends Error_{
     generateMessage(){
         return `ZeroDivisionError: in line ${this.lineIndex}\n`;
     }
@@ -132,7 +133,9 @@ class ZeroDivisionError extends Error{
 
 
 
-export {DuplicateLabelsError, 
+export {
+    Error_,
+    DuplicateLabelsError, 
     UnexpectedTokenError, 
     UnidentifiedInstructionError,
     InvalidInstructionError, 

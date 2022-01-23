@@ -1,8 +1,8 @@
-import {Parser} from '../build/parser.js';
+import {Emulator} from '../build/emulator.js';
 
 class App{
     constructor(){
-        this.parser = new Parser();
+        this.emulator = new Emulator();
         this.breakpoints = [];
         this.lastLinesNum = 1;
         this.keywords = [

@@ -25,11 +25,11 @@ export function updateOutputTape(){
     let i;
     let cells = app.outputTape.children;
 
-    while (app.parser.outputs.length > app.outputTape.childElementCount){
+    while (app.emulator.outputs.length > app.outputTape.childElementCount){
         appendCellToTape("out", app.outputTape);
     }
-    for(i = 0; i < app.parser.outputs.length; i++){
-        cells[i].children[0].value = app.parser.outputs[i];
+    for(i = 0; i < app.emulator.outputs.length; i++){
+        cells[i].children[0].value = app.emulator.outputs[i];
     }
 }
 

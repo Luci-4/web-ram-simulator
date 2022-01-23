@@ -67,7 +67,7 @@ function setup(){
         
         app.editor[i].addEventListener("input", OnInput, false);
     }
-    loadLastSessionData();
+    // loadLastSessionData();
     updateEditorMargin();
 
 }
@@ -77,7 +77,7 @@ function stopRun(){
     let button = document.getElementById(`stop-button`);
     disableStopIcon();
     button.classList.remove(`run-active`);
-    app.parser.execHead = app.parser.lexer.programLength;
+    app.emulator.execHead = app.emulator.parser.programLength;
     updateConsole();
     updateOutputTape();
 
@@ -117,7 +117,7 @@ export function run() {
     let program = app.editor.value;
     
     // interpret and check for errors
-    if(!app.parser.init(program, getInputs())){
+    if(!app.emulator.init(program, getInputs())){
         stop();
         return 1;
     }
@@ -126,14 +126,14 @@ export function run() {
 }
 
 function step(){
-    let stepResult = app.parser.step();
+    let stepResult = app.emulator.step();
     if (stepResult === 1){
-        app.parser.debugConsole.push("returned with code 1\n")
+        app.emulator.debugConsole.push("returned with code 1\n")
         
         stop();
     }
     else if (stepResult === 0){
-        app.parser.debugConsole.push("returned with code 0\n")
+        app.emulator.debugConsole.push("returned with code 0\n")
         
         stop();
     }
@@ -155,7 +155,7 @@ export function debug(){
     let program = app.editor.value;
 
     // interpret and check for errors
-    if (!app.parser.init(program, getInputs(), app.breakpoints)){
+    if (!app.emulator.init(program, getInputs(), app.breakpoints)){
         stop();
         return 1;
     }
@@ -175,7 +175,7 @@ export function stepDebugger(){
     updateLineMarginHighlight();
     updateCellHighlight();
     step();
-    if(app.parser.breakpoints.includes(app.parser.execHead)){
+    if(app.emulator.breakpoints.includes(app.emulator.execHead)){
         stopOnBreakpoint();
     }
 

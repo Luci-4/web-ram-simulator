@@ -48,11 +48,11 @@ export function disableContinueButton(){
 
 export function updateLineMarginHighlight(){
     
-    if (app.parser.lexer.contents.length === app.parser.execHead){
+    if (app.emulator.parser.contents.length === app.emulator.execHead){
         disableStopIcon();
         return;
     }
-    let currentMarginLine = document.getElementById(`line-${app.parser.execHead+1}`);
+    let currentMarginLine = document.getElementById(`line-${app.emulator.execHead+1}`);
     currentMarginLine.classList.add("line-highlight");
 }
 
@@ -106,6 +106,6 @@ function clearCellHighlight(){
 
 export function updateCellHighlight(){
     clearCellHighlight();
-    app.inputTape.children[app.parser.inputHead].children[0].classList.add("cell-highlight");
-    app.outputTape.children[app.parser.outputHead].children[0].classList.add("cell-highlight");
+    app.inputTape.children[app.emulator.inputHead].children[0].classList.add("cell-highlight");
+    app.outputTape.children[app.emulator.outputHead].children[0].classList.add("cell-highlight");
 }

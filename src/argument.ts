@@ -2,23 +2,13 @@ import { Instruction } from "./instruction.js";
 import {Parser} from "./parser.js";
 import {Token} from "./token.js";
 
-
 abstract class Argument extends Token{
-    value: string;
-    validateValue(){
-        
-        if(this.value.length === 0 || isNaN(Number(this.value))){
-            return false;
-        }
-        return true;
-    }
-    constructor(value: string){
-        super();
-        this.value = value;
-    }
 
-    static GenerateArgument(text: string){
-        if(/^[0-9]+$/.test(text)){
+    static GenerateArgument(text: string | undefined){
+        if (typeof text === "undefined"){
+            return new ArgumentsTypes["null"]();
+        }
+        else if(/^[0-9]+$/.test(text)){
             return new ArgumentsTypes["address"](text);
         }
     
@@ -34,10 +24,28 @@ abstract class Argument extends Token{
             return new ArgumentsTypes["label"](text);
         }
     }
+}
+class Null extends Argument{
+
+}
+abstract class PopulatedArgument extends Argument{
+    value: string;
+    validateValue(){
+        
+        if(this.value.length === 0 || isNaN(Number(this.value))){
+            return false;
+        }
+        return true;
+    }
+    constructor(value: string){
+        super();
+        this.value = value;
+    }
+
     
 }
 
-abstract class CellArgument extends Argument{
+abstract class CellArgument extends PopulatedArgument{
     abstract getCellValue(parser: Parser): number;
 }
 
@@ -45,7 +53,7 @@ abstract class ReferenceArgument extends CellArgument {
     abstract getAddress(parser: Parser): number;
 }
 
-class LabelArg extends Argument{
+class LabelArg extends PopulatedArgument{
     value: string;
     validateValue(){
         if(this.value.length > 0){
@@ -86,6 +94,7 @@ class Pointer extends ReferenceArgument {
 }
 
 const ArgumentsTypes = {
+    "null": Null,
     "address": Address,
     "integer": Integer, 
     "pointer": Pointer,
@@ -95,6 +104,8 @@ const ArgumentsTypes = {
 
 export {
     Argument,
+    PopulatedArgument,
+    Null,
     CellArgument,
     ReferenceArgument,
     LabelArg,

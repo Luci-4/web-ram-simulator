@@ -1,10 +1,11 @@
 import { Error_ } from "./exceptions.js";
 import {Parser} from "./parser.js";
+import { Statement } from "./statement.js";
 class Emulator {
     memory: number[];
     inputs: number[];
     outputs: number[];
-    private debugConsole: string[];
+    debugConsole: string[];
     errors: Error_[];
     parser: Parser;
     breakpoints: number[];
@@ -23,17 +24,15 @@ class Emulator {
         this.breakpoints = breakpoints;
 
         // check if all tokens could be generated properly
-        let foundInvalidStatements = this.parser.contents.some(element => typeof element === "undefined")
+        let foundInvalidStatements = this.parser.contents.some((statement: Statement) => !statement.isValid);
         if (foundInvalidStatements){
             // load all messagesparser's console
-            this.parser.errors.forEach((error: Error_) => {
-                this.errors.push(error);
-            });
+            this.errors.push(...this.parser.errors);
             this.debugConsole = this.errors.map((e: Error_) => e.generateMessage()) 
             return false;
         }
 
-        this.parser.mapLabels();
+        this.parser.generateLabelsMap();
         this.execHead = 0;
         this.inputHead = 0;
         this.outputHead = 0;

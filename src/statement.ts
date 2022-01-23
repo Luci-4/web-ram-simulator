@@ -5,25 +5,24 @@ import {Emulator} from "./emulator.js";
 import { Parser } from "./parser.js";
 import { Error_ } from "./exceptions.js";
 
-
 class Statement {
     index: number;
     label: Label;
     instruction: Instruction;
     argument: Argument;
-    constructor(
-        index: number,
-        label: Label, 
-        instruction: Instruction, 
-        argument: Argument
-    )
+    isValid: boolean = false;
+    isPopulated: boolean = false;
+    constructor(index: number)
     {
         this.index = index;
+    }
+    populate(label: Label, instruction: Instruction, argument: Argument){
         this.label = label;
         this.instruction = instruction;
         this.argument = argument;
-    }
+        this.isPopulated = true;
 
+    }
     execute(emulator: Emulator){
         if (typeof this.instruction === "undefined"){
             emulator.execHead++;
@@ -50,6 +49,7 @@ class Statement {
             status = s;
             errors.push(...e)
         })(this.instruction.validate(this.index, this.argument));
+        this.isValid = status;
         return [status, errors]
     }
     

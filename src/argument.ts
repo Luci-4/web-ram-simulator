@@ -1,4 +1,3 @@
-import { Instruction } from "./instruction.js";
 import {Emulator} from "./emulator.js";
 import {Token} from "./token.js";
 import { Error_, InvalidArgumentValueError } from "./exceptions.js";

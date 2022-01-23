@@ -1,57 +1,96 @@
-class DuplicateLabelsError {
-    static generateMessage(lineIndex, label) {
-        return `DuplicateLabelsError: in line ${lineIndex} label '${label.id}' already exists\n`;
+class Error_ {
+    constructor(lineIndex) {
+        this.lineIndex = lineIndex;
     }
 }
-class UnexpectedTokenError {
-    static generateMessage(lineIndex, count) {
-        return `UnexpectedTokenError: in line ${lineIndex} expected 3 tokens, got ${count}\n`;
+class DuplicateLabelsError extends Error_ {
+    constructor(lineIndex, label) {
+        super(lineIndex);
+        this.label = label;
+    }
+    generateMessage() {
+        return `DuplicateLabelsError: in line ${this.lineIndex} label '${this.label.id}' already exists\n`;
     }
 }
-class InvalidInstructionError {
-    static generateMessage(lineIndex, text) {
-        return `InvalidInstructionError: in line ${lineIndex} '${text}'\n`;
+class UnexpectedTokenError extends Error_ {
+    constructor(lineIndex, count) {
+        super(lineIndex);
+        this.count = count;
+    }
+    generateMessage() {
+        return `UnexpectedTokenError: in line ${this.lineIndex} expected max 3 tokens, got ${this.count}\n`;
     }
 }
-class InvalidArgumentError {
-    static generateMessage(lineIndex, argument, instruction) {
-        return `InvalidArgumentError: in line ${lineIndex} invalid argument of type ${argument.constructor.name} for ${instruction.constructor.name}\n`;
+class UnidentifiedInstructionError extends Error_ {
+    generateMessage() {
+        return `UnidentifiedInstructionError: in line ${this.lineIndex} could not identify any instruction\n`;
     }
 }
-class InvalidArgumentValueError {
-    static generateMessage(lineIndex, argument) {
-        return `InvalidArgumentValueError: in line ${lineIndex} unexpected value '${argument.value}' for argument of type ${argument.constructor.name}\n`;
+class InvalidInstructionError extends Error_ {
+    constructor(lineIndex, text) {
+        super(lineIndex);
+        this.text = text;
+    }
+    generateMessage() {
+        return `InvalidInstructionError: in line ${this.lineIndex} '${this.text}'\n`;
     }
 }
-class EmptyArgumentError {
-    static generateMessage(lineIndex, instruction) {
-        return `EmptyArgumentError: in line ${lineIndex} instruction ${instruction.constructor.name} expects an argument\n`;
+class InvalidArgumentError extends Error_ {
+    constructor(lineIndex, argument, instruction) {
+        super(lineIndex);
+        this.argument = argument;
+        this.instruction = instruction;
+    }
+    generateMessage() {
+        return `InvalidArgumentError: in line ${this.lineIndex} invalid argument of type ${this.argument.constructor.name} for ${this.instruction.constructor.name}\n`;
     }
 }
-class UndefinedAccumulatorError {
-    static generateMessage(lineIndex) {
-        return `UndefinedAccumulatorError: in line ${lineIndex}\n`;
+class InvalidArgumentValueError extends Error_ {
+    constructor(lineIndex, argument) {
+        super(lineIndex);
+        this.argument = argument;
+    }
+    generateMessage() {
+        return `InvalidArgumentValueError: in line ${this.lineIndex} unexpected value '${this.argument.value}' for argument of type ${this.argument.constructor.name}\n`;
     }
 }
-class UndefinedCellError {
-    static generateMessage(lineIndex) {
-        return `UndefinedCellError: in line ${lineIndex + 1}\n`;
+class EmptyArgumentError extends Error_ {
+    constructor(lineIndex, instruction) {
+        super(lineIndex);
+        this.instruction = instruction;
+    }
+    generateMessage() {
+        return `EmptyArgumentError: in line ${this.lineIndex} instruction ${this.instruction.constructor.name} expects an argument\n`;
     }
 }
-class UndefinedInputError {
-    static generateMessage(lineIndex) {
-        return `UndefinedInputError: in line ${lineIndex}\n`;
+class UndefinedAccumulatorError extends Error_ {
+    generateMessage() {
+        return `UndefinedAccumulatorError: in line ${this.lineIndex}\n`;
     }
 }
-class LabelNotFoundError {
-    static generateMessage(lineIndex, labelId) {
-        return `LabelNotFoundError: in line ${lineIndex} label ${labelId} doesn't exist\n`;
+class UndefinedCellError extends Error_ {
+    generateMessage() {
+        return `UndefinedCellError: in line ${this.lineIndex + 1}\n`;
     }
 }
-class ZeroDivisionError {
-    static generateMessage(lineIndex) {
-        return `ZeroDivisionError: in line ${lineIndex}\n`;
+class UndefinedInputError extends Error_ {
+    generateMessage() {
+        return `UndefinedInputError: in line ${this.lineIndex}\n`;
     }
 }
-export { DuplicateLabelsError, UnexpectedTokenError, InvalidInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };
+class LabelNotFoundError extends Error_ {
+    constructor(lineIndex, labelId) {
+        super(lineIndex);
+        this.labelId = labelId;
+    }
+    generateMessage() {
+        return `LabelNotFoundError: in line ${this.lineIndex} label ${this.labelId} doesn't exist\n`;
+    }
+}
+class ZeroDivisionError extends Error_ {
+    generateMessage() {
+        return `ZeroDivisionError: in line ${this.lineIndex}\n`;
+    }
+}
+export { Error_, DuplicateLabelsError, UnexpectedTokenError, UnidentifiedInstructionError, InvalidInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };
 //# sourceMappingURL=exceptions.js.map

@@ -1,7 +1,16 @@
 import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer, NullArgument, PopulatedArgument} from "./argument.js";
 import {Token} from "./token.js";
 import {Emulator} from "./emulator.js";
-import { EmptyArgumentError, Error_, InvalidArgumentError, LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError} from "./exceptions.js";
+import {
+    EmptyArgumentError, 
+    Error_, 
+    InvalidArgumentError, 
+    LabelNotFoundError, 
+    UndefinedAccumulatorError, 
+    UndefinedCellError, 
+    UndefinedInputError, 
+    ZeroDivisionError
+} from "./exceptions.js";
 
 abstract class Instruction extends Token{
     abstract execute(argument: Argument | undefined, emulator: Emulator): boolean;

@@ -1,23 +1,37 @@
-import { CellArgument, ReferenceArgument, LabelArg } from "./argument.js";
+import { CellArgument, ReferenceArgument, LabelArg, NullArgument, PopulatedArgument } from "./argument.js";
 import { Token } from "./token.js";
-import { LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError } from "./exceptions.js";
+import { EmptyArgumentError, InvalidArgumentError, LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError } from "./exceptions.js";
 class Instruction extends Token {
-    validateAccumulatorDefinition(parser) {
-        if (typeof parser.memory[0] === 'undefined') {
-            let message = UndefinedAccumulatorError.generateMessage(parser.execHead);
-            parser.debugConsole.push(message);
+    validateAccumulatorDefinition(emulator) {
+        if (typeof emulator.memory[0] === 'undefined') {
+            emulator.errors.push(new UndefinedAccumulatorError(emulator.execHead));
             return false;
         }
         return true;
     }
-    static GenerateInstruction(text) {
-        return new Instructions[text.toLowerCase()]();
+    static Generate(text) {
+        const instrClass = getKeyValue(Instructions)(text.toLowerCase());
+        return new instrClass();
     }
     static validateInstruction(text) {
         if (Instructions.hasOwnProperty(text.toLowerCase())) {
             return true;
         }
         return false;
+    }
+    validate(lineIndex, argument) {
+        const errors = [];
+        let status = true;
+        if (!this.validateArgument(argument)) {
+            if (argument instanceof NullArgument) {
+                errors.push(new EmptyArgumentError(lineIndex, this));
+            }
+            else if (argument instanceof PopulatedArgument) {
+                errors.push(new InvalidArgumentError(lineIndex, argument, this));
+            }
+            status = false;
+        }
+        return [status, errors];
     }
 }
 class JumpInstr extends Instruction {
@@ -27,10 +41,9 @@ class JumpInstr extends Instruction {
         }
         return false;
     }
-    validateLabelsExistance(labelId, parser) {
-        if (!parser.lexer.labelsWithIndices.hasOwnProperty(labelId)) {
-            let message = LabelNotFoundError.generateMessage(parser.execHead, labelId);
-            parser.debugConsole.push(message);
+    validateLabelsExistance(labelId, emulator) {
+        if (!emulator.parser.labelsWithIndices.hasOwnProperty(labelId)) {
+            emulator.errors.push(new LabelNotFoundError(emulator.execHead, labelId));
             return false;
         }
         return true;
@@ -46,67 +59,66 @@ class OperationInst extends Instruction {
         }
         return false;
     }
-    validateCellDefinition(argument, parser) {
-        if (typeof argument.getCellValue(parser) === 'undefined') {
-            let message = UndefinedCellError.generateMessage(parser.execHead);
-            parser.debugConsole.push(message);
+    validateCellDefinition(argument, emulator) {
+        if (typeof argument.getCellValue(emulator) === 'undefined') {
+            emulator.errors.push(new UndefinedCellError(emulator.execHead));
             return false;
         }
         return true;
     }
 }
 class Jump extends JumpInstr {
-    execute(argument, parser) {
-        if (!this.validateLabelsExistance(argument.value, parser)) {
+    execute(argument, emulator) {
+        if (!this.validateLabelsExistance(argument.value, emulator)) {
             return false;
         }
-        parser.execHead = argument.getLabelIndex(parser);
+        emulator.execHead = argument.getLabelIndex(emulator);
         return true;
     }
 }
 class Jgtz extends JumpInstr {
-    execute(argument, parser) {
-        if (!this.validateLabelsExistance(argument.value, parser)) {
+    execute(argument, emulator) {
+        if (!this.validateLabelsExistance(argument.value, emulator)) {
             return false;
         }
-        if (!super.validateAccumulatorDefinition(parser)) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        if (parser.memory[0] > 0) {
-            parser.execHead = parser.lexer.labelsWithIndices[argument.value];
+        if (emulator.memory[0] > 0) {
+            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
         }
         else {
-            parser.execHead++;
+            emulator.execHead++;
         }
         return true;
     }
 }
 class Jzero extends JumpInstr {
-    execute(argument, parser) {
-        if (!this.validateLabelsExistance(argument.value, parser)) {
+    execute(argument, emulator) {
+        if (!this.validateLabelsExistance(argument.value, emulator)) {
             return false;
         }
-        if (!super.validateAccumulatorDefinition(parser)) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        if (parser.memory[0] === 0) {
-            parser.execHead = parser.lexer.labelsWithIndices[argument.value];
+        if (emulator.memory[0] === 0) {
+            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
         }
         else {
-            parser.execHead++;
+            emulator.execHead++;
         }
         return true;
     }
 }
 class Read extends OperationInst {
-    execute(argument, parser) {
-        if (!this.validateInputDefinition(argument, parser)) {
+    execute(argument, emulator) {
+        if (!this.validateInputDefinition(argument, emulator)) {
             return false;
         }
-        let address = argument.getAddress(parser);
-        parser.memory[address] = parser.inputs[parser.inputHead];
-        parser.inputHead++;
-        parser.execHead++;
+        let address = argument.getAddress(emulator);
+        emulator.memory[address] = emulator.inputs[emulator.inputHead];
+        emulator.inputHead++;
+        emulator.execHead++;
         return true;
     }
     validateArgument(argument) {
@@ -120,9 +132,9 @@ class Read extends OperationInst {
             return false;
         }
     }
-    validateInputDefinition(argument, parser) {
-        if (typeof parser.inputs[parser.inputHead] === 'undefined') {
-            parser.debugConsole.push(UndefinedInputError.generateMessage(parser.execHead + 1));
+    validateInputDefinition(argument, emulator) {
+        if (typeof emulator.inputs[emulator.inputHead] === 'undefined') {
+            emulator.errors.push(new UndefinedInputError(emulator.execHead + 1));
             return false;
         }
         else {
@@ -131,34 +143,34 @@ class Read extends OperationInst {
     }
 }
 class Write extends OperationInst {
-    execute(argument, parser) {
-        if (!super.validateCellDefinition(argument, parser)) {
+    execute(argument, emulator) {
+        if (!super.validateCellDefinition(argument, emulator)) {
             return false;
         }
-        parser.outputs[parser.outputHead] = argument.getCellValue(parser);
-        parser.outputHead++;
-        parser.execHead++;
+        emulator.outputs[emulator.outputHead] = argument.getCellValue(emulator);
+        emulator.outputHead++;
+        emulator.execHead++;
         return true;
     }
 }
 class Load extends OperationInst {
-    execute(argument, parser) {
-        if (!super.validateCellDefinition(argument, parser)) {
+    execute(argument, emulator) {
+        if (!super.validateCellDefinition(argument, emulator)) {
             return false;
         }
-        parser.memory[0] = argument.getCellValue(parser);
+        emulator.memory[0] = argument.getCellValue(emulator);
         ;
-        parser.execHead++;
+        emulator.execHead++;
         return true;
     }
 }
 class Store extends OperationInst {
-    execute(argument, parser) {
-        if (!super.validateAccumulatorDefinition(parser)) {
+    execute(argument, emulator) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        parser.memory[argument.getAddress(parser)] = parser.memory[0];
-        parser.execHead++;
+        emulator.memory[argument.getAddress(emulator)] = emulator.memory[0];
+        emulator.execHead++;
         return true;
     }
     validateArgument(argument) {
@@ -174,82 +186,83 @@ class Store extends OperationInst {
     }
 }
 class Add extends OperationInst {
-    execute(argument, parser) {
-        if (!super.validateAccumulatorDefinition(parser)) {
+    execute(argument, emulator) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        if (!super.validateCellDefinition(argument, parser)) {
+        if (!super.validateCellDefinition(argument, emulator)) {
             return false;
         }
-        parser.memory[0] += argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] += argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 }
 class Sub extends OperationInst {
-    execute(argument, parser) {
-        if (!super.validateAccumulatorDefinition(parser)) {
+    execute(argument, emulator) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        if (!super.validateCellDefinition(argument, parser)) {
+        if (!super.validateCellDefinition(argument, emulator)) {
             return false;
         }
-        parser.memory[0] -= argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] -= argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 }
 class Mult extends OperationInst {
-    execute(argument, parser) {
-        if (!super.validateAccumulatorDefinition(parser)) {
+    execute(argument, emulator) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        if (!super.validateCellDefinition(argument, parser)) {
+        if (!super.validateCellDefinition(argument, emulator)) {
             return false;
         }
-        parser.memory[0] *= argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] *= argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 }
 class Div extends OperationInst {
-    validateDivisor(argument, parser) {
-        if (argument.getCellValue(parser) === 0) {
-            parser.debugConsole.push(ZeroDivisionError.generateMessage(parser.execHead));
+    validateDivisor(argument, emulator) {
+        if (argument.getCellValue(emulator) === 0) {
+            emulator.errors.push(new ZeroDivisionError(emulator.execHead));
             return false;
         }
         return true;
     }
-    execute(argument, parser) {
-        if (!super.validateAccumulatorDefinition(parser)) {
+    execute(argument, emulator) {
+        if (!super.validateAccumulatorDefinition(emulator)) {
             return false;
         }
-        if (!this.validateDivisor(argument, parser)) {
+        if (!this.validateDivisor(argument, emulator)) {
             return false;
         }
-        if (!super.validateCellDefinition(argument, parser)) {
+        if (!super.validateCellDefinition(argument, emulator)) {
             return false;
         }
-        parser.memory[0] /= argument.getCellValue(parser);
-        parser.execHead++;
+        emulator.memory[0] /= argument.getCellValue(emulator);
+        emulator.execHead++;
         return true;
     }
 }
 class Halt extends Instruction {
-    execute(argument, parser) {
-        parser.execHead = parser.lexer.programLength;
+    execute(argument, emulator) {
+        emulator.execHead = emulator.parser.programLength;
         return true;
     }
     validateArgument(argument) {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (typeof argument === 'undefined') {
+        if (argument instanceof NullArgument) {
             return true;
         }
         return false;
     }
 }
+const getKeyValue = (obj) => (key) => obj[key];
 const Instructions = {
     "read": Read,
     "load": Load,

@@ -77,7 +77,7 @@ function stopRun(){
     let button = document.getElementById(`stop-button`);
     disableStopIcon();
     button.classList.remove(`run-active`);
-    app.emulator.execHead = app.emulator.parser.programLength;
+    app.emulator.execHead = app.emulator.programLength;
     updateConsole();
     updateOutputTape();
 

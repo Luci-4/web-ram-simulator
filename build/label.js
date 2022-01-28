@@ -7,7 +7,7 @@ class Label extends Token {
         }
         return new PopulatedLabel(text);
     }
-    validate(lineIndex, labelIds) {
+    parseValidate(lineIndex, labelIds) {
         const errors = [];
         let status = true;
         if (!this.validateUniqueness(labelIds)) {
@@ -18,7 +18,7 @@ class Label extends Token {
     }
 }
 class NullLabel extends Label {
-    constructor(text) {
+    constructor(text = undefined) {
         super();
         this.id = text;
     }
@@ -33,11 +33,8 @@ class PopulatedLabel extends Label {
     }
     validateUniqueness(labelIds) {
         const filteredIds = labelIds.filter((id) => typeof id !== "undefined");
-        if (filteredIds.includes(this.id)) {
-            return false;
-        }
-        return true;
+        return !(filteredIds.includes(this.id));
     }
 }
-export { Label, PopulatedLabel };
+export { Label, PopulatedLabel, NullLabel };
 //# sourceMappingURL=label.js.map

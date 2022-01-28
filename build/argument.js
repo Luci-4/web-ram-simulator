@@ -22,7 +22,7 @@ class Argument extends Token {
             return new ArgumentsTypes["label"](text);
         }
     }
-    validate(lineIndex) {
+    parseValidate(lineIndex) {
         const errors = [];
         let status = true;
         if (!this.validateValue()) {
@@ -33,19 +33,19 @@ class Argument extends Token {
     }
 }
 class NullArgument extends Argument {
+    constructor(value = undefined) {
+        super(value);
+        this.value = value;
+    }
     validateValue() {
-        if (typeof this.value === "undefined") {
-            return true;
-        }
-        return false;
+        return (typeof this.value === "undefined");
     }
 }
 class PopulatedArgument extends Argument {
     validateValue() {
-        if (this.value.length === 0 || isNaN(Number(this.value))) {
-            return false;
-        }
-        return true;
+        let valueLengthIsZero = this.value.length === 0;
+        let valueIsNaN = isNaN(Number(this.value));
+        return !(valueLengthIsZero || valueIsNaN);
     }
 }
 class CellArgument extends PopulatedArgument {
@@ -54,10 +54,7 @@ class ReferenceArgument extends CellArgument {
 }
 class LabelArg extends PopulatedArgument {
     validateValue() {
-        if (this.value.length > 0) {
-            return true;
-        }
-        return false;
+        return (this.value.length > 0);
     }
     getLabelIndex(emulator) {
         return emulator.parser.labelsWithIndices[this.value];

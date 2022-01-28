@@ -9,6 +9,9 @@ abstract class Argument extends Token{
         super();
         this.value = value;
     }
+
+    protected abstract validateValue(): boolean;
+
     public static Generate(text: string | undefined): Argument{
         if (typeof text === "undefined"){
             return new ArgumentsTypes["null"](text);
@@ -29,11 +32,11 @@ abstract class Argument extends Token{
             return new ArgumentsTypes["label"](text);
         }
     }
-    abstract validateValue(): boolean;
 
-    validate(lineIndex: number): [boolean, Error_[]]{
+    parseValidate(lineIndex: number): [boolean, Error_[]]{
         const errors: Error_[] = []
         let status = true;
+
         if(!this.validateValue()){
             errors.push(new InvalidArgumentValueError(lineIndex, this))
             status = false
@@ -44,22 +47,23 @@ abstract class Argument extends Token{
 }
 class NullArgument extends Argument{
     value: undefined; 
-    validateValue(){
-        if(typeof this.value === "undefined"){
-            return true;
 
-        }
-        return false;
+    constructor(value: undefined = undefined){
+        super(value);
+        this.value = value;
+    }
+
+    protected validateValue(){
+        return (typeof this.value === "undefined");
     }
 }
 abstract class PopulatedArgument extends Argument{
     value: string;
-    validateValue(){
-        
-        if(this.value.length === 0 || isNaN(Number(this.value))){
-            return false;
-        }
-        return true;
+
+    protected validateValue(){
+        let valueLengthIsZero = this.value.length === 0;
+        let valueIsNaN = isNaN(Number(this.value));
+        return !(valueLengthIsZero || valueIsNaN);
     }
 }
 
@@ -73,12 +77,11 @@ abstract class ReferenceArgument extends CellArgument {
 
 class LabelArg extends PopulatedArgument{
     value: string;
-    validateValue(){
-        if(this.value.length > 0){
-            return true;
-        }
-        return false;
+
+    protected validateValue(){
+        return (this.value.length > 0);
     }
+
     getLabelIndex(emulator: Emulator){
         return emulator.parser.labelsWithIndices[this.value];
     }

@@ -10,19 +10,24 @@ class Instruction extends Token {
         return true;
     }
     static Generate(text) {
+        if (text.length == 0) {
+            return new NullInstruction();
+        }
         const instrClass = getKeyValue(Instructions)(text.toLowerCase());
         return new instrClass();
     }
     static validateInstruction(text) {
-        if (Instructions.hasOwnProperty(text.toLowerCase())) {
+        if (text.length == 0) {
             return true;
         }
-        return false;
+        return (Instructions.hasOwnProperty(text.toLowerCase()));
     }
-    validate(lineIndex, argument) {
+    parseValidate(lineIndex, argument) {
         const errors = [];
         let status = true;
+        console.log("parse validate", argument);
         if (!this.validateArgument(argument)) {
+            console.log("argument invalid");
             if (argument instanceof NullArgument) {
                 errors.push(new EmptyArgumentError(lineIndex, this));
             }
@@ -31,18 +36,18 @@ class Instruction extends Token {
             }
             status = false;
         }
+        console.log(this, "parse validate", status, errors);
         return [status, errors];
     }
 }
 class JumpInstr extends Instruction {
     validateArgument(argument) {
-        if (argument instanceof LabelArg) {
-            return true;
-        }
-        return false;
+        return (argument instanceof LabelArg);
     }
     validateLabelsExistance(labelId, emulator) {
-        if (!emulator.parser.labelsWithIndices.hasOwnProperty(labelId)) {
+        const parser = emulator.parser;
+        const labelsWithIndices = parser.labelsWithIndices;
+        if (!labelsWithIndices.hasOwnProperty(labelId)) {
             emulator.errors.push(new LabelNotFoundError(emulator.execHead, labelId));
             return false;
         }
@@ -54,10 +59,7 @@ class OperationInst extends Instruction {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof CellArgument) {
-            return true;
-        }
-        return false;
+        return (argument instanceof CellArgument);
     }
     validateCellDefinition(argument, emulator) {
         if (typeof argument.getCellValue(emulator) === 'undefined') {
@@ -85,7 +87,11 @@ class Jgtz extends JumpInstr {
             return false;
         }
         if (emulator.memory[0] > 0) {
-            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
+            const parser = emulator.parser;
+            const labelsWithIndices = parser.labelsWithIndices;
+            const value = argument.value;
+            const newExecHead = labelsWithIndices[value];
+            emulator.execHead = newExecHead;
         }
         else {
             emulator.execHead++;
@@ -102,7 +108,10 @@ class Jzero extends JumpInstr {
             return false;
         }
         if (emulator.memory[0] === 0) {
-            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
+            const parser = emulator.parser;
+            const labelsWithIndices = parser.labelsWithIndices;
+            const value = argument.value;
+            emulator.execHead = labelsWithIndices[value];
         }
         else {
             emulator.execHead++;
@@ -125,21 +134,14 @@ class Read extends OperationInst {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof ReferenceArgument) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return (argument instanceof ReferenceArgument);
     }
     validateInputDefinition(argument, emulator) {
         if (typeof emulator.inputs[emulator.inputHead] === 'undefined') {
             emulator.errors.push(new UndefinedInputError(emulator.execHead + 1));
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
 }
 class Write extends OperationInst {
@@ -177,12 +179,7 @@ class Store extends OperationInst {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof ReferenceArgument) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return (argument instanceof ReferenceArgument);
     }
 }
 class Add extends OperationInst {
@@ -256,10 +253,15 @@ class Halt extends Instruction {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if (argument instanceof NullArgument) {
-            return true;
-        }
-        return false;
+        return (argument instanceof NullArgument);
+    }
+}
+export class NullInstruction extends Instruction {
+    execute(argument, emulator) {
+        return true;
+    }
+    validateArgument(argument) {
+        return (argument instanceof NullArgument);
     }
 }
 const getKeyValue = (obj) => (key) => obj[key];
@@ -275,7 +277,7 @@ const Instructions = {
     "jgtz": Jgtz,
     "jzero": Jzero,
     "write": Write,
-    "halt": Halt
+    "halt": Halt,
 };
 export { Instruction, Instructions };
 //# sourceMappingURL=instruction.js.map

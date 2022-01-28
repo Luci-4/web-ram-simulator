@@ -1,21 +1,22 @@
-import {Label} from "./label.js";
-import {Instruction, Instructions} from "./instruction.js";
-import {Argument} from "./argument.js";
+import {Label, NullLabel} from "./label.js";
+import {Instruction, Instructions, NullInstruction} from "./instruction.js";
+import {Argument, NullArgument} from "./argument.js";
 import {Emulator} from "./emulator.js";
 import { Parser } from "./parser.js";
 import { Error_ } from "./exceptions.js";
 
 class Statement {
     index: number;
-    label: Label;
-    instruction: Instruction;
-    argument: Argument;
+    label: Label = new NullLabel();
+    instruction: Instruction = new NullInstruction();
+    argument: Argument = new NullArgument();
     isValid: boolean = false;
     isPopulated: boolean = false;
     constructor(index: number)
     {
         this.index = index;
     }
+
     populate(label: Label, instruction: Instruction, argument: Argument){
         this.label = label;
         this.instruction = instruction;
@@ -23,34 +24,49 @@ class Statement {
         this.isPopulated = true;
 
     }
+
     execute(emulator: Emulator){
-        if (typeof this.instruction === "undefined"){
+        if (this.instruction instanceof NullInstruction){
             emulator.execHead++;
             return true;
         }
         return this.instruction.execute(this.argument, emulator);
     }
-    validate(parser: Parser): [boolean, Error_[]]{
+
+    parseValidate(allStatements: Statement[]): [boolean, Error_[]]{
         let status = true;
-        const errors: Error_[] = [];
-        const labelIds = parser.contents.map((statement: Statement) => statement.label.id);
-        (([s, e]: [boolean, Error_[]]) => {
-            status = s;
-            errors.push(...e)
-        })(this.label.validate(this.index, labelIds));
 
-        (([s, e]: [boolean, Error_[]]) => {
-            status = s;
-            errors.push(...e)
-        })(this.argument.validate(this.index));
+        const labelIds = allStatements.map((statement: Statement) => statement.label.id);
+        let labelErrors: Error_[];
+        let labelStatus: boolean;
+        [labelStatus, labelErrors] = this.label.parseValidate(this.index, labelIds); 
+        status = labelStatus ? status : labelStatus;
+
+        let argumentErrors: Error_[];
+        let argumentStatus: boolean;
+        [argumentStatus, argumentErrors] = this.argument.parseValidate(this.index);
+        status = argumentStatus ? status : argumentStatus;
+
+        let instructionErrors: Error_[]  = [];
+        if(argumentStatus){
+            console.log("current status before validting instruction", this.instruction, status);
+            let instructionStatus: boolean;
+            [instructionStatus, instructionErrors] = this.instruction.parseValidate(this.index, this.argument);
+            status = instructionStatus ? status : instructionStatus;
+        }
+        console.log("parse validate statement", this, status, instructionErrors)
 
 
-        (([s, e]: [boolean, Error_[]]) => {
-            status = s;
-            errors.push(...e)
-        })(this.instruction.validate(this.index, this.argument));
         this.isValid = status;
-        return [status, errors]
+
+        return [
+            status, 
+            [
+                ...labelErrors, 
+                ...argumentErrors, 
+                ...instructionErrors
+            ]
+        ];
     }
     
 }

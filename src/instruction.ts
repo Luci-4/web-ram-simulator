@@ -14,7 +14,8 @@ import {
 
 abstract class Instruction extends Token{
     abstract execute(argument: Argument | undefined, emulator: Emulator): boolean;
-    abstract validateArgument(token: Token): boolean;
+    protected abstract validateArgument(token: Token): boolean;
+
     validateAccumulatorDefinition(emulator: Emulator): boolean{
         if(typeof emulator.memory[0] === 'undefined'){
             emulator.errors.push(new UndefinedAccumulatorError(emulator.execHead));
@@ -22,22 +23,28 @@ abstract class Instruction extends Token{
         }
         return true;
     }
+
     static Generate(text: string): Instruction{
+        if (text.length == 0){
+            return new NullInstruction()
+        }
         const instrClass = getKeyValue(Instructions)(text.toLowerCase());
 
         return new instrClass();
     }
 
     static validateInstruction(text: string) {
-        if(Instructions.hasOwnProperty(text.toLowerCase())){
-            return true;
+        if (text.length == 0){
+            return true
         }
-        return false;
+        return (Instructions.hasOwnProperty(text.toLowerCase()));
     }
-    validate(lineIndex: number, argument: Argument): [boolean, Error_[]]{
+    parseValidate(lineIndex: number, argument: Argument): [boolean, Error_[]]{
         const errors: Error_[] = [];
         let status = true;
+        console.log("parse validate", argument)
         if(!this.validateArgument(argument)){
+            console.log("argument invalid");
             if(argument instanceof NullArgument){
                 errors.push(new EmptyArgumentError(lineIndex, this))
             }
@@ -46,41 +53,35 @@ abstract class Instruction extends Token{
             }
             status = false
         }
-        
+        console.log(this, "parse validate", status, errors); 
         return [status, errors]
     }
 }
 
 abstract class JumpInstr extends Instruction {
 
-    validateArgument(argument: Argument): boolean{
-      if(argument instanceof LabelArg){
-          return true;
-      }
-      return false;
+    protected validateArgument(argument: Argument): boolean{
+      return (argument instanceof LabelArg);
       
     }
 
     validateLabelsExistance(labelId: string, emulator: Emulator): boolean{
-        if (!emulator.parser.labelsWithIndices.hasOwnProperty(labelId)){
+        const parser = emulator.parser;
+        const labelsWithIndices = parser.labelsWithIndices;
+        if (!labelsWithIndices.hasOwnProperty(labelId)){
             emulator.errors.push(new LabelNotFoundError(emulator.execHead, labelId));
             return false;
         }
         return true;
-        
     }
 }
 
-
 abstract class OperationInst extends Instruction {
-    validateArgument(argument: Argument): boolean {
+    protected validateArgument(argument: Argument): boolean {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if(argument instanceof CellArgument){
-            return true;
-        }
-        return false;
+        return (argument instanceof CellArgument);
     }
 
     validateCellDefinition(argument: CellArgument, emulator: Emulator): boolean{
@@ -109,9 +110,13 @@ class Jgtz extends JumpInstr {
         if(!this.validateLabelsExistance(argument.value, emulator)){return false;}
 
         if (!super.validateAccumulatorDefinition(emulator)){return false}
+
         if(emulator.memory[0] > 0) {
-            
-            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
+            const parser = emulator.parser; 
+            const labelsWithIndices = parser.labelsWithIndices;
+            const value = argument.value;
+            const newExecHead = labelsWithIndices[value];
+            emulator.execHead = newExecHead;
         }
         else {
             emulator.execHead++;
@@ -134,7 +139,10 @@ class Jzero extends JumpInstr {
         }
 
         if(emulator.memory[0] === 0){
-            emulator.execHead = emulator.parser.labelsWithIndices[argument.value];
+            const parser = emulator.parser;
+            const labelsWithIndices = parser.labelsWithIndices;
+            const value = argument.value
+            emulator.execHead = labelsWithIndices[value];
         }
         else {
             emulator.execHead++;
@@ -156,16 +164,11 @@ class Read extends OperationInst {
         return true;
     }
 
-    validateArgument(argument: Argument): boolean {
+    protected validateArgument(argument: Argument): boolean {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if(argument instanceof ReferenceArgument){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return (argument instanceof ReferenceArgument);
     }
 
     validateInputDefinition(argument: ReferenceArgument, emulator: Emulator): boolean {
@@ -173,9 +176,7 @@ class Read extends OperationInst {
             emulator.errors.push(new UndefinedInputError(emulator.execHead+1));
             return false;
         }
-        else{
-            return true;
-        }
+        return true;
 
     }
 }
@@ -189,8 +190,6 @@ class Write extends OperationInst {
         emulator.execHead++;
         return true;
     }
-
-
 }
 
 class Load extends OperationInst {
@@ -214,16 +213,11 @@ class Store extends OperationInst {
         return true;
     }
 
-    validateArgument(argument: Argument) {
+    protected validateArgument(argument: Argument) {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if(argument instanceof ReferenceArgument){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return (argument instanceof ReferenceArgument);
     }
 
 }
@@ -282,31 +276,37 @@ class Div extends OperationInst {
     execute(argument: CellArgument, emulator: Emulator): boolean {
         if(!super.validateAccumulatorDefinition(emulator)){return false;}
         if(!this.validateDivisor(argument, emulator)){return false}
-        if (!super.validateCellDefinition(argument, emulator)){return false;}
+        if(!super.validateCellDefinition(argument, emulator)){return false;}
 
         emulator.memory[0] /= argument.getCellValue(emulator);
         emulator.execHead++;
         return true;
     }
-
 }
 
 class Halt extends Instruction {
-    execute(argument: Argument, emulator: Emulator): boolean {
+    execute(argument: NullArgument, emulator: Emulator): boolean {
         emulator.execHead = emulator.parser.programLength;
         return true;
     }
 
-    validateArgument(argument: Argument) {
+    protected validateArgument(argument: Argument) {
         /**
          * validation of instructions that perform operations on numbers from cells
          */
-        if(argument instanceof NullArgument){
-            return true;
-        }
-        return false;
+        return (argument instanceof NullArgument)
     }
 }
+
+export class NullInstruction extends Instruction{
+    execute(argument: NullArgument, emulator: Emulator): boolean {
+       return true; 
+    }
+    protected validateArgument(argument: Argument): boolean {
+        return (argument instanceof NullArgument)
+    } 
+}
+
 const getKeyValue = <T extends object, U extends keyof T>(obj: T) => (key: U) => obj[key];
 const Instructions: {[key: string]: {new(): Instruction}} = {
     "read": Read,
@@ -320,7 +320,7 @@ const Instructions: {[key: string]: {new(): Instruction}} = {
     "jgtz": Jgtz,
     "jzero": Jzero,
     "write": Write,
-    "halt": Halt
+    "halt": Halt,
 };
 
 

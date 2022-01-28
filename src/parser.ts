@@ -10,36 +10,10 @@ import {
 
 
 export class Parser {
-    contents: (Statement)[];
     programLength: number;
     labelsWithIndices: {[key: string]: number};
-    errors: Array<Error_>;
 
-    constructor(contents: string) {
-        this.errors = [];
-        this.contents = [];
-        // replace multiple whitespace characters with one space
-        let lines: string[];
-        lines = contents.split("\n");
-        
-        // remove whitespaces around every line
-        lines = lines.map((line: string) => line.trim());
-        
-
-        // convert lines to tokens
-        lines.forEach((line: string, index: number) => {
-            let elements: string[] = line.split(" ");
-            let statementNow = this.GenerateTokens(elements, index + 1);
-            
-            this.contents.push(statementNow);
-        });
-
-        this.programLength = this.contents.length;
-
-        this.labelsWithIndices = {};
-        
-    }
-    IdentifyInstruction(elements: string[]): number{
+    private static identifyInstruction(elements: string[]): number{
         for(let elemInd = 0; elemInd < elements.length; elemInd++){
             if(Instruction.validateInstruction(elements[elemInd])){
                 return elemInd;
@@ -48,64 +22,71 @@ export class Parser {
         return -1;
     }
 
-    GenerateTokens(elements: string[], lineIndex: number): Statement{
-        const statement = new Statement(lineIndex);
-
+    private static validateElements(elements: string[], lineIndex: number, instrInd: number): [boolean, Error_[]]{
+        let status = true;
+        const errors: Error_[] = [];
         if(elements.length > 3){
-            this.errors.push(new UnexpectedTokenError(lineIndex, elements.length))
-            return statement;
+            console.log("HELLO THEREapparently more than 3", elements.length);
+            errors.push(new UnexpectedTokenError(lineIndex, elements.length))
+            status = false;
         }
-        const instrInd: number = this.IdentifyInstruction(elements); 
-
+        // TODO: add validation for the instruction being in the third place
         if (instrInd < 0){
-            this.errors.push(new UnidentifiedInstructionError(lineIndex))
+            
+            console.log("HELLO THEREapparently could not find the instruction", instrInd);
+            errors.push(new UnidentifiedInstructionError(lineIndex))
+            status = false
+        }
+        return [status, errors];
+    }
+
+    private static splitToLinesOfElements(program: string): string[][]{
+
+        const lines = program.split("\n");
+        
+        const linesTrimmed = lines.map((l: string) => l.trim());
+        const elements = linesTrimmed.map((l: string) => l.split(" "))
+        
+        return elements;
+    }
+
+    static parse(program: string): [boolean, Error_[], Statement[]]{
+        let status: boolean = true;
+        const linesOfElements = Parser.splitToLinesOfElements(program);
+        const statements: Statement[] = [];
+        const errors: Error_[] = [];
+        linesOfElements.forEach((elements: string[], lineIndex: number) => {
+            const instrInd = Parser.identifyInstruction(elements);
+            let elementErrors: Error_[];
+            let elementStatus: boolean;
+            [elementStatus, elementErrors] = Parser.validateElements(elements, lineIndex, instrInd);
+            status = elementStatus ? status : elementStatus;
+            console.log("HERE", status)
+            let statement = Parser.generateStatement(elementStatus, elements, lineIndex + 1, instrInd);
+            console.log(statement)
+            let statementErrors: Error_[];
+            let statementValidationStatus: boolean;
+            [statementValidationStatus, statementErrors] = statement.parseValidate(statements);
+            status = statementValidationStatus ? status : statementValidationStatus;
+
+            statements.push(statement);
+            errors.push(...elementErrors, ...statementErrors);
+        });
+        return [status, errors, statements];
+    }
+
+    private static generateStatement(canBePopulated: boolean, elements: string[], lineNumber: number, instrIndex: number): Statement{
+        const statement = new Statement(lineNumber);
+        if (!canBePopulated){
             return statement;
         }
-        const labelInd = instrInd - 1;
-        const argumentInd = instrInd + 1;
+        const labelInd = instrIndex - 1;
+        const argumentInd = instrIndex + 1;
         statement.populate(
             Label.Generate(elements[labelInd]),
-            Instruction.Generate(elements[instrInd]),
+            Instruction.Generate(elements[instrIndex]),
             Argument.Generate(elements[argumentInd])
         )
-        const [status, errors] = statement.validate(this)
-        if(!status){
-            this.errors.push(...errors);
-        }
         return statement;
-
     }
-
-    generateLabelsMap(){
-        // swap contents' indices with tokens labels' ids to create labelsWithIndices
-        
-        Object.keys(this.contents).forEach((key: string) => {
-            if(typeof key !== 'undefined'){
-                let index: number = parseInt(key);
-                let statement = this.contents[index]
-                let labelId: string | undefined = statement.label.id; 
-                
-                if(typeof labelId !== "undefined"){
-                    this.labelsWithIndices[labelId] = index;
-                }
-            }
-        })
-    }
-
-    validateLabelUniqueness(label: Label){
-        let labels: Array<string|undefined> = [];
-        // TODO: fix autocomplete in the middle of other text
-        this.contents.forEach(statement => {
-            if(typeof statement?.label?.id !== "undefined"){
-                labels.push(statement.label.id);
-            }
-            
-        });
-        if(labels.includes(label.id)){
-            return false;
-        }
-        return true;
-    }
-
-    
 }

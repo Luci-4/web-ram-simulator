@@ -48,7 +48,7 @@ export function disableContinueButton(){
 
 export function updateLineMarginHighlight(){
     
-    if (app.emulator.parser.contents.length === app.emulator.execHead){
+    if (app.emulator.programLength === app.emulator.execHead){
         disableStopIcon();
         return;
     }

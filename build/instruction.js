@@ -2,6 +2,19 @@ import { CellArgument, ReferenceArgument, LabelArg, NullArgument, PopulatedArgum
 import { Token } from "./token.js";
 import { EmptyArgumentError, InvalidArgumentError, LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError } from "./exceptions.js";
 class Instruction extends Token {
+    execute(argument, emulator) {
+        const [status, errors] = this.validate(argument, emulator);
+        if (!status) {
+            return [status, errors];
+        }
+        this._execute(argument, emulator);
+        return [true, []];
+    }
+    ;
+    validate(argument, emulator) {
+        return [true, []];
+    }
+    ;
     static validateAccumulatorDefinition(accumulator) {
         return (typeof accumulator !== 'undefined');
     }
@@ -68,13 +81,8 @@ class MathInst extends OperationInst {
     }
 }
 class Jump extends JumpInstr {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.execHead = argument.getLabelIndex(emulator.labelsWithIndices);
-        return [true, []];
     }
     validate(argument, emulator) {
         let errors = [];
@@ -88,11 +96,7 @@ class Jump extends JumpInstr {
     }
 }
 class Jgtz extends JumpInstr {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         if (emulator.memory[0] > 0) {
             const labelsWithIndices = emulator.labelsWithIndices;
             const value = argument.value;
@@ -102,7 +106,6 @@ class Jgtz extends JumpInstr {
         else {
             emulator.execHead++;
         }
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -120,11 +123,7 @@ class Jgtz extends JumpInstr {
     }
 }
 class Jzero extends JumpInstr {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         if (emulator.memory[0] === 0) {
             const labelsWithIndices = emulator.labelsWithIndices;
             const value = argument.value;
@@ -133,7 +132,6 @@ class Jzero extends JumpInstr {
         else {
             emulator.execHead++;
         }
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -151,16 +149,11 @@ class Jzero extends JumpInstr {
     }
 }
 class Read extends OperationInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         let address = argument.getAddress(emulator.memory);
         emulator.memory[address] = emulator.inputs[emulator.inputHead];
         emulator.inputHead++;
         emulator.execHead++;
-        return [true, []];
     }
     validateArgument(argument) {
         /**
@@ -182,15 +175,10 @@ class Read extends OperationInst {
     }
 }
 class Write extends OperationInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.outputs[emulator.outputHead] = argument.getCellValue(emulator.memory);
         emulator.outputHead++;
         emulator.execHead++;
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -203,15 +191,10 @@ class Write extends OperationInst {
     }
 }
 class Load extends OperationInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.memory[0] = argument.getCellValue(emulator.memory);
         ;
         emulator.execHead++;
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -224,14 +207,9 @@ class Load extends OperationInst {
     }
 }
 class Store extends OperationInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.memory[argument.getAddress(emulator.memory)] = emulator.memory[0];
         emulator.execHead++;
-        return [true, []];
     }
     validateArgument(argument) {
         /**
@@ -250,14 +228,9 @@ class Store extends OperationInst {
     }
 }
 class Add extends MathInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.memory[0] += argument.getCellValue(emulator.memory);
         emulator.execHead++;
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -274,14 +247,9 @@ class Add extends MathInst {
     }
 }
 class Sub extends MathInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.memory[0] -= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -293,14 +261,9 @@ class Sub extends MathInst {
     }
 }
 class Mult extends MathInst {
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.memory[0] *= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -315,14 +278,9 @@ class Div extends MathInst {
     static validateDivisor(argument, memory) {
         return (argument.getCellValue(memory) === 0);
     }
-    execute(argument, emulator) {
-        const [status, errors] = this.validate(argument, emulator);
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument, emulator) {
         emulator.memory[0] /= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-        return [true, []];
     }
     validate(argument, emulator) {
         const errors = [];
@@ -338,9 +296,8 @@ class Div extends MathInst {
     }
 }
 class Halt extends Instruction {
-    execute(argument, emulator) {
+    _execute(argument, emulator) {
         emulator.execHead = emulator.programLength;
-        return [true, []];
     }
     validateArgument(argument) {
         /**
@@ -350,9 +307,7 @@ class Halt extends Instruction {
     }
 }
 export class NullInstruction extends Instruction {
-    execute(argument, emulator) {
-        return [true, []];
-    }
+    _execute(argument, emulator) { }
     validateArgument(argument) {
         return (argument instanceof NullArgument);
     }

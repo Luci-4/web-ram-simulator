@@ -20,7 +20,25 @@ import {
 } from "./exceptions.js";
 
 abstract class Instruction extends Token{
-    abstract execute(argument: Argument, emulator: Emulator): [boolean, Error_[]];
+    execute(argument: Argument, emulator: Emulator): [boolean, Error_[]] {
+
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
+        }
+
+        this._execute(argument, emulator);
+
+        return [true, []];
+    };
+
+    abstract _execute(argument: Argument, emulator: Emulator): void;
+
+    validate(argument: Argument, emulator: Emulator): [boolean, Error_[]] {
+        return [true, []];
+    };
+
     protected abstract validateArgument(token: Token): boolean;
 
     protected static validateAccumulatorDefinition(accumulator: number | undefined): boolean{
@@ -108,16 +126,8 @@ abstract class MathInst extends OperationInst {
 }
 
 class Jump extends JumpInstr {
-    execute(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors]
-        }
-
-        emulator.execHead = argument.getLabelIndex(emulator.labelsWithIndices);
-
-        return [true, []]
+    _execute(argument: LabelArg, emulator: Emulator): void {
+        emulator.execHead = argument.getLabelIndex(emulator.labelsWithIndices)
     }
 
     validate(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
@@ -134,13 +144,8 @@ class Jump extends JumpInstr {
 }
 
 class Jgtz extends JumpInstr {
-    execute(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator)
-
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: LabelArg, emulator: Emulator): void {
+        
         if (emulator.memory[0] > 0) {
             const labelsWithIndices = emulator.labelsWithIndices;
             const value = argument.value;
@@ -150,9 +155,6 @@ class Jgtz extends JumpInstr {
         else {
             emulator.execHead++;
         }
-
-        return [true, []];
-
     }
 
     validate(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
@@ -176,13 +178,7 @@ class Jgtz extends JumpInstr {
 }
 
 class Jzero extends JumpInstr {
-    execute(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: LabelArg, emulator: Emulator): void {
         if (emulator.memory[0] === 0) {
             const labelsWithIndices = emulator.labelsWithIndices;
             const value = argument.value
@@ -191,8 +187,6 @@ class Jzero extends JumpInstr {
         else {
             emulator.execHead++;
         }
-
-        return [true, []];
     }
 
     validate(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
@@ -215,19 +209,11 @@ class Jzero extends JumpInstr {
 }
 
 class Read extends OperationInst {
-    execute(argument: ReferenceArgument, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: ReferenceArgument, emulator: Emulator): void {
         let address = argument.getAddress(emulator.memory);
         emulator.memory[address] = emulator.inputs[emulator.inputHead];
         emulator.inputHead++;
         emulator.execHead++;
-
-        return [true, []];
     }
 
     protected validateArgument(argument: Argument): boolean {
@@ -256,18 +242,10 @@ class Read extends OperationInst {
 }
 
 class Write extends OperationInst {
-    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors]
-        }
-
+    _execute(argument: CellArgument, emulator: Emulator): void {
         emulator.outputs[emulator.outputHead] = argument.getCellValue(emulator.memory);
         emulator.outputHead++;
         emulator.execHead++;
-
-        return [true, []];
     }
 
     validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
@@ -284,17 +262,9 @@ class Write extends OperationInst {
 }
 
 class Load extends OperationInst {
-    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
-        
+    _execute(argument: CellArgument, emulator: Emulator): void {
         emulator.memory[0] = argument.getCellValue(emulator.memory);;
         emulator.execHead++;
-
-        return [true, []];
     }
 
     validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
@@ -312,16 +282,9 @@ class Load extends OperationInst {
 
 class Store extends OperationInst {
 
-    execute(argument: ReferenceArgument, emulator: Emulator): [boolean, Error_[]] {
-
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
+    _execute(argument: ReferenceArgument, emulator: Emulator): void {
         emulator.memory[argument.getAddress(emulator.memory)] = emulator.memory[0];
         emulator.execHead++;
-        return [true, []];
     }
 
     protected validateArgument(argument: Argument) {
@@ -343,17 +306,9 @@ class Store extends OperationInst {
 }
 
 class Add extends MathInst {
-    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: CellArgument, emulator: Emulator): void {
         emulator.memory[0] += argument.getCellValue(emulator.memory);
         emulator.execHead++;
-
-        return [true, []];
     }
 
     validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
@@ -375,18 +330,9 @@ class Add extends MathInst {
 }
 
 class Sub extends MathInst {
-    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
-        
-        const [status, errors] = this.validate(argument, emulator);
-        
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: CellArgument, emulator: Emulator): void {
         emulator.memory[0] -= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-
-        return [true, []];
     }
 
     validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
@@ -405,17 +351,9 @@ class Sub extends MathInst {
 }
 
 class Mult extends MathInst {
-    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: CellArgument, emulator: Emulator): void {
         emulator.memory[0] *= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-
-        return [true, []];
     }
 
     validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
@@ -437,17 +375,9 @@ class Div extends MathInst {
         return (argument.getCellValue(memory) === 0);
     }
 
-    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
-        const [status, errors] = this.validate(argument, emulator);
-
-        if (!status) {
-            return [status, errors];
-        }
-
+    _execute(argument: CellArgument, emulator: Emulator): void {
         emulator.memory[0] /= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-
-        return [true, []];
     }
 
     validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
@@ -469,9 +399,8 @@ class Div extends MathInst {
 }
 
 class Halt extends Instruction {
-    execute(argument: NullArgument, emulator: Emulator): [boolean, Error_[]] {
+    _execute(argument: NullArgument, emulator: Emulator): void {
         emulator.execHead = emulator.programLength;
-        return [true, []];
     }
 
     protected validateArgument(argument: Argument) {
@@ -483,9 +412,7 @@ class Halt extends Instruction {
 }
 
 export class NullInstruction extends Instruction {
-    execute(argument: NullArgument, emulator: Emulator): [boolean, Error_[]] {
-       return [true, []]; 
-    }
+    _execute(argument: Argument, emulator: Emulator): void {}
 
     protected validateArgument(argument: Argument): boolean {
         return (argument instanceof NullArgument)

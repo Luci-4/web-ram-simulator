@@ -92,7 +92,9 @@ class Emulator {
         }
         let currentStatement: Statement = this.statements[this.execHead];
 
-        // TODO: restructure emulator validation and maybe refactor it's class 
+        // move core execution instruction code to this class and place it in methods
+        // TODO: refactor emulator class
+
         const [status, errors]: [boolean, Error_[]] = currentStatement.execute(this);
         if (!status) {
             this.errors.push(...errors)

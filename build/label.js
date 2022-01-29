@@ -1,5 +1,5 @@
-import { DuplicateLabelsError } from "./exceptions.js";
-import { Token } from "./token.js";
+import { DuplicateLabelsError } from "./errors.js";
+import Token from "./token.js";
 class Label extends Token {
     static Generate(text) {
         if (typeof text === "undefined") {

@@ -1,6 +1,6 @@
 import { CellArgument, ReferenceArgument, LabelArg, NullArgument, PopulatedArgument } from "./argument.js";
-import { Token } from "./token.js";
-import { EmptyArgumentError, InvalidArgumentError, LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError } from "./exceptions.js";
+import Token from "./token.js";
+import { EmptyArgumentError, InvalidArgumentError, LabelNotFoundError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, ZeroDivisionError } from "./errors.js";
 class Instruction extends Token {
     execute(argument, emulator) {
         const [status, errors] = this.validate(argument, emulator);
@@ -297,7 +297,7 @@ class Div extends MathInst {
 }
 class Halt extends Instruction {
     _execute(argument, emulator) {
-        emulator.execHead = emulator.programLength;
+        emulator.execHead = emulator.statements.length;
     }
     validateArgument(argument) {
         /**

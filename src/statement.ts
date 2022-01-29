@@ -1,11 +1,11 @@
 import {Label, NullLabel} from "./label.js";
 import {Instruction, Instructions, NullInstruction} from "./instruction.js";
 import {Argument, NullArgument} from "./argument.js";
-import {Emulator} from "./emulator.js";
-import { Parser } from "./parser.js";
-import { Error_ } from "./exceptions.js";
+import Emulator from "./emulator.js";
+import Parser from "./parser.js";
+import { Error_ } from "./errors.js";
 
-class Statement {
+export default class Statement {
     index: number;
     label: Label = new NullLabel();
     instruction: Instruction = new NullInstruction();
@@ -32,10 +32,9 @@ class Statement {
         return this.instruction.execute(this.argument, emulator);
     }
 
-    parseValidate(allStatements: Statement[]): [boolean, Error_[]] {
+    parseValidate(labelIds: Array<string | undefined>): [boolean, Error_[]] {
         let status = true;
 
-        const labelIds = allStatements.map((statement: Statement) => statement.label.id);
         let labelErrors: Error_[];
         let labelStatus: boolean;
         [labelStatus, labelErrors] = this.label.parseValidate(this.index, labelIds); 
@@ -67,5 +66,3 @@ class Statement {
     }
     
 }
-
-export {Statement};

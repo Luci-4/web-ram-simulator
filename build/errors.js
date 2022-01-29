@@ -84,4 +84,4 @@ class ZeroDivisionError extends Error_ {
     }
 }
 export { Error_, DuplicateLabelsError, UnexpectedTokenError, UnidentifiedInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };
-//# sourceMappingURL=exceptions.js.map
+//# sourceMappingURL=errors.js.map

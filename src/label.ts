@@ -1,5 +1,5 @@
-import { DuplicateLabelsError, Error_ } from "./exceptions.js";
-import {Token} from "./token.js";
+import { DuplicateLabelsError, Error_ } from "./errors.js";
+import Token from "./token.js";
 
 abstract class Label extends Token{
     id: string | undefined;

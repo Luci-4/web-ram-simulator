@@ -1,4 +1,4 @@
-import {Emulator} from '../build/emulator.js';
+import Emulator from '../build/emulator.js';
 
 class App{
     constructor(){

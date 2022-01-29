@@ -1,6 +1,6 @@
-import {Emulator} from "./emulator.js";
-import {Token} from "./token.js";
-import { Error_, InvalidArgumentValueError } from "./exceptions.js";
+import Emulator from "./emulator.js";
+import Token from "./token.js";
+import { Error_, InvalidArgumentValueError } from "./errors.js";
 
 abstract class Argument extends Token{
     value: string | undefined;

@@ -1,9 +1,10 @@
 import { Instruction } from "./instruction.js";
 import { Label } from "./label.js";
 import { Argument } from "./argument.js";
-import { Statement } from "./statement.js";
-import { UnexpectedTokenError, UnidentifiedInstructionError } from "./exceptions.js";
-export class Parser {
+import Statement from "./statement.js";
+import { UnexpectedTokenError, UnidentifiedInstructionError } from "./errors.js";
+import StatementArray from "./statementArray.js";
+export default class Parser {
     static identifyInstruction(elements) {
         for (let elemInd = 0; elemInd < elements.length; elemInd++) {
             if (Instruction.validateInstruction(elements[elemInd])) {
@@ -35,7 +36,7 @@ export class Parser {
     static parse(program) {
         let status = true;
         const linesOfElements = Parser.splitToLinesOfElements(program);
-        const statements = [];
+        const statements = new StatementArray();
         const errors = [];
         linesOfElements.forEach((elements, lineIndex) => {
             const instrInd = Parser.identifyInstruction(elements);
@@ -46,9 +47,9 @@ export class Parser {
             let statement = Parser.generateStatement(elementStatus, elements, lineIndex, instrInd);
             let statementErrors;
             let statementValidationStatus;
-            [statementValidationStatus, statementErrors] = statement.parseValidate(statements);
+            [statementValidationStatus, statementErrors] = statement.parseValidate(statements.getLabelIds());
             status = statementValidationStatus ? status : statementValidationStatus;
-            statements.push(statement);
+            statements.add(statement);
             errors.push(...elementErrors, ...statementErrors);
         });
         return [status, errors, statements];

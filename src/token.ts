@@ -1,1 +1,1 @@
-export abstract class Token{};
+export default abstract class Token{};

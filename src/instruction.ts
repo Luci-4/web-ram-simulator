@@ -6,8 +6,8 @@ import {Argument,
     PopulatedArgument
 } from "./argument.js";
 
-import {Token} from "./token.js";
-import {Emulator} from "./emulator.js";
+import Token from "./token.js";
+import Emulator from "./emulator.js";
 import {
     EmptyArgumentError, 
     Error_, 
@@ -17,7 +17,7 @@ import {
     UndefinedCellError, 
     UndefinedInputError, 
     ZeroDivisionError
-} from "./exceptions.js";
+} from "./errors.js";
 
 abstract class Instruction extends Token{
     execute(argument: Argument, emulator: Emulator): [boolean, Error_[]] {
@@ -400,7 +400,7 @@ class Div extends MathInst {
 
 class Halt extends Instruction {
     _execute(argument: NullArgument, emulator: Emulator): void {
-        emulator.execHead = emulator.programLength;
+        emulator.execHead = emulator.statements.length;
     }
 
     protected validateArgument(argument: Argument) {

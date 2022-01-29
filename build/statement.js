@@ -1,7 +1,7 @@
 import { NullLabel } from "./label.js";
 import { NullInstruction } from "./instruction.js";
 import { NullArgument } from "./argument.js";
-class Statement {
+export default class Statement {
     constructor(index) {
         this.label = new NullLabel();
         this.instruction = new NullInstruction();
@@ -23,9 +23,8 @@ class Statement {
         }
         return this.instruction.execute(this.argument, emulator);
     }
-    parseValidate(allStatements) {
+    parseValidate(labelIds) {
         let status = true;
-        const labelIds = allStatements.map((statement) => statement.label.id);
         let labelErrors;
         let labelStatus;
         [labelStatus, labelErrors] = this.label.parseValidate(this.index, labelIds);
@@ -51,5 +50,4 @@ class Statement {
         ];
     }
 }
-export { Statement };
 //# sourceMappingURL=statement.js.map

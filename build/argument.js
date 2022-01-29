@@ -1,5 +1,5 @@
-import { Token } from "./token.js";
-import { InvalidArgumentValueError } from "./exceptions.js";
+import Token from "./token.js";
+import { InvalidArgumentValueError } from "./errors.js";
 class Argument extends Token {
     constructor(value) {
         super();

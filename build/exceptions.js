@@ -1,6 +1,6 @@
 class Error_ {
     constructor(lineIndex) {
-        this.lineIndex = lineIndex;
+        this.lineNumber = lineIndex + 1;
     }
 }
 class DuplicateLabelsError extends Error_ {
@@ -9,7 +9,7 @@ class DuplicateLabelsError extends Error_ {
         this.label = label;
     }
     generateMessage() {
-        return `DuplicateLabelsError: in line ${this.lineIndex} label '${this.label.id}' already exists\n`;
+        return `DuplicateLabelsError: in line ${this.lineNumber} label '${this.label.id}' already exists\n`;
     }
 }
 class UnexpectedTokenError extends Error_ {
@@ -18,21 +18,12 @@ class UnexpectedTokenError extends Error_ {
         this.count = count;
     }
     generateMessage() {
-        return `UnexpectedTokenError: in line ${this.lineIndex} expected max 3 tokens, got ${this.count}\n`;
+        return `UnexpectedTokenError: in line ${this.lineNumber} expected max 3 tokens, got ${this.count}\n`;
     }
 }
 class UnidentifiedInstructionError extends Error_ {
     generateMessage() {
-        return `UnidentifiedInstructionError: in line ${this.lineIndex} could not identify any instruction\n`;
-    }
-}
-class InvalidInstructionError extends Error_ {
-    constructor(lineIndex, text) {
-        super(lineIndex);
-        this.text = text;
-    }
-    generateMessage() {
-        return `InvalidInstructionError: in line ${this.lineIndex} '${this.text}'\n`;
+        return `UnidentifiedInstructionError: in line ${this.lineNumber} could not identify any instruction\n`;
     }
 }
 class InvalidArgumentError extends Error_ {
@@ -42,7 +33,7 @@ class InvalidArgumentError extends Error_ {
         this.instruction = instruction;
     }
     generateMessage() {
-        return `InvalidArgumentError: in line ${this.lineIndex} invalid argument of type ${this.argument.constructor.name} for ${this.instruction.constructor.name}\n`;
+        return `InvalidArgumentError: in line ${this.lineNumber} invalid argument of type ${this.argument.constructor.name} for ${this.instruction.constructor.name}\n`;
     }
 }
 class InvalidArgumentValueError extends Error_ {
@@ -51,7 +42,7 @@ class InvalidArgumentValueError extends Error_ {
         this.argument = argument;
     }
     generateMessage() {
-        return `InvalidArgumentValueError: in line ${this.lineIndex} unexpected value '${this.argument.value}' for argument of type ${this.argument.constructor.name}\n`;
+        return `InvalidArgumentValueError: in line ${this.lineNumber} unexpected value '${this.argument.value}' for argument of type ${this.argument.constructor.name}\n`;
     }
 }
 class EmptyArgumentError extends Error_ {
@@ -60,22 +51,22 @@ class EmptyArgumentError extends Error_ {
         this.instruction = instruction;
     }
     generateMessage() {
-        return `EmptyArgumentError: in line ${this.lineIndex} instruction ${this.instruction.constructor.name} expects an argument\n`;
+        return `EmptyArgumentError: in line ${this.lineNumber} instruction ${this.instruction.constructor.name} expects an argument\n`;
     }
 }
 class UndefinedAccumulatorError extends Error_ {
     generateMessage() {
-        return `UndefinedAccumulatorError: in line ${this.lineIndex}\n`;
+        return `UndefinedAccumulatorError: in line ${this.lineNumber}\n`;
     }
 }
 class UndefinedCellError extends Error_ {
     generateMessage() {
-        return `UndefinedCellError: in line ${this.lineIndex + 1}\n`;
+        return `UndefinedCellError: in line ${this.lineNumber}\n`;
     }
 }
 class UndefinedInputError extends Error_ {
     generateMessage() {
-        return `UndefinedInputError: in line ${this.lineIndex}\n`;
+        return `UndefinedInputError: in line ${this.lineNumber}\n`;
     }
 }
 class LabelNotFoundError extends Error_ {
@@ -84,13 +75,13 @@ class LabelNotFoundError extends Error_ {
         this.labelId = labelId;
     }
     generateMessage() {
-        return `LabelNotFoundError: in line ${this.lineIndex} label ${this.labelId} doesn't exist\n`;
+        return `LabelNotFoundError: in line ${this.lineNumber} label ${this.labelId} doesn't exist\n`;
     }
 }
 class ZeroDivisionError extends Error_ {
     generateMessage() {
-        return `ZeroDivisionError: in line ${this.lineIndex}\n`;
+        return `ZeroDivisionError: in line ${this.lineNumber}\n`;
     }
 }
-export { Error_, DuplicateLabelsError, UnexpectedTokenError, UnidentifiedInstructionError, InvalidInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };
+export { Error_, DuplicateLabelsError, UnexpectedTokenError, UnidentifiedInstructionError, UndefinedAccumulatorError, UndefinedCellError, UndefinedInputError, InvalidArgumentError, InvalidArgumentValueError, EmptyArgumentError, LabelNotFoundError, ZeroDivisionError };
 //# sourceMappingURL=exceptions.js.map

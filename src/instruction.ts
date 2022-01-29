@@ -1,4 +1,11 @@
-import {Argument, CellArgument, ReferenceArgument, LabelArg, Address, Integer, Pointer, NullArgument, PopulatedArgument} from "./argument.js";
+import {Argument, 
+    CellArgument, 
+    ReferenceArgument, 
+    LabelArg, 
+    NullArgument, 
+    PopulatedArgument
+} from "./argument.js";
+
 import {Token} from "./token.js";
 import {Emulator} from "./emulator.js";
 import {
@@ -13,20 +20,16 @@ import {
 } from "./exceptions.js";
 
 abstract class Instruction extends Token{
-    abstract execute(argument: Argument | undefined, emulator: Emulator): boolean;
+    abstract execute(argument: Argument, emulator: Emulator): [boolean, Error_[]];
     protected abstract validateArgument(token: Token): boolean;
 
-    validateAccumulatorDefinition(emulator: Emulator): boolean{
-        if(typeof emulator.memory[0] === 'undefined'){
-            emulator.errors.push(new UndefinedAccumulatorError(emulator.execHead));
-            return false;
-        }
-        return true;
+    protected static validateAccumulatorDefinition(accumulator: number | undefined): boolean{
+        return (typeof accumulator !== 'undefined');
     }
 
     static Generate(text: string): Instruction{
-        if (text.length == 0){
-            return new NullInstruction()
+        if (text.length == 0) {
+            return new NullInstruction();
         }
         const instrClass = getKeyValue(Instructions)(text.toLowerCase());
 
@@ -34,26 +37,26 @@ abstract class Instruction extends Token{
     }
 
     static validateInstruction(text: string) {
-        if (text.length == 0){
+        if (text.length == 0) {
             return true
         }
         return (Instructions.hasOwnProperty(text.toLowerCase()));
     }
-    parseValidate(lineIndex: number, argument: Argument): [boolean, Error_[]]{
+
+    parseValidate(lineIndex: number, argument: Argument): [boolean, Error_[]] {
         const errors: Error_[] = [];
         let status = true;
-        console.log("parse validate", argument)
-        if(!this.validateArgument(argument)){
-            console.log("argument invalid");
-            if(argument instanceof NullArgument){
+
+        if (!this.validateArgument(argument)) {
+            if (argument instanceof NullArgument) {
                 errors.push(new EmptyArgumentError(lineIndex, this))
             }
-            else if(argument instanceof PopulatedArgument){
+            else if (argument instanceof PopulatedArgument) {
                 errors.push(new InvalidArgumentError(lineIndex, argument, this))
             }
             status = false
         }
-        console.log(this, "parse validate", status, errors); 
+
         return [status, errors]
     }
 }
@@ -65,14 +68,8 @@ abstract class JumpInstr extends Instruction {
       
     }
 
-    validateLabelsExistance(labelId: string, emulator: Emulator): boolean{
-        const parser = emulator.parser;
-        const labelsWithIndices = parser.labelsWithIndices;
-        if (!labelsWithIndices.hasOwnProperty(labelId)){
-            emulator.errors.push(new LabelNotFoundError(emulator.execHead, labelId));
-            return false;
-        }
-        return true;
+    protected static validateLabelsExistance(labelId: string, labelsWithIndices: {[key: string]: number}): boolean{
+        return (labelsWithIndices.hasOwnProperty(labelId));
     }
 }
 
@@ -84,36 +81,68 @@ abstract class OperationInst extends Instruction {
         return (argument instanceof CellArgument);
     }
 
-    validateCellDefinition(argument: CellArgument, emulator: Emulator): boolean{
+    protected static validateCellDefinition(argument: CellArgument, memory: number[]): boolean{
         
-        if(typeof argument.getCellValue(emulator) === 'undefined'){
-            emulator.errors.push(new UndefinedCellError(emulator.execHead));
-            return false;
-        }
-        return true;
+        return (typeof argument.getCellValue(memory) !== 'undefined');
     }
 
 }
 
-class Jump extends JumpInstr{
-    execute(argument: LabelArg, emulator: Emulator): boolean{
-        if (!this.validateLabelsExistance(argument.value, emulator)){return false;}
+abstract class MathInst extends OperationInst {
+    protected static validateMemoryDefinition(argument: CellArgument, memory: number[], execHead: number): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
 
-        emulator.execHead = argument.getLabelIndex(emulator);
-        return true;
+        if (!MathInst.validateAccumulatorDefinition(memory[0])) {
+            status = false;
+            errors.push(new UndefinedAccumulatorError(execHead));
+        }
+
+        if (!MathInst.validateCellDefinition(argument, memory)) {
+            status = false;
+            errors.push(new UndefinedCellError(execHead));
+        }
+
+        return [status, errors];
+    }
+}
+
+class Jump extends JumpInstr {
+    execute(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors]
+        }
+
+        emulator.execHead = argument.getLabelIndex(emulator.labelsWithIndices);
+
+        return [true, []]
+    }
+
+    validate(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
+        let errors: Error_[] = [];
+        let status = true;
+        const labelId = argument.value;
+        if (!Jump.validateLabelsExistance(labelId, emulator.labelsWithIndices)) {
+            errors.push(new LabelNotFoundError(emulator.execHead, labelId));
+            status = false;
+        }
+        return [status, errors]
     }
 
 }
 
 class Jgtz extends JumpInstr {
-    execute(argument: LabelArg, emulator: Emulator): boolean {
-        if(!this.validateLabelsExistance(argument.value, emulator)){return false;}
+    execute(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator)
 
-        if (!super.validateAccumulatorDefinition(emulator)){return false}
+        if (!status) {
+            return [status, errors];
+        }
 
-        if(emulator.memory[0] > 0) {
-            const parser = emulator.parser; 
-            const labelsWithIndices = parser.labelsWithIndices;
+        if (emulator.memory[0] > 0) {
+            const labelsWithIndices = emulator.labelsWithIndices;
             const value = argument.value;
             const newExecHead = labelsWithIndices[value];
             emulator.execHead = newExecHead;
@@ -121,47 +150,84 @@ class Jgtz extends JumpInstr {
         else {
             emulator.execHead++;
         }
-        return true;
 
+        return [true, []];
+
+    }
+
+    validate(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+        const labelId = argument.value;
+
+        if (!Jgtz.validateLabelsExistance(labelId, emulator.labelsWithIndices)) {
+            status = false;
+            errors.push(new LabelNotFoundError(emulator.execHead, labelId));
+        }
+
+        if (!Jgtz.validateAccumulatorDefinition(emulator.memory[0])) {
+            status = false;
+            errors.push(new UndefinedAccumulatorError(emulator.execHead))
+        }
+
+        return [status, errors]
     }
 
 }
 
 class Jzero extends JumpInstr {
-    execute(argument: LabelArg, emulator: Emulator): boolean {
-        if(!this.validateLabelsExistance(argument.value, emulator)){
-            
-            return false;
+    execute(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
         }
 
-        if(!super.validateAccumulatorDefinition(emulator)){
-            return false;
-        }
-
-        if(emulator.memory[0] === 0){
-            const parser = emulator.parser;
-            const labelsWithIndices = parser.labelsWithIndices;
+        if (emulator.memory[0] === 0) {
+            const labelsWithIndices = emulator.labelsWithIndices;
             const value = argument.value
             emulator.execHead = labelsWithIndices[value];
         }
         else {
             emulator.execHead++;
         }
-        return true;
+
+        return [true, []];
+    }
+
+    validate(argument: LabelArg, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+        const labelId = argument.value;
+
+        if (!Jzero.validateLabelsExistance(labelId, emulator.labelsWithIndices)) {
+            status = false;
+            errors.push(new LabelNotFoundError(emulator.execHead, labelId));
+        }
+
+        if (!Jzero.validateAccumulatorDefinition(emulator.memory[0])) {
+            status = false;
+            errors.push(new UndefinedAccumulatorError(emulator.execHead))
+        }
+
+        return [status, errors]
     }
 }
 
 class Read extends OperationInst {
-    execute(argument: ReferenceArgument, emulator: Emulator): boolean {
-        if (!this.validateInputDefinition(argument, emulator)){
-            
-            return false;
+    execute(argument: ReferenceArgument, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
         }
-        let address = argument.getAddress(emulator);
+
+        let address = argument.getAddress(emulator.memory);
         emulator.memory[address] = emulator.inputs[emulator.inputHead];
         emulator.inputHead++;
         emulator.execHead++;
-        return true;
+
+        return [true, []];
     }
 
     protected validateArgument(argument: Argument): boolean {
@@ -171,46 +237,91 @@ class Read extends OperationInst {
         return (argument instanceof ReferenceArgument);
     }
 
-    validateInputDefinition(argument: ReferenceArgument, emulator: Emulator): boolean {
-        if(typeof emulator.inputs[emulator.inputHead] === 'undefined'){
-            emulator.errors.push(new UndefinedInputError(emulator.execHead+1));
-            return false;
+    validate(argument: ReferenceArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+
+        if (!Read.validateInputDefinition(argument, emulator.inputs, emulator.inputHead)) {
+            status = false; 
+            errors.push(new UndefinedInputError(emulator.execHead))
         }
-        return true;
+
+        return [status, errors]
+    }
+
+    private static validateInputDefinition(argument: ReferenceArgument, inputs: number[], inputHead: number): boolean {
+        return (typeof inputs[inputHead] !== 'undefined');
 
     }
 }
 
 class Write extends OperationInst {
-    execute(argument: CellArgument, emulator: Emulator): boolean {
-        if (!super.validateCellDefinition(argument, emulator)){return false;}
+    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
 
-        emulator.outputs[emulator.outputHead] = argument.getCellValue(emulator);
+        if (!status) {
+            return [status, errors]
+        }
+
+        emulator.outputs[emulator.outputHead] = argument.getCellValue(emulator.memory);
         emulator.outputHead++;
         emulator.execHead++;
-        return true;
+
+        return [true, []];
+    }
+
+    validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+
+        if (!OperationInst.validateCellDefinition(argument, emulator.memory)) {
+            status = false;
+            errors.push(new UndefinedCellError(emulator.execHead));
+        }
+        
+        return [status, errors];
     }
 }
 
 class Load extends OperationInst {
-    execute(argument: CellArgument, emulator: Emulator): boolean {
-        if (!super.validateCellDefinition(argument, emulator)){return false;}
+    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
+        }
         
-        emulator.memory[0] = argument.getCellValue(emulator);;
+        emulator.memory[0] = argument.getCellValue(emulator.memory);;
         emulator.execHead++;
-        return true;
+
+        return [true, []];
+    }
+
+    validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+
+        if (!OperationInst.validateCellDefinition(argument, emulator.memory)) {
+            status = false;
+            errors.push(new UndefinedCellError(emulator.execHead));
+        }
+
+        return [status, errors];
     }
 }
 
 class Store extends OperationInst {
 
-    execute(argument: ReferenceArgument, emulator: Emulator): boolean {
+    execute(argument: ReferenceArgument, emulator: Emulator): [boolean, Error_[]] {
 
-        if(!super.validateAccumulatorDefinition(emulator)){return false;}
+        const [status, errors] = this.validate(argument, emulator);
 
-        emulator.memory[argument.getAddress(emulator)] = emulator.memory[0];
+        if (!status) {
+            return [status, errors];
+        }
+        emulator.memory[argument.getAddress(emulator.memory)] = emulator.memory[0];
         emulator.execHead++;
-        return true;
+        return [true, []];
     }
 
     protected validateArgument(argument: Argument) {
@@ -220,74 +331,147 @@ class Store extends OperationInst {
         return (argument instanceof ReferenceArgument);
     }
 
-}
-
-class Add extends OperationInst {
-    execute(argument: CellArgument,emulator: Emulator): boolean {
-        if(!super.validateAccumulatorDefinition(emulator)){return false;}
-
-        if (!super.validateCellDefinition(argument, emulator)){return false;}
-
-        emulator.memory[0] += argument.getCellValue(emulator);
-        emulator.execHead++;
-        return true;
-    }
-
-    
-}
-
-class Sub extends OperationInst {
-    execute(argument: CellArgument, emulator: Emulator): boolean {
-        
-        if(!super.validateAccumulatorDefinition(emulator)){return false;}
-        
-        if (!super.validateCellDefinition(argument, emulator)){return false;}
-        
-        emulator.memory[0] -= argument.getCellValue(emulator);
-        emulator.execHead++;
-        return true;
-    }
-
-}
-
-class Mult extends OperationInst {
-    execute(argument: CellArgument, emulator: Emulator): boolean {
-        if(!super.validateAccumulatorDefinition(emulator)){return false;}
-        
-        if (!super.validateCellDefinition(argument, emulator)){return false;}
-
-        emulator.memory[0] *= argument.getCellValue(emulator);
-        emulator.execHead++;
-        return true;
-    }
-
-}
-
-class Div extends OperationInst {
-
-    validateDivisor(argument: CellArgument, emulator: Emulator){
-        if(argument.getCellValue(emulator) === 0){
-            emulator.errors.push(new ZeroDivisionError(emulator.execHead));
-            return false;
+    validate(argument: ReferenceArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+        if (!Store.validateAccumulatorDefinition(emulator.memory[0])) {
+            status = false;
+            errors.push(new UndefinedAccumulatorError(emulator.execHead))
         }
-        return true;
+        return [status, errors];
+    }
+}
+
+class Add extends MathInst {
+    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
+        }
+
+        emulator.memory[0] += argument.getCellValue(emulator.memory);
+        emulator.execHead++;
+
+        return [true, []];
     }
 
-    execute(argument: CellArgument, emulator: Emulator): boolean {
-        if(!super.validateAccumulatorDefinition(emulator)){return false;}
-        if(!this.validateDivisor(argument, emulator)){return false}
-        if(!super.validateCellDefinition(argument, emulator)){return false;}
+    validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
 
-        emulator.memory[0] /= argument.getCellValue(emulator);
+        if (!Add.validateAccumulatorDefinition(emulator.memory[0])) {
+            status = false;
+            errors.push(new UndefinedAccumulatorError(emulator.execHead));
+        }
+
+        if (!Add.validateCellDefinition(argument, emulator.memory)) {
+            status = false;
+            errors.push(new UndefinedCellError(emulator.execHead));
+        }
+
+        return [status, errors];
+    }
+}
+
+class Sub extends MathInst {
+    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        
+        const [status, errors] = this.validate(argument, emulator);
+        
+        if (!status) {
+            return [status, errors];
+        }
+
+        emulator.memory[0] -= argument.getCellValue(emulator.memory);
         emulator.execHead++;
-        return true;
+
+        return [true, []];
+    }
+
+    validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+        
+        let [memoryIsValid, memoryErrors] = Sub.validateMemoryDefinition(argument, emulator.memory, emulator.execHead);
+        errors.push(...memoryErrors)
+
+        status = memoryIsValid ? status : memoryIsValid;
+
+
+        return [status, errors];
+    }
+
+}
+
+class Mult extends MathInst {
+    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
+        }
+
+        emulator.memory[0] *= argument.getCellValue(emulator.memory);
+        emulator.execHead++;
+
+        return [true, []];
+    }
+
+    validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+        
+        let [memoryIsValid, memoryErrors] = Mult.validateMemoryDefinition(argument, emulator.memory, emulator.execHead);
+        errors.push(...memoryErrors)
+
+        status = memoryIsValid ? status : memoryIsValid;
+
+        return [status, errors];
+    }
+}
+
+class Div extends MathInst {
+
+    private static validateDivisor(argument: CellArgument, memory: number[]) {
+        return (argument.getCellValue(memory) === 0);
+    }
+
+    execute(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const [status, errors] = this.validate(argument, emulator);
+
+        if (!status) {
+            return [status, errors];
+        }
+
+        emulator.memory[0] /= argument.getCellValue(emulator.memory);
+        emulator.execHead++;
+
+        return [true, []];
+    }
+
+    validate(argument: CellArgument, emulator: Emulator): [boolean, Error_[]] {
+        const errors: Error_[] = [];
+        let status = true;
+        
+        const [memoryIsValid, memoryErrors] = MathInst.validateMemoryDefinition(argument, emulator.memory, emulator.execHead);
+        if (!Div.validateDivisor(argument, emulator.memory)) {
+            errors.push(new ZeroDivisionError(emulator.execHead));
+            status = false
+        }
+
+        errors.push(...memoryErrors)
+
+        status = memoryIsValid ? status : memoryIsValid;
+
+        return [status, errors];
     }
 }
 
 class Halt extends Instruction {
-    execute(argument: NullArgument, emulator: Emulator): boolean {
-        emulator.execHead = emulator.parser.programLength;
-        return true;
+    execute(argument: NullArgument, emulator: Emulator): [boolean, Error_[]] {
+        emulator.execHead = emulator.programLength;
+        return [true, []];
     }
 
     protected validateArgument(argument: Argument) {
@@ -298,16 +482,18 @@ class Halt extends Instruction {
     }
 }
 
-export class NullInstruction extends Instruction{
-    execute(argument: NullArgument, emulator: Emulator): boolean {
-       return true; 
+export class NullInstruction extends Instruction {
+    execute(argument: NullArgument, emulator: Emulator): [boolean, Error_[]] {
+       return [true, []]; 
     }
+
     protected validateArgument(argument: Argument): boolean {
         return (argument instanceof NullArgument)
     } 
 }
 
 const getKeyValue = <T extends object, U extends keyof T>(obj: T) => (key: U) => obj[key];
+
 const Instructions: {[key: string]: {new(): Instruction}} = {
     "read": Read,
     "load": Load,
@@ -322,6 +508,5 @@ const Instructions: {[key: string]: {new(): Instruction}} = {
     "write": Write,
     "halt": Halt,
 };
-
 
 export {Instruction, Instructions};

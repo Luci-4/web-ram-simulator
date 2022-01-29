@@ -56,29 +56,29 @@ class LabelArg extends PopulatedArgument {
     validateValue() {
         return (this.value.length > 0);
     }
-    getLabelIndex(emulator) {
-        return emulator.parser.labelsWithIndices[this.value];
+    getLabelIndex(labelsWithIndices) {
+        return labelsWithIndices[this.value];
     }
 }
 class Integer extends CellArgument {
-    getCellValue(emulator) {
+    getCellValue(memory) {
         return parseInt(this.value);
     }
 }
 class Address extends ReferenceArgument {
-    getCellValue(emulator) {
-        return emulator.memory[parseInt(this.value)];
+    getCellValue(memory) {
+        return memory[parseInt(this.value)];
     }
-    getAddress(emulator) {
+    getAddress(memory) {
         return parseInt(this.value);
     }
 }
 class Pointer extends ReferenceArgument {
-    getCellValue(emulator) {
-        return emulator.memory[emulator.memory[parseInt(this.value)]];
+    getCellValue(memory) {
+        return memory[memory[parseInt(this.value)]];
     }
-    getAddress(emulator) {
-        return emulator.memory[parseInt(this.value)];
+    getAddress(memory) {
+        return memory[parseInt(this.value)];
     }
 }
 const ArgumentsTypes = {

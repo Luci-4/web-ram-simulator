@@ -17,23 +17,22 @@ class Statement {
         this.index = index;
     }
 
-    populate(label: Label, instruction: Instruction, argument: Argument){
+    populate(label: Label, instruction: Instruction, argument: Argument) {
         this.label = label;
         this.instruction = instruction;
         this.argument = argument;
         this.isPopulated = true;
-
     }
 
-    execute(emulator: Emulator){
-        if (this.instruction instanceof NullInstruction){
+    execute(emulator: Emulator): [boolean, Error_[]] {
+        if (this.instruction instanceof NullInstruction) {
             emulator.execHead++;
-            return true;
+            return [true, []];
         }
         return this.instruction.execute(this.argument, emulator);
     }
 
-    parseValidate(allStatements: Statement[]): [boolean, Error_[]]{
+    parseValidate(allStatements: Statement[]): [boolean, Error_[]] {
         let status = true;
 
         const labelIds = allStatements.map((statement: Statement) => statement.label.id);
@@ -47,14 +46,12 @@ class Statement {
         [argumentStatus, argumentErrors] = this.argument.parseValidate(this.index);
         status = argumentStatus ? status : argumentStatus;
 
-        let instructionErrors: Error_[]  = [];
-        if(argumentStatus){
-            console.log("current status before validting instruction", this.instruction, status);
+        let instructionErrors: Error_[] = [];
+        if (argumentStatus) {
             let instructionStatus: boolean;
             [instructionStatus, instructionErrors] = this.instruction.parseValidate(this.index, this.argument);
             status = instructionStatus ? status : instructionStatus;
         }
-        console.log("parse validate statement", this, status, instructionErrors)
 
 
         this.isValid = status;

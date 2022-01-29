@@ -19,7 +19,7 @@ class Statement {
     execute(emulator) {
         if (this.instruction instanceof NullInstruction) {
             emulator.execHead++;
-            return true;
+            return [true, []];
         }
         return this.instruction.execute(this.argument, emulator);
     }
@@ -36,12 +36,10 @@ class Statement {
         status = argumentStatus ? status : argumentStatus;
         let instructionErrors = [];
         if (argumentStatus) {
-            console.log("current status before validting instruction", this.instruction, status);
             let instructionStatus;
             [instructionStatus, instructionErrors] = this.instruction.parseValidate(this.index, this.argument);
             status = instructionStatus ? status : instructionStatus;
         }
-        console.log("parse validate statement", this, status, instructionErrors);
         this.isValid = status;
         return [
             status,

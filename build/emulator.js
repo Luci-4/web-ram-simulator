@@ -18,9 +18,7 @@ class Emulator {
         // let foundInvalidStatements = this.parser.contents.some((statement: Statement) => !statement.isValid);
         if (!parsedOK) {
             this.errors.push(...parserErrors);
-            console.log("parsed not ok", this.errors);
             this.debugConsole = this.errors.map((e) => e.generateMessage());
-            console.log("debug console", this.debugConsole);
             return false;
         }
         this.programLength = this.statements.length;
@@ -40,10 +38,7 @@ class Emulator {
                 labels.push(labelId);
             }
         });
-        if (labels.includes(label.id)) {
-            return false;
-        }
-        return true;
+        return !(labels.includes(label.id));
     }
     generateLabelsMap() {
         // swap statements' indices with tokens labels' ids to create labelsWithIndices
@@ -54,8 +49,6 @@ class Emulator {
                 let label = statement.label;
                 if (label instanceof PopulatedLabel) {
                     let labelId = label.id;
-                    console.log(label, labelId, index);
-                    console.log(this.labelsWithIndices);
                     this.labelsWithIndices[labelId] = index;
                 }
             }
@@ -75,8 +68,10 @@ class Emulator {
         }
         let currentStatement = this.statements[this.execHead];
         // TODO: restructure emulator validation and maybe refactor it's class 
-        let result = currentStatement.execute(this);
-        if (!result) {
+        const [status, errors] = currentStatement.execute(this);
+        if (!status) {
+            this.errors.push(...errors);
+            this.debugConsole = this.errors.map((e) => e.generateMessage());
             return 1;
         }
     }

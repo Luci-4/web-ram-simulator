@@ -16,13 +16,11 @@ export class Parser {
         let status = true;
         const errors = [];
         if (elements.length > 3) {
-            console.log("HELLO THEREapparently more than 3", elements.length);
             errors.push(new UnexpectedTokenError(lineIndex, elements.length));
             status = false;
         }
         // TODO: add validation for the instruction being in the third place
         if (instrInd < 0) {
-            console.log("HELLO THEREapparently could not find the instruction", instrInd);
             errors.push(new UnidentifiedInstructionError(lineIndex));
             status = false;
         }
@@ -45,9 +43,7 @@ export class Parser {
             let elementStatus;
             [elementStatus, elementErrors] = Parser.validateElements(elements, lineIndex, instrInd);
             status = elementStatus ? status : elementStatus;
-            console.log("HERE", status);
-            let statement = Parser.generateStatement(elementStatus, elements, lineIndex + 1, instrInd);
-            console.log(statement);
+            let statement = Parser.generateStatement(elementStatus, elements, lineIndex, instrInd);
             let statementErrors;
             let statementValidationStatus;
             [statementValidationStatus, statementErrors] = statement.parseValidate(statements);
@@ -57,8 +53,8 @@ export class Parser {
         });
         return [status, errors, statements];
     }
-    static generateStatement(canBePopulated, elements, lineNumber, instrIndex) {
-        const statement = new Statement(lineNumber);
+    static generateStatement(canBePopulated, elements, lineIndex, instrIndex) {
+        const statement = new Statement(lineIndex);
         if (!canBePopulated) {
             return statement;
         }

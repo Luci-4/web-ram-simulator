@@ -17,6 +17,7 @@ class Emulator {
     outputHead: number;
     intervalId: ReturnType<typeof setInterval>;
     programLength: number;
+
     init(program: string, inputs: number[], breakpoints: number[] = []): boolean {
         this.memory = [];
         this.inputs = inputs;
@@ -29,11 +30,9 @@ class Emulator {
         [parsedOK, parserErrors, this.statements] = Parser.parse(program);
         // check if all tokens could be generated properly
         // let foundInvalidStatements = this.parser.contents.some((statement: Statement) => !statement.isValid);
-        if(!parsedOK){
+        if (!parsedOK) {
             this.errors.push(...parserErrors);
-            console.log("parsed not ok", this.errors)
             this.debugConsole = this.errors.map((e: Error_) => e.generateMessage())
-            console.log("debug console", this.debugConsole)
             return false;
         }
 
@@ -46,33 +45,29 @@ class Emulator {
 
     }
 
-    validateLabelUniqueness(label: Label){
+    validateLabelUniqueness(label: Label) {
         let labels: Array<string|undefined> = [];
         // TODO: fix autocomplete in the middle of other text
         this.statements.forEach(statement => {
             const labelId = statement?.label?.id;
-            if(label instanceof PopulatedLabel){
+            if (label instanceof PopulatedLabel) {
                 labels.push(labelId);
             }
             
         });
-        if(labels.includes(label.id)){
-            return false;
-        }
-        return true;
+        return !(labels.includes(label.id));
     }
-    generateLabelsMap(){
+
+    generateLabelsMap() {
         // swap statements' indices with tokens labels' ids to create labelsWithIndices
         Object.keys(this.statements).forEach((key: string) => {
-            if(typeof key !== 'undefined'){
+            if (typeof key !== 'undefined') {
                 let index: number = parseInt(key);
                 let statement = this.statements[index]
                 let label = statement.label;
 
-                if(label instanceof PopulatedLabel){
+                if (label instanceof PopulatedLabel) {
                     let labelId = label.id;
-                    console.log(label, labelId, index)
-                    console.log(this.labelsWithIndices)
                     this.labelsWithIndices[labelId] = index;
                 }
             }
@@ -84,21 +79,24 @@ class Emulator {
 
     }
 
-    debug(program: string, inputs: number[], breakpoints: number[]){
-        if(!this.init(program, inputs, breakpoints)){
+    debug(program: string, inputs: number[], breakpoints: number[]) {
+        if (!this.init(program, inputs, breakpoints)) {
             return 1;
         }
     }
-    step(){
-        if(this.execHead >= this.programLength){
+
+    step() {
+        if (this.execHead >= this.programLength) {
             
             return 0;
         }
         let currentStatement: Statement = this.statements[this.execHead];
 
         // TODO: restructure emulator validation and maybe refactor it's class 
-        let result = currentStatement.execute(this);
-        if(!result){
+        const [status, errors]: [boolean, Error_[]] = currentStatement.execute(this);
+        if (!status) {
+            this.errors.push(...errors)
+            this.debugConsole = this.errors.map((e: Error_) => e.generateMessage())
             return 1;
         }
     }

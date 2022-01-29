@@ -11,8 +11,8 @@ class Emulator {
     inputHead: number;
     outputHead: number;
     
-    readonly labelsWithIndices: {[key: string]: number} = {};
-    private _statements: StatementArray;
+    labelsWithIndices: {[key: string]: number} = {};
+    private _statements: StatementArray = new StatementArray();
 
     public get statements() {
         return this._statements;
@@ -38,13 +38,13 @@ class Emulator {
 
         let [parsedOK, parserErrors, statements] = Parser.parse(contents);
         
+        this._statements = statements;
         if (!parsedOK) {
             this.errors.push(...parserErrors);
             this.debugConsole = this.errors.map((e: Error_) => e.generateMessage())
             return false;
         }
-        this._statements = statements;
-        this.generateLabelsMap;
+        this.labelsWithIndices = this._statements.generateLabelsMap();
         this.execHead = 0;
         this.inputHead = 0;
         this.outputHead = 0;
@@ -80,21 +80,6 @@ class Emulator {
             return 1;
         }
     }
-    private generateLabelsMap() {
-        // swap statements' indices with tokens labels' ids to create labelsWithIndices
-        Object.keys(this.statements).forEach((key: string) => {
-            if (typeof key !== 'undefined') {
-                let index: number = parseInt(key);
-                let statement = this.statements.getByIndex(index);
-                let label = statement.label;
-
-                if (label instanceof PopulatedLabel) {
-                    let labelId = label.id;
-                    this.labelsWithIndices[labelId] = index;
-                }
-            }
-        })
-    }    
 }
 
 export default Emulator;

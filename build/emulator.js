@@ -1,8 +1,9 @@
-import { PopulatedLabel } from "./label.js";
 import Parser from "./parser.js";
+import StatementArray from "./statementArray.js";
 class Emulator {
     constructor() {
         this.labelsWithIndices = {};
+        this._statements = new StatementArray();
     }
     get statements() {
         return this._statements;
@@ -17,13 +18,13 @@ class Emulator {
         // let parsedOK: boolean;
         // let parserErrors: Error_[];
         let [parsedOK, parserErrors, statements] = Parser.parse(contents);
+        this._statements = statements;
         if (!parsedOK) {
             this.errors.push(...parserErrors);
             this.debugConsole = this.errors.map((e) => e.generateMessage());
             return false;
         }
-        this._statements = statements;
-        this.generateLabelsMap;
+        this.labelsWithIndices = this._statements.generateLabelsMap();
         this.execHead = 0;
         this.inputHead = 0;
         this.outputHead = 0;
@@ -50,20 +51,6 @@ class Emulator {
             this.debugConsole = this.errors.map((e) => e.generateMessage());
             return 1;
         }
-    }
-    generateLabelsMap() {
-        // swap statements' indices with tokens labels' ids to create labelsWithIndices
-        Object.keys(this.statements).forEach((key) => {
-            if (typeof key !== 'undefined') {
-                let index = parseInt(key);
-                let statement = this.statements.getByIndex(index);
-                let label = statement.label;
-                if (label instanceof PopulatedLabel) {
-                    let labelId = label.id;
-                    this.labelsWithIndices[labelId] = index;
-                }
-            }
-        });
     }
 }
 export default Emulator;

@@ -1,4 +1,4 @@
-import { PopulatedLabel } from "./label";
+import { PopulatedLabel } from "./label.js";
 import Statement from "./statement";
 
 export default class StatementArray {
@@ -23,5 +23,24 @@ export default class StatementArray {
     public getLabelIds(): Array<string | undefined> {
         return this.statements.map((statement: Statement) => statement.label.id);
     }
+
+    public generateLabelsMap(): {[key: string]: number} {
+        // swap statements' indices with tokens labels' ids to create labelsWithIndices
+        const labelsWithIndices: {[key: string]: number} = {};
+
+        Object.keys(this._statements).forEach((key: string) => {
+            if (typeof key !== 'undefined') {
+                let index: number = parseInt(key);
+                let statement = this._statements[index];
+                let label = statement.label;
+
+                if (label instanceof PopulatedLabel) {
+                    let labelId = label.id;
+                    labelsWithIndices[labelId] = index;
+                }
+            }
+        })
+        return labelsWithIndices
+    }    
 
 }
